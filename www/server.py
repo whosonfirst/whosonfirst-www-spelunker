@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import logging
 import urlparse
 import urllib
@@ -25,7 +26,7 @@ logging.basicConfig(level=logging.INFO)
 def init():
 
     spatial_dsn = os.environ.get('WOF_SPATIAL_DSN', None)
-    spatial_db = spatial.query(query_dsn)
+    spatial_db = spatial.query(spatial_dsn)
 
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
@@ -49,7 +50,7 @@ def info(id):
         'query': query
     }
 
-    rsp = flask.g.search_idx.query(body)
+    rsp = flask.g.search_idx.search(body)
 
     docs = rsp['rows']
     doc = docs[0]
@@ -59,7 +60,7 @@ def info(id):
 @app.route("/")
 @app.route("/search")
 @app.route("/search/")
-def search():
+def searchify():
 
     q = flask.request.args.get('q')
 
@@ -89,7 +90,7 @@ def search():
         'query': query
     }
     
-    rsp = flask.g.search_idx.query(body, **args)
+    rsp = flask.g.search_idx.search(body, **args)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -115,9 +116,9 @@ if __name__ == '__main__':
     opt_parser = optparse.OptionParser()
 
     opt_parser.add_option('-p', '--port', dest='port', action='store', default=7777, help='')
-    opt_parser.add_option('-c', '--config', dest='config', action='config', default=None, help='')
-
+    opt_parser.add_option('-c', '--config', dest='config', action='store', default=None, help='')
     opt_parser.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False, help='Be chatty (default is false)')
+
     options, args = opt_parser.parse_args()
 
     if options.verbose:	
