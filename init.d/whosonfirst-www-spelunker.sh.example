@@ -23,6 +23,7 @@ GUNICORN_PID_NAME='whosonfirst-spelunker-server'
 
 GUNICORN=`which gunicorn`
 GUNICORN_OPTS="-c ${GUNICORN_CONFIG}"
+GUNICORN_USER="www-data"
 
 PIDFILE=/var/run/${GUNICORN_PID_NAME}.pid
 
@@ -42,7 +43,7 @@ case $1 in
 	cd ${GUNICORN_APP_ROOT} 
         echo "Starting ${GUNICORN_APP_NAME}"
 
-	PID=`exec sudo $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app > /dev/null 2>&1 & echo $!`
+	PID=`exec sudo -u ${GUNICORN_USER} $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app > /dev/null 2>&1 & echo $!`
 	echo "PID: ${PID}"
 
 	cd -
