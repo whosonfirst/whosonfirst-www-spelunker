@@ -1,0 +1,16 @@
+{% if pagination.pages > 1 %}
+<ul id="pagination">
+{% if pagination.page == 1 %}
+<li>start</li>
+{% else %}
+<li><a href="{{ pagination_url }}&page={{ pagination.page-1 }}">previous</a></li>
+{% endif %}
+{% if pagination.page == pagination.pages %}
+<li>stop</li>
+{% else %}
+<li><a href="{{ pagination_url }}&page={{ pagination.page + 1 }}">next</a></li>
+{% endif %}
+</ul>
+<br clear="all" />
+<div style="font-size:small;text-align:center;">{{ pagination|pprint|e }}</div>
+{% endif %}

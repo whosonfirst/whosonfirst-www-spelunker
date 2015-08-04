@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <script type="text/javascript" src="{{ url_for('static', filename='leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='tangram.min.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='leaflet.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='spelunker.css') }}" />
+    {% block head %}{% endblock %}
+</head>
+<body>
+  <div id="nav">
+    <div id="nav-search">
+      <form method="GET" action="https://{{ request.host }}/search/">
+	<input type="text" name="q" id="q" placeholder="Search for a place" />
+	<button type="submit">Search</button>
+      </form>
+    </div>
+    <h2>{{ page_title|e }}</h2>
+    </div>
+
+    <div id="content">{% block content %}{% endblock %}</div>
+</body>
+</html>

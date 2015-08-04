@@ -1,0 +1,53 @@
+body {
+padding:0px;
+margin:2em;
+margin-right:3em;
+font-family:sans-serif;
+}
+
+.hey-look {
+font-weight:700;
+}
+
+#nav {
+border-bottom:1px solid #999;
+margin-bottom:1em;
+}
+
+#nav-search {
+float:right;
+}
+
+#pagination  {
+text-align:center;
+color: #ccc;
+
+}
+
+#pagination li {
+display:inline;
+border:1px solid #ccc;
+padding:1em;
+}
+
+.meta {
+display:block;
+border: solid thin;
+padding: 2em;
+float:left;
+margin-right:2em;
+margin-bottom:2em;
+}
+
+.geom {
+color:#ccc;
+font-family:monospace;
+line-height:1.4em;
+}
+
+#map {
+    height: 400px;
+    width:100%;
+    border: solid thin;
+    margin-bottom:1.5em;
+}

@@ -1,0 +1,60 @@
+{% set page_title = doc.properties.get("wof:name") %}
+{% extends "base.html" %}
+{% block title %}{{ doc.properties.get("wof:id") |e }} | {{ doc.properties.get("wof:name") |e }}{% endblock %}
+{% block content %}
+<div id="map"></div>
+<div class="meta">
+<h3>Properties</h3>
+<pre>{{ doc['properties'] |pprint|e }}</pre>
+<h3>Bounding box</h3>
+<pre>{{ doc['bbox'] |pprint|e }}</pre>
+</div>
+<div class="geom">{{ doc['geometry'] |e }}</div>
+<script type="text/javascript">
+
+window.onload = function(e){
+
+	var map = L.map('map');
+	map.fitBounds([[{{ doc.bbox.1|e }},{{ doc.bbox.0|e }}], [ {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }} ]]);
+
+	var tangram = Tangram.leafletLayer({
+		scene: "{{ url_for('static', filename='scene.yaml') }}",
+	        numWorkers: 2,
+        	unloadInvisibleTiles: false,
+	        updateWhenIdle: false
+	});
+
+	tangram.addTo(map);
+
+	var boundary_bbox = {
+		"color": "#72A0C1",
+		"weight": 3,
+		"opacity": 1
+	};
+
+	var boundary_poly = {
+		"color": "#ff7800",
+		"weight": 3,
+		"opacity": 1
+	};
+
+	var geojson = JSON.parse('{{ doc.geometry_str|safe }}');
+	geojson = L.geoJson(geojson, {'style': boundary_bbox});
+	geojson.addTo(map);
+
+	var remote = "https://s3.amazonaws.com/com.mapzen.gazetteer/{{ doc.properties['wof:path'] |e }}";
+
+	var req = new XMLHttpRequest();
+
+	req.onload = function(){
+		var geojson = JSON.parse(this.responseText);
+		geojson = L.geoJson(geojson, {'style': boundary_poly});
+		geojson.addTo(map);
+	};
+
+	req.open("get", remote, true);
+	req.send();
+
+};
+</script>
+{% endblock %}
