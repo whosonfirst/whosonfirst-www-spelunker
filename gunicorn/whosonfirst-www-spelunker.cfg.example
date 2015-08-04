@@ -11,7 +11,7 @@ spelunker_port = 'YOUR-SPELUNKER-PORT-GOES-HERE'
 spelunker_root = 'YOUR-SPELUNKER-WWW-GOES-HERE'
 spelunker_cfg = 'YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE'
 
-spelunker_cfg = os.path.join(speunker_root, spelunker_cfg)
+spelunker_cfg = os.path.join(spelunker_root, spelunker_cfg)
 
 workers = multiprocessing.cpu_count() * 2 + 1
 worker_class = "egg:gunicorn#gevent"
