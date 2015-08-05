@@ -43,24 +43,58 @@ window.onload = function(e){
 		"opacity": 1
 	};
 
-{% if doc.geometry_str %}
+{% if 0 %}
 	var geojson = JSON.parse('{{ doc.geometry_str|safe }}');
 	geojson = L.geoJson(geojson, {'style': boundary_bbox});
 	geojson.addTo(map);
+{% endif %}
 
 	var remote = "https://s3.amazonaws.com/com.mapzen.gazetteer/{{ doc.properties['wof:path'] |e }}";
 
 	var req = new XMLHttpRequest();
 
+	// sudo put me in a generic function...
+
 	req.onload = function(){
 		var geojson = JSON.parse(this.responseText);
+	        var bbox = geojson['bbox'];
+
+	        var sw = [bbox[1], bbox[0]];
+        	var ne = [bbox[3], bbox[2]];
+
+        var bounds = new L.LatLngBounds([sw, ne]);
+        var current = map.getBounds();
+
+        var redraw = false;
+
+        if (bounds.getSouth() > current.getSouth()){
+            redraw = true;
+        }
+
+        else if (bounds.getWest() > current.getWest()){
+            redraw = true;
+        }
+
+        else if (bounds.getNorth() < current.getNorth()){
+            redraw = true;
+        }
+
+        else if (bounds.getEast() < current.getEast()){
+            redraw = true;
+        }
+
+        else {}
+
+        if (redraw){
+            map.fitBounds(bounds);
+        }
+
 		geojson = L.geoJson(geojson, {'style': boundary_poly});
 		geojson.addTo(map);
 	};
 
 	req.open("get", remote, true);
 	req.send();
-{% endif %}
 
 };
 </script>
