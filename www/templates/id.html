@@ -43,12 +43,6 @@ window.onload = function(e){
 		"opacity": 1
 	};
 
-{% if 0 %}
-	var geojson = JSON.parse('{{ doc.geometry_str|safe }}');
-	geojson = L.geoJson(geojson, {'style': boundary_bbox});
-	geojson.addTo(map);
-{% endif %}
-
 	var remote = "https://s3.amazonaws.com/com.mapzen.gazetteer/{{ doc.properties['wof:path'] |e }}";
 
 	var req = new XMLHttpRequest();
@@ -93,9 +87,17 @@ window.onload = function(e){
 		geojson.addTo(map);
 	};
 
-	req.open("get", remote, true);
-	req.send();
+        console.log("fetch " + remote);
 
+        try {				    
+	   req.open("get", remote, true);
+	   req.send();
+        }
+				    
+        catch(e){
+           console.log("failed to fetch " + remote);				    
+           console.log(e);				    
+        }				    
 };
 </script>
 {% endblock %}
