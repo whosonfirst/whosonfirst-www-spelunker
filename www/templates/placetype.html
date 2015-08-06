@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="facetbox">
+
+<div class="facetbox-iso">
+<h4>by ISO</h4>
+<ul>
+{% for f in facets['countries'] %}
+<li><a href="/search/?q={{ query | e}}&iso={{ f.key | e}}">{{ f.key.upper() | e }}</a> <small>{{ f.doc_count | e }}</small></li>
+{% endfor %}
+</ul>
+</div>
+
+</div>
+
 <h2>{{ placetype |e }}</h2>
 {% include "inc_docs.html" %}
 

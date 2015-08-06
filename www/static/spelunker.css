@@ -63,9 +63,16 @@ line-height:1.4em;
 .facetbox ul {
     padding: 0px;
     margin: 0px;
+    display: inline !important;
 }
 .facetbox ul li {
     list-style-type: none;
     padding: 0px;
     margin: 0px;
+    display: inline !important;
+}
+
+.facetbox small {
+    color:#ccc;
+    font-size: .8em;
 }

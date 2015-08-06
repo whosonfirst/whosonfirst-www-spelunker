@@ -97,8 +97,19 @@ def placetype(placetype):
     }
     
     body = {
-        'query': query
+        'query': query,
     }
+
+    iso = flask.request.args.get('iso', None)
+
+    if iso:
+        iso = iso.lower()
+
+        filter = {
+            'term': { 'iso:country': iso }
+        }
+
+        body['filter'] = filter
 
     args = {}
 
@@ -116,33 +127,37 @@ def placetype(placetype):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
+    # facets
+
     aggrs = {
-        'placetypes': {
+        'countries': {
             'terms': {
                 'field': 'iso:country',
+                'size': 0
             }
         }
     }
-        
+
     body = {
         'query': query,
         'aggregations': aggrs,
     }
 
     query_str = { 
-        'search_type': 'count'
+        'search_type': 'count',
     }
 
     args = { 'body': body, 'query': query_str }
     rsp = flask.g.search_idx.search_raw(**args)
 
     aggregations = rsp.get('aggregations', {})
-    results = aggregations.get('placetypes', {})
-    buckets = results.get('buckets', [])
+    countries = aggregations.get('countries', {})
 
-    print buckets
+    facets = {
+        'countries': countries.get('buckets', []),
+    }
 
-    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination)
+    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, facets=facets)
 
 @app.route("/")
 @app.route("/search")
@@ -212,11 +227,13 @@ def searchify():
         'placetypes': {
             'terms': {
                 'field': 'wof:placetype',
+                'size': 0
             }
         },
         'countries': {
             'terms': {
                 'field': 'iso:country',
+                'size': 0
             }
         }
     }
