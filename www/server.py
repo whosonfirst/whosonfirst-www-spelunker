@@ -157,7 +157,9 @@ def placetype(placetype):
         'countries': countries.get('buckets', []),
     }
 
-    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, facets=facets)
+    pagination_url = build_pagination_url()
+
+    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets)
 
 @app.route("/")
 @app.route("/search")
@@ -261,6 +263,12 @@ def searchify():
 
     #
 
+    pagination_url = build_pagination_url()
+
+    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=facets)
+
+def build_pagination_url():
+
     qs = flask.request.query_string
     qs = dict(urlparse.parse_qsl(qs))
 
@@ -269,10 +277,8 @@ def searchify():
 
     qs = urllib.urlencode(qs)
 
-    pagination_url = "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
-
-    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=facets)
-
+    return "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
+    
 if __name__ == '__main__':
 
     import sys
