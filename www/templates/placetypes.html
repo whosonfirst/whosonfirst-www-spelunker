@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 
-<pre>{{ placetypes | e }}</pre>
+<ul>
+{% for b in placetypes %}
+<li><a href="/placetypes/{{ b.key | e}}/">{{ b.key|e }}</a> <small>{{ b.doc_count | e }} records</small></li>
+{% endfor %}
+</ul>
 
 {% endblock %}

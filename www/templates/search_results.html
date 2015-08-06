@@ -15,32 +15,15 @@ and this <span class="hey-look">page {{ pagination.page|e }}</span> of {{ pagina
 {% endif %}
 {% endif %}
 
-<ol>
-{% for doc in docs %}
-<li>
-  <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
-  <code>{{ doc['properties']['wof:id'] |e }}</code>
-  <small>&#8212; a {{ doc['properties']['wof:placetype'] |e }} in {{ doc['properties']['iso:country'] |e }}</small>
-</li>
+<div style="border:solid thin; float:right; padding:2em;max-width:30%;">
+<ul class="list">
+{% for f in facets %}
+<li><a href="/search/?q={{ query | e}}&placetype={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
-</ol>
-
-{% if pagination.pages > 1 %}
-<ul id="pagination">
-{% if pagination.page == 1 %}
-<li>start</li>
-{% else %}
-<li><a href="{{ pagination_url }}&page={{ pagination.page-1 }}">previous</a></li>
-{% endif %}
-{% if pagination.page == pagination.pages %}
-<li>stop</li>
-{% else %}
-<li><a href="{{ pagination_url }}&page={{ pagination.page + 1 }}">next</a></li>
-{% endif %}
 </ul>
-<br clear="all" />
-<div style="font-size:small;text-align:center;">{{ pagination|pprint|e }}</div>
-{% endif %}
+</div>
+
+{% include "inc_docs.html" %}
 
 {% endif %}
 {% endblock %}

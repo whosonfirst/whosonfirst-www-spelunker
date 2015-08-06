@@ -1,0 +1,33 @@
+<ol>
+{% for doc in docs %}
+<li>
+  <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
+  <code>{{ doc['properties']['wof:id'] |e }}</code>
+  <small>
+    &#8212;
+    {% if doc['properties']['iso:country'] |e %}
+    this is a <a href="/placetypes/{{ doc['properties']['wof:placetype'] |e }}/">{{ doc['properties']['wof:placetype'] |e }}</a> in {{ doc['properties']['iso:country'] |e }}
+    {% else %}
+    this is a <a href="/placetypes/{{ doc['properties']['wof:placetype'] |e }}/">{{ doc['properties']['wof:placetype'] |e }}</a>
+    {% endif %}
+  </small>
+</li>
+{% endfor %}
+</ol>
+
+{% if pagination.pages > 1 %}
+<ul id="pagination">
+{% if pagination.page == 1 %}
+<li>start</li>
+{% else %}
+<li><a href="{{ pagination_url }}&page={{ pagination.page-1 }}">previous</a></li>
+{% endif %}
+{% if pagination.page == pagination.pages %}
+<li>stop</li>
+{% else %}
+<li><a href="{{ pagination_url }}&page={{ pagination.page + 1 }}">next</a></li>
+{% endif %}
+</ul>
+<br clear="all" />
+<div style="font-size:small;text-align:center;">{{ pagination|pprint|e }}</div>
+{% endif %}

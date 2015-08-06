@@ -73,7 +73,7 @@ def placetypes():
         'aggregations': aggrs,
     }
 
-    query = {
+    query = { 
         'search_type': 'count'
     }
 
@@ -84,14 +84,65 @@ def placetypes():
     results = aggregations.get('placetypes', {})
     buckets = results.get('buckets', [])
 
-    placetypes = {}
+    return flask.render_template('placetypes.html', placetypes=buckets)
 
-    for b in buckets:
-        key = b['key']
-        count = b['doc_count']
-        placetypes[key] = count
+@app.route("/placetypes/<placetype>")
+@app.route("/placetypes/<placetype>/")
+def placetype(placetype):
 
-    return flask.render_template('placetypes.html', placetypes=placetypes)
+    query = {
+        'term': {
+            'wof:placetype': placetype
+        }
+    }
+    
+    body = {
+        'query': query
+    }
+
+    args = {}
+
+    page = flask.request.args.get('page')
+
+    if page:
+        page = int(page)
+        args['page'] = page
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'iso:country',
+            }
+        }
+    }
+        
+    body = {
+        'query': query,
+        'aggregations': aggrs,
+    }
+
+    query_str = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query_str }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    buckets = results.get('buckets', [])
+
+    print buckets
+
+    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination)
 
 @app.route("/")
 @app.route("/search")
@@ -130,7 +181,35 @@ def searchify():
 
     pagination = rsp['pagination']
     docs = rsp['rows']
-    
+
+    # facet
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'wof:placetype',
+            }
+        }
+    }
+        
+    body = {
+        'query': query,
+        'aggregations': aggrs,
+    }
+
+    query_str = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query_str }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    buckets = results.get('buckets', [])
+
+    #
+
     qs = flask.request.query_string
     qs = dict(urlparse.parse_qsl(qs))
 
@@ -141,7 +220,7 @@ def searchify():
 
     pagination_url = "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
 
-    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q)
+    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=buckets)
 
 if __name__ == '__main__':
 
