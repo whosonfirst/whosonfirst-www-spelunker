@@ -13,9 +13,26 @@
 <div class="other">
 
 <h3>Hierarchy</h3>
+
+<h4>Ancestors that {{ doc.properties.get("wof:name") |e }} is parented by</h4>
+
+{% for hierarchy in hierarchies %}
+<ul>
+{% for w in hierarchy %}
+{% if hierarchy[ w ] %}
+<li>the {{ w|e }} of <a href="/id/{{ hierarchy[ w ]['properties']['wof:id'] | e }}/">{{ hierarchy[ w ]['properties']['wof:name'] | e }}</a></li>
+{% else %}
+<li>a <code>{{ w | escape }}</code> that we aren't able to index correctly because... ?</li>
+{% endif %}
+{% endfor %}
+</ul>
+{% endfor %}
+
+<h4>Descendants that are parented by {{ doc.properties.get("wof:name") |e }}</h4>
 <ul>
 <li><a href="/id/{{ doc.properties.get("wof:id") |e }}/descendants/">See all the descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
 </ul>
+
 </div>
 
 <div class="geom">{{ doc['geometry'] |e }}</div>

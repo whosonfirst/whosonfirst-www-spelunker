@@ -11,6 +11,7 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 
+import types
 import math
 import json
 
@@ -41,7 +42,9 @@ def init():
 def info(id):
 
     doc = get_by_id(id)
-    return flask.render_template('id.html', doc=doc)
+    hiers = inflate_hierarchy(doc)
+
+    return flask.render_template('id.html', doc=doc, hierarchies=hiers)
 
 @app.route("/id/<id>/descendants")
 @app.route("/id/<id>/descendants/")
@@ -353,9 +356,43 @@ def get_by_id(id):
     }
 
     rsp = flask.g.search_idx.search(body)
-
     docs = rsp['rows']
-    return docs[0]
+
+    try:
+        return docs[0]
+    except Exception, e:
+        print "failed to retrieve %s" % id
+        return None
+
+def inflate_hierarchy(doc):
+
+    props = doc.get('properties', {})
+
+    hierarchies = props.get('wof:hierarchy', [])
+
+    # this suggests there is some data clean-up that is
+    # necessary (21050806/thisisaaronland)
+
+    if type(hierarchies) == types.DictType:
+        hierarchies = [ hierarchies ]
+
+    hiers = []
+
+    for hier in hierarchies:
+
+        inflated = {}
+
+        for rel, id in hier.items():
+
+            if id == props['wof:id']:
+                continue
+
+            rel = rel.replace("_id", "")
+            inflated[rel] = get_by_id(id)
+
+        hiers.append(inflated)
+
+    return hiers
 
 if __name__ == '__main__':
 
