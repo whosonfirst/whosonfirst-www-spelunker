@@ -7,7 +7,7 @@
 <h4>by ISO</h4>
 <ul>
 {% for f in facets['countries'] %}
-<li><a href="/search/?q={{ query | e}}&iso={{ f.key | e}}">{{ f.key.upper() | e }}</a> <small>{{ f.doc_count | e }}</small></li>
+<li><a href="/placetypes/{{ placetype | e}}/?iso={{ f.key | e}}">{{ f.key.upper() | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
 </ul>
 </div>
