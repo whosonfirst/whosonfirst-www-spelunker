@@ -40,9 +40,18 @@ def init():
 @app.route("/id/<id>/")
 def info(id):
 
+    doc = get_by_id(id)
+    return flask.render_template('id.html', doc=doc)
+
+@app.route("/id/<id>/descendants")
+@app.route("/id/<id>/descendants/")
+def descendants(id):
+
+    doc = get_by_id(id)
+
     query = {
-        'ids': {
-            'values': [id]
+        'term': {
+            'wof:belongsto': id
         }
     }
     
@@ -50,12 +59,64 @@ def info(id):
         'query': query
     }
 
-    rsp = flask.g.search_idx.search(body)
+    placetype = flask.request.args.get('placetype', None)
+
+    if placetype:
+
+        filter = {
+            'term': { 'wof:placetype': placetype }
+        }
+
+        body['filter'] = filter
+
+    args = {}
+
+    page = flask.request.args.get('page')
+
+    if page:
+        page = int(page)
+        args['page'] = page
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
 
     docs = rsp['rows']
-    doc = docs[0]
+    pagination = rsp['pagination']
 
-    return flask.render_template('id.html', doc=doc)
+    # facets
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'wof:placetype',
+            }
+        }
+    }
+        
+    body = {
+        'query': query,
+        'aggregations': aggrs,
+    }
+
+    query_str = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query_str }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    
+    facets = {
+        'placetypes': results.get('buckets', [])
+    }
+
+    pagination_url = build_pagination_url()
+
+    return flask.render_template('descendants.html', docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets, doc=doc)
 
 @app.route("/placetypes")
 @app.route("/placetypes/")
@@ -278,7 +339,24 @@ def build_pagination_url():
     qs = urllib.urlencode(qs)
 
     return "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
+
+def get_by_id(id):
+
+    query = {
+        'ids': {
+            'values': [id]
+        }
+    }
     
+    body = {
+        'query': query
+    }
+
+    rsp = flask.g.search_idx.search(body)
+
+    docs = rsp['rows']
+    return docs[0]
+
 if __name__ == '__main__':
 
     import sys

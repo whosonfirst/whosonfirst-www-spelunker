@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="facetbox">
+
+<div class="facetbox-iso">
+<h4>by placetype</h4>
+<ul>
+{% for f in facets['placetypes'] %}
+<li><a href="/id/{{ doc['properties']['wof:id'] | e }}/descendants/?placetype={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
+{% endfor %}
+</ul>
+</div>
+
+</div>
+
+<h2>Descendants of <a href="/id/{{ doc['properties']['wof:id'] | e }}/">{{ doc['properties']['wof:name'] | e }}</h2>
+{% include "inc_docs.html" %}
+
+{% endblock %}

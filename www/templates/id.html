@@ -9,6 +9,15 @@
 <h3>Bounding box</h3>
 <pre>{{ doc['bbox'] |pprint|e }}</pre>
 </div>
+
+<div class="other">
+
+<h3>Hierarchy</h3>
+<ul>
+<li><a href="/id/{{ doc.properties.get("wof:id") |e }}/descendants/">See all the descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
+</ul>
+</div>
+
 <div class="geom">{{ doc['geometry'] |e }}</div>
 <script type="text/javascript">
 
