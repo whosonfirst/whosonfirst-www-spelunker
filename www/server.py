@@ -164,19 +164,43 @@ def searchify():
 
     if page:
         args['page'] = page
-
-    placetype = flask.request.args.get('placetype')
     
     query = {
         'query_string': {
             'query': q
         }
     }
-    
-    body = {
-        'query': query
-    }
-    
+
+    filters = []
+
+    placetype = flask.request.args.get('placetype', None)
+    iso = flask.request.args.get('iso', None)
+
+    if placetype:
+        filters.append({ 'term': { 'wof:placetype' : placetype } })
+
+    if iso:
+        iso = iso.lower()
+        filters.append({ 'term': { 'iso:country' : iso } })
+
+    # oh elasticsearch... Y U MOON LANGUAGE?
+    # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536
+
+    if len(filters):
+
+        body = {
+            'query': {
+                'filtered': {
+                    'query': query,
+                    'filter': { 'and': filters }
+                }
+            }
+        }
+
+    else:
+        
+        body = { 'query': query }
+
     rsp = flask.g.search_idx.search(body, **args)
 
     pagination = rsp['pagination']
@@ -188,6 +212,11 @@ def searchify():
         'placetypes': {
             'terms': {
                 'field': 'wof:placetype',
+            }
+        },
+        'countries': {
+            'terms': {
+                'field': 'iso:country',
             }
         }
     }
@@ -205,8 +234,13 @@ def searchify():
     rsp = flask.g.search_idx.search_raw(**args)
 
     aggregations = rsp.get('aggregations', {})
-    results = aggregations.get('placetypes', {})
-    buckets = results.get('buckets', [])
+    placetypes = aggregations.get('placetypes', {})
+    countries = aggregations.get('countries', {})
+
+    facets = {
+        'placetypes': placetypes.get('buckets', []),
+        'countries': countries.get('buckets', []),
+    }
 
     #
 
@@ -220,7 +254,7 @@ def searchify():
 
     pagination_url = "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
 
-    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=buckets)
+    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=facets)
 
 if __name__ == '__main__':
 

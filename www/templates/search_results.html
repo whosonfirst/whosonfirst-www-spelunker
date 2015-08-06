@@ -15,12 +15,24 @@ and this <span class="hey-look">page {{ pagination.page|e }}</span> of {{ pagina
 {% endif %}
 {% endif %}
 
-<div style="border:solid thin; float:right; padding:2em;max-width:30%;">
+<div class="facetbox">
+
+<h4>by placetype</h4>
 <ul class="list">
-{% for f in facets %}
+{% for f in facets['placetypes'] %}
 <li><a href="/search/?q={{ query | e}}&placetype={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
 </ul>
+</div>
+
+<div class="facetbox">
+<h4>by country</h4>
+<ul class="list-inline">
+{% for f in facets['countries'] %}
+<li><a href="/search/?q={{ query | e}}&iso={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
+{% endfor %}
+</ul>
+
 </div>
 
 {% include "inc_docs.html" %}

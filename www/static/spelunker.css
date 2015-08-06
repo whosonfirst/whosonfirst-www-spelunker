@@ -51,3 +51,21 @@ line-height:1.4em;
     border: solid thin;
     margin-bottom:1.5em;
 }
+
+.facetbox {
+    border:none;
+    float:right;
+    max-width:30%;
+    padding:2em;
+    padding-top:.5em;
+}
+
+.facetbox ul {
+    padding: 0px;
+    margin: 0px;
+}
+.facetbox ul li {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
