@@ -57,6 +57,42 @@ def info(id):
 
     return flask.render_template('id.html', doc=doc)
 
+@app.route("/placetypes")
+@app.route("/placetypes/")
+def placetypes():
+    
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'wof:placetype',
+            }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = {
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    buckets = results.get('buckets', [])
+
+    placetypes = {}
+
+    for b in buckets:
+        key = b['key']
+        count = b['doc_count']
+        placetypes[key] = count
+
+    return flask.render_template('placetypes.html', placetypes=placetypes)
+
 @app.route("/")
 @app.route("/search")
 @app.route("/search/")
