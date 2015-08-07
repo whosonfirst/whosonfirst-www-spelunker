@@ -94,6 +94,7 @@ def descendants(id):
         'placetypes': {
             'terms': {
                 'field': 'wof:placetype',
+                'size': 0,
             }
         }
     }
