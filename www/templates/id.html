@@ -28,9 +28,12 @@
 </ul>
 {% endfor %}
 
-<h4>Descendants that are parented by {{ doc.properties.get("wof:name") |e }}</h4>
+<h4>Other</h4>
 <ul>
 <li><a href="/id/{{ doc.properties.get("wof:id") |e }}/descendants/">See all the descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
+
+<li><a href="https://54.148.56.3/?latitude={{ doc.properties.get("geom:latitude") |e }}&longitude={{ doc.properties.get("geom:longitude") |e }}" target="_reversegeo">Reverse geocode</a> ({{ doc.properties.get("geom:latitude") |e }}, {{ doc.properties.get("geom:longitude") |e }})</li>
+
 </ul>
 
 </div>
