@@ -72,6 +72,27 @@ window.onload = function(e){
 		"opacity": 1
 	};
 
+	var point_style = {
+		"color": "#ff7800",
+		"weight": 3,
+		"opacity": 1
+	};
+
+	var pt = {
+		'type': 'Feature',
+		'geometry': { 'type': 'Point', 'coordinates' : [ {{ doc.properties.get("geom:longitude") |e }}, {{ doc.properties.get("geom:latitude") |e }}] }
+	}
+console.log(pt);
+
+	var geojson = L.geoJson(pt, {
+		'style': boundary_poly,
+		pointToLayer: function (feature, latlng) {
+	            return L.circleMarker(latlng, point_style);
+		}
+	});
+
+	geojson.addTo(map);
+
 	var remote = "https://s3.amazonaws.com/com.mapzen.gazetteer/{{ doc.properties['wof:path'] |e }}";
 
 	var req = new XMLHttpRequest();
