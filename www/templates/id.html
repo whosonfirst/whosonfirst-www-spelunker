@@ -2,8 +2,11 @@
 {% extends "base.html" %}
 {% block title %}{{ doc.properties.get("wof:id") |e }} | {{ doc.properties.get("wof:name") |e }}{% endblock %}
 {% block content %}
+
 <div id="map"></div>
-<small>{{ doc.properties.get("wof:name") | e }} is a <span class="hey-look">{{ doc.properties.get("wof:placetype") | e }}</span></small>
+
+<small>{{ doc.properties.get("wof:name") | e }} is a <span class="hey-look">{{ doc.properties.get("wof:placetype") | e }}</span> and its consensus geometry is from <a href="/?q={{ doc.properties.get('src:geom', 'unknown') | e}}" class="hey-look">{{ doc.properties.get('src:geom', 'unknown') | e}}</a></small>
+
 <div class="meta">
 <h3>Properties</h3>
 <pre>{{ doc['properties'] |pprint|e }}</pre>
