@@ -1,8 +1,9 @@
-{% set page_title = doc.properties.get("wof:name") %}
+{% set page_title = doc.properties.get("wof:name")  %}
 {% extends "base.html" %}
 {% block title %}{{ doc.properties.get("wof:id") |e }} | {{ doc.properties.get("wof:name") |e }}{% endblock %}
 {% block content %}
 <div id="map"></div>
+<small>{{ doc.properties.get("wof:name") | e }} is a <span class="hey-look">{{ doc.properties.get("wof:placetype") | e }}</span></small>
 <div class="meta">
 <h3>Properties</h3>
 <pre>{{ doc['properties'] |pprint|e }}</pre>
