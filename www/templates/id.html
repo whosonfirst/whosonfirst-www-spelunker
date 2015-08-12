@@ -60,94 +60,9 @@ window.onload = function(e){
 
 	tangram.addTo(map);
 
-	var boundary_bbox = {
-		"color": "#72A0C1",
-		"weight": 3,
-		"opacity": 1
-	};
-
-	var boundary_poly = {
-		"color": "#ff7800",
-		"weight": 3,
-		"opacity": 1
-	};
-
-	var point_style = {
-		"color": "#ff7800",
-		"weight": 3,
-		"opacity": 1
-	};
-
-	var pt = {
-		'type': 'Feature',
-		'geometry': { 'type': 'Point', 'coordinates' : [ {{ doc.properties.get("geom:longitude") |e }}, {{ doc.properties.get("geom:latitude") |e }}] }
-	}
-console.log(pt);
-
-	var geojson = L.geoJson(pt, {
-		'style': boundary_poly,
-		pointToLayer: function (feature, latlng) {
-	            return L.circleMarker(latlng, point_style);
-		}
-	});
-
-	geojson.addTo(map);
-
-	var remote = "https://s3.amazonaws.com/com.mapzen.gazetteer/{{ doc.properties['wof:path'] |e }}";
-
-	var req = new XMLHttpRequest();
-
-	// sudo put me in a generic function...
-
-	req.onload = function(){
-		var geojson = JSON.parse(this.responseText);
-	        var bbox = geojson['bbox'];
-
-	        var sw = [bbox[1], bbox[0]];
-        	var ne = [bbox[3], bbox[2]];
-
-        var bounds = new L.LatLngBounds([sw, ne]);
-        var current = map.getBounds();
-
-        var redraw = false;
-
-        if (bounds.getSouth() > current.getSouth()){
-            redraw = true;
-        }
-
-        else if (bounds.getWest() > current.getWest()){
-            redraw = true;
-        }
-
-        else if (bounds.getNorth() < current.getNorth()){
-            redraw = true;
-        }
-
-        else if (bounds.getEast() < current.getEast()){
-            redraw = true;
-        }
-
-        else {}
-
-        if (redraw){
-            map.fitBounds(bounds);
-        }
-
-		geojson = L.geoJson(geojson, {'style': boundary_poly});
-		geojson.addTo(map);
-	};
-
-        console.log("fetch " + remote);
-
-        try {				    
-	   req.open("get", remote, true);
-	   req.send();
-        }
-				    
-        catch(e){
-           console.log("failed to fetch " + remote);				    
-           console.log(e);				    
-        }				    
+	whosonfirst_enmapify(map, {{ doc.properties.get("wof:id") |e }});
+        return;
 };
+
 </script>
 {% endblock %}
