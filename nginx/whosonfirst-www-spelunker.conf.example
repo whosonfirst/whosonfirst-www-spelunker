@@ -23,4 +23,20 @@ server {
     	    proxy_set_header X-Scheme $scheme;
     	}
 
+	location /data/ {
+	
+	    auth_basic "Restricted";                    
+	    xauth_basic_user_file /usr/local/mapzen/gazetteer-www/.htpasswd;
+
+	    proxy_set_header       Authorization '';
+
+	    proxy_hide_header      Set-Cookie;
+	    proxy_ignore_headers   "Set-Cookie";
+
+	    add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET';
+
+	    proxy_pass https://s3.amazonaws.com/com.mapzen.gazetteer/;
+        }
+
 }
