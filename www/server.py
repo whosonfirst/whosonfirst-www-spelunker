@@ -58,7 +58,12 @@ def descendants(id):
         }
     }
     
+    sort = [
+        { 'wof:name' : 'asc' }
+    ]
+
     body = {
+        'sort': sort,
         'query': query
     }
 
