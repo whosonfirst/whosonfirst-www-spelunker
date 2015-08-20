@@ -37,20 +37,27 @@ def init():
     flask.g.spatial_db = spatial_db
     flask.g.search_idx = search_idx
 
-@app.route("/id/<id>")
-@app.route("/id/<id>/")
+@app.route("/id/<int:id>", methods=["GET"])
+@app.route("/id/<int:id>/", methods=["GET"])
 def info(id):
 
     doc = get_by_id(id)
+    
+    if not doc:
+        flask.abort(404)
+
     hiers = inflate_hierarchy(doc)
 
     return flask.render_template('id.html', doc=doc, hierarchies=hiers)
 
-@app.route("/id/<id>/descendants")
-@app.route("/id/<id>/descendants/")
+@app.route("/id/<int:id>/descendants", methods=["GET"])
+@app.route("/id/<int:id>/descendants/", methods=["GET"])
 def descendants(id):
 
     doc = get_by_id(id)
+
+    if not doc:
+        flask.abort(404)
 
     query = {
         'term': {
@@ -127,8 +134,8 @@ def descendants(id):
 
     return flask.render_template('descendants.html', docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets, doc=doc)
 
-@app.route("/placetypes")
-@app.route("/placetypes/")
+@app.route("/placetypes", methods=["GET"])
+@app.route("/placetypes/", methods=["GET"])
 def placetypes():
     
     aggrs = {
