@@ -64,7 +64,7 @@ window.onload = function(e){
 
 	tangram.addTo(map);
 
-	whosonfirst_enmapify(map, {{ doc.properties.get("wof:id") |e }});
+	mapzen_whosonfirst_enmapify(map, {{ doc.properties.get("wof:id") |e }});
         return;
 };
 
