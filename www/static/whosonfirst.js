@@ -202,7 +202,7 @@ function whosonfirst_fit_map(map, geojson){
 function whosonfirst_id2abspath(id){
 
 	var rel_path = whosonfirst_id2relpath(id);
-	var abs_path = "https://52.27.138.134/data/" + rel_path;
+	var abs_path = "http://whosonfirst.mapzen.com/data/" + rel_path;
 	
 	return abs_path;
 }

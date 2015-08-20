@@ -13,8 +13,7 @@ This assumes two data sources:
 
 ## See also
 
-* https://github.com/mapzen/whosonfirst-data
-* https://github.com/mapzen/whosonfirst-venue
+* https://github.com/whosonfirst/whosonfirst-data
 
 * https://github.com/mapzen/py-mapzen-whosonfirst-search
 * https://github.com/mapzen/py-mapzen-whosonfirst-spatial
