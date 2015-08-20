@@ -163,8 +163,8 @@ def placetypes():
 
     return flask.render_template('placetypes.html', placetypes=buckets)
 
-@app.route("/placetypes/<placetype>")
-@app.route("/placetypes/<placetype>/")
+@app.route("/placetypes/<placetype>", methods=["GET"])
+@app.route("/placetypes/<placetype>/", methods=["GET"])
 def placetype(placetype):
 
     query = {
@@ -238,9 +238,9 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets)
 
-@app.route("/")
-@app.route("/search")
-@app.route("/search/")
+@app.route("/", methods=["GET"])
+@app.route("/search", methods=["GET"])
+@app.route("/search/", methods=["GET"])
 def searchify():
 
     q = flask.request.args.get('q')
@@ -382,13 +382,6 @@ def inflate_hierarchy(doc):
     props = doc.get('properties', {})
 
     hierarchies = props.get('wof:hierarchy', [])
-
-    # this suggests there is some data clean-up that is
-    # necessary (21050806/thisisaaronland)
-
-    if type(hierarchies) == types.DictType:
-        hierarchies = [ hierarchies ]
-
     hiers = []
 
     for hier in hierarchies:
