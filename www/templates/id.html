@@ -3,22 +3,29 @@
 {% block title %}{{ doc.properties.get("wof:id") |e }} | {{ doc.properties.get("wof:name") |e }}{% endblock %}
 {% block content %}
 
-<div id="map"></div>
-
-<small>{{ doc.properties.get("wof:name") | e }} is a <span class="hey-look">{{ doc.properties.get("wof:placetype") | e }}</span> and its consensus geometry is from <a href="/?q={{ doc.properties.get('src:geom', 'unknown') | e}}" class="hey-look">{{ doc.properties.get('src:geom', 'unknown') | e}}</a></small>
-
-<div class="meta">
-<h3>Properties</h3>
-<pre>{{ doc['properties'] |pprint|e }}</pre>
-<h3>Bounding box</h3>
-<pre>{{ doc['bbox'] |pprint|e }}</pre>
+<div class="row">
+<div class="col-md-12" id="map"></div>
 </div>
 
-<div class="other">
+<div class="row">
+<small>{{ doc.properties.get("wof:name") | e }} is a <span class="hey-look">{{ doc.properties.get("wof:placetype") | e }}</span> and its consensus geometry is from <a href="/?q={{ doc.properties.get('src:geom', 'unknown') | e}}" class="hey-look">{{ doc.properties.get('src:geom', 'unknown') | e}}</a></small>
+</div>
+
+<div class="row debug">
+
+<div class="col-md-7 debug">
+
+<h3>Properties</h3>
+<pre>{{ doc['properties'] |pprint|e }}</pre>
+
+<h3>Bounding box</h3>
+<pre>{{ doc['bbox'] |pprint|e }}</pre>
+
+</div>
+
+<div class="col-md-5 debug">
 
 <h3>Hierarchy</h3>
-
-<h4>Ancestors that {{ doc.properties.get("wof:name") |e }} is parented by</h4>
 
 {% for hierarchy in hierarchies %}
 <ul>
@@ -38,11 +45,13 @@
 
 <li><a href="https://54.148.56.3/?latitude={{ doc.properties.get("geom:latitude") |e }}&longitude={{ doc.properties.get("geom:longitude") |e }}" target="_reversegeo">Reverse geocode</a> ({{ doc.properties.get("geom:latitude") |e }}, {{ doc.properties.get("geom:longitude") |e }})</li>
 
+<li><a href="">Raw data (GeoJSON)</a></li>
+
 </ul>
 
 </div>
+</div>
 
-<div class="geom">{{ doc['geometry'] |e }}</div>
 <script type="text/javascript">
 
 window.onload = function(e){
