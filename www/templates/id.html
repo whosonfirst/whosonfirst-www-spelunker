@@ -55,7 +55,7 @@ window.onload = function(e){
 	map.fitBounds([[{{ doc.bbox.1|e }},{{ doc.bbox.0|e }}], [ {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }} ]]);
 {% endif %}
 
-	var scene = "{{ url_for('static', filename='scene.yaml') }}";
+	var scene = "{{ url_for('static', filename='tangram/scene.yaml') }}";
 
 	var tangram = Tangram.leafletLayer({
 		scene: scene,
