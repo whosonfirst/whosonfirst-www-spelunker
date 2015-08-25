@@ -1,49 +1,49 @@
 body {
-padding:0px;
-margin:2em;
-margin-right:3em;
-font-family:sans-serif;
-line-height: 1.4em;
+    padding:0px;
+    margin:2em;
+    margin-right:3em;
+    font-family:sans-serif;
+    line-height: 1.4em;
 }
 
 .hey-look {
-font-weight:700;
+    font-weight:700;
 }
 
 #nav {
-border-bottom:1px solid #999;
-margin-bottom:1em;
+    border-bottom:1px solid #999;
+    margin-bottom:1em;
 }
 
 #nav-search {
-float:right;
+    float:right;
 }
 
 #pagination  {
-text-align:center;
-color: #ccc;
-
+    text-align:center;
+    color: #ccc;
+    margin-top:4em;
 }
 
 #pagination li {
-display:inline;
-border:1px solid #ccc;
-padding:1em;
+    display:inline;
+    border:1px solid #ccc;
+    padding:1em;
 }
 
 .meta {
-display:block;
-border: solid thin;
-padding: 2em;
-float:left;
-margin-right:2em;
-margin-bottom:2em;
+    display:block;
+    border: solid thin;
+    padding: 2em;
+    float:left;
+    margin-right:2em;
+    margin-bottom:2em;
 }
 
 .geom {
-color:#ccc;
-font-family:monospace;
-line-height:1.4em;
+    color:#ccc;
+    font-family:monospace;
+    line-height:1.4em;
 }
 
 #map {

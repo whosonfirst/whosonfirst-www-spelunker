@@ -24,17 +24,24 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-  <div id="nav">
+  <div id="nav" class="container">
     <div id="nav-search-x">
-      <form method="GET" action="https://{{ request.host }}/search/">
-	<input type="text" name="q" id="q" placeholder="Search for a place" />
-	<button type="submit">Search</button>
+      <form method="GET" action="https://{{ request.host }}/search/" class="form-inline" role="form">
+
+	<div class="form-group">
+	  <label class="sr-only" for="q">Search for a place</label>
+	<input type="text" name="q" id="q" placeholder="Search for a place" class="form-control"/>
+	</div>
+	<button type="submit" class="btn">Search</button>
       </form>
       <br clear="all" />
     </div>
+
     <h2>{{ page_title|e }}</h2>
     </div>
 
-    <div id="content">{% block content %}{% endblock %}</div>
+    <div class="container" id="content">
+      {% block content %}{% endblock %}
+    </div>
 </body>
 </html>

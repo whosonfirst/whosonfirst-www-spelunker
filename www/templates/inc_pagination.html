@@ -1,5 +1,5 @@
 {% if pagination.pages > 1 %}
-<ul id="pagination">
+<ul id="pagination" class="list-inline">
 {% if pagination.page == 1 %}
 <li>start</li>
 {% else %}
@@ -12,5 +12,18 @@
 {% endif %}
 </ul>
 <br clear="all" />
-<div style="font-size:small;text-align:center;">{{ pagination|pprint|e }}</div>
+<div style="font-size:small;text-align:center;">
+{% if pagination.total==0 %}
+
+{% elif pagination.total==1 %}
+
+{% else %}
+There are <span class="hey-look">{{ pagination.total |e }} results</span>
+
+{% if pagination.pages > 1 %}
+and this is <span class="hey-look">page {{ pagination.page |e }}</span> of {{ pagination.pages |e }}
+{% endif %}
+
+{% endif %}
+
 {% endif %}
