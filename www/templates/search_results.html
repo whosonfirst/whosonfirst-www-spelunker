@@ -2,10 +2,11 @@
 {% block content %}
 {% if pagination.count == 0 %}
 
-<div style="font-size:5em;"><span style="font-size:2em;">😿 </span> can not find anything matching <q class="hey-look">{{ query|e }}</q></div>
+<div class="row"><span style="font-size:2em;">😿 </span> can not find anything matching <q class="hey-look">{{ query|e }}</q></div>
 
 {% else %}
 
+<div class="row"><h3>
 {% if pagination.total == 1 %}
 There is <span class="hey-look">one place</span> matching <q class="hey-look">{{ query|e }}</q>
 {% else %}
@@ -14,30 +15,37 @@ There are <span class="hey-look">{{ pagination.total|e }} places</span> matching
 and this <span class="hey-look">page {{ pagination.page|e }}</span> of {{ pagination.pages|e }}
 {% endif %}
 {% endif %}
+</h3></div>
 
-<div class="facetbox">
+<div class="row">
 
-<div class="facetbox-placetype">
+<div class="col-md-7">
+{% include "inc_docs.html" %}
+</div>
+
+<div class="col-md-5">
+
 <h4>by placetype</h4>
-<ul class="list">
+<ul class="list-inline">
 {% for f in facets['placetypes'] %}
 <li><a href="/search/?q={{ query | e}}&placetype={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
 </ul>
-</div>
 
-<div class="facetbox-iso">
 <h4>by ISO</h4>
 <ul class="list-inline">
 {% for f in facets['countries'] %}
 <li><a href="/search/?q={{ query | e}}&iso={{ f.key | e}}">{{ f.key.upper() | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
 </ul>
-</div>
 
 </div>
 
-{% include "inc_docs.html" %}
+</div>
+
+<div class="row">
+{% include "inc_pagination.html" %}
+</div>
 
 {% endif %}
 {% endblock %}

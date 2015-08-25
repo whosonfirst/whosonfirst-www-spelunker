@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<ul>
+<div class="row">
+<div class="col-md-12">
+
+<h3>Placetypes in Who's On First</h3>
+
+<ul class="list">
 {% for b in placetypes %}
 <li><a href="/placetypes/{{ b.key | e}}/">{{ b.key|e }}</a> <small>{{ b.doc_count | e }} records</small></li>
 {% endfor %}
 </ul>
+
+</div>
+</div>
 
 {% endblock %}
