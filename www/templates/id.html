@@ -16,7 +16,7 @@
 <div class="col-md-7 debug">
 
 <h3>Properties</h3>
-<pre>{{ doc['properties'] |pprint|e }}</pre>
+<pre id="props">{{ doc['properties'] |pprint|e }}</pre>
 
 <h3>Bounding box</h3>
 <pre>{{ doc['bbox'] |pprint|e }}</pre>
@@ -55,6 +55,18 @@
 <script type="text/javascript">
 
 window.onload = function(e){
+
+	/*
+	try {
+		var props = document.getElementById("props");
+		props = props.innerHTML;
+		props = JSON.parse(props);
+	}
+
+	catch (e){
+		console.log("failed to parse props because " + e);
+	}
+	*/
 
 	var map = L.map('map');
 
