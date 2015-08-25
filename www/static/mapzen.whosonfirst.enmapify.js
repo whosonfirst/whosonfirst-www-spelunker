@@ -1,71 +1,91 @@
-function mapzen_whosonfirst_enmapify(map, wofid){
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-	if (! wofid){
-		console.log("missing WOF ID");
-		return false;
-	}
+mapzen.whosonfirst.enmapify = (function(){
 
-	var on_fetch = function(geojson){
+		var self = {
+			'render_id': function(map, wofid){
 
-		mapzen_whosonfirst_leaflet_fit_map(map, geojson);
+				var _self = self;
 
-		var props = geojson['properties'];
+				if (! wofid){
+					console.log("missing WOF ID");
+					return false;
+				}
+				
+				var on_fetch = function(geojson){
+					self.render_feature(map, geojson);
+				};
 
-		var child_id = props['wof:id'];
-		var parent_id = props['wof:parent_id'];
+				var url = mapzen.whosonfirst.data.id2abspath(wofid);
+				mapzen.whosonfirst.net.fetch(url, on_fetch);
+			},
 
-		var child_url = mapzen_whosonfirst_utils_id2abspath(child_id);
-		var parent_url = mapzen_whosonfirst_utils_id2abspath(parent_id);
+			'render_feature': function(map, feature){
 
-		var on_parent = function(geojson){
+				mapzen.whosonfirst.leaflet.fit_map(map, feature);
 
-			var style = {
-				"color": "#ffff00",
-				"weight": 3,
-				"opacity": 1,
-				"fillOpacity": 0.8
-			};
+				var props = feature['properties'];
+				
+				var child_id = props['wof:id'];
+				var parent_id = props['wof:parent_id'];
+				
+				var child_url = mapzen.whosonfirst.data.id2abspath(child_id);
+				var parent_url = mapzen.whosonfirst.data.id2abspath(parent_id);
+				
+				var on_parent = function(parent_feature){
+					
+					var style = {
+						"color": "#ffff00",
+						"weight": 3,
+						"opacity": 1,
+						"fillOpacity": 0.8
+					};
+					
+					mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
+					mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, style);
+					
+					mapzen.whosonfirst.net.fetch(child_url, on_child);			
+				};
+	
+				var on_child = function(child_feature){
+		
+					var style = {
+						"color": "#ff69b4",
+						"weight": 3,
+						"opacity": 1,
+						"fillOpacity": 0.8
+					};
+					
+					mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
+					mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, style);
+		
+					var props = child_feature['properties'];
+					var lat = props['geom:latitude'];
+					var lon = props['geom:longitude'];
+					
+					var pt = {
+						'type': 'Feature',
+						'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] }
+					};
+					
+					mapzen.whosonfirst.leaflet.draw_point(map, pt);
+				}
+	
+				if (parent_id == -1){
+					mapzen.whosonfirst.net.fetch(child_url, on_child);
+				}
+				
+				else {
+					mapzen.whosonfirst.net.fetch(parent_url, on_parent);
+				}
+			},
 
-			mapzen_whosonfirst_leaflet_fit_map(map, geojson);
-			mapzen_whosonfirst_leaflet_draw_poly(map, geojson, style);
-
-			mapzen_whosonfirst_utils_fetch(child_url, on_child);			
+			'enmapify_feature': function(map, collection){
+				// please write me
+			}
 		};
 
-		var on_child = function(geojson){
+		return self;
 
-			var style = {
-				"color": "#ff69b4",
-				"weight": 3,
-				"opacity": 1,
-				"fillOpacity": 0.8
-			};
-
-			mapzen_whosonfirst_leaflet_fit_map(map, geojson);
-			mapzen_whosonfirst_leaflet_draw_poly(map, geojson, style);
-
-			var props = geojson['properties'];
-			var lat = props['geom:latitude'];
-			var lon = props['geom:longitude'];
-
-			var pt = {
-				'type': 'Feature',
-				'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] }
-			};
-			
-			mapzen_whosonfirst_leaflet_draw_point(map, pt);
-		}
-
-		if (parent_id == -1){
-			mapzen_whosonfirst_utils_fetch(child_url, on_child);
-		}
-		
-		else {
-			mapzen_whosonfirst_utils_fetch(parent_url, on_parent);
-		}
-	};
-
-	var url = mapzen_whosonfirst_utils_id2abspath(wofid);
-	mapzen_whosonfirst_utils_fetch(url, on_fetch);
-}
-
+})();
