@@ -85,10 +85,11 @@ def descendants(id):
             logging.warning("invalid placetype %s" % placetype)
             flask.abort(404)
 
-        esc_placetype = flask.g.search_idx.escape(placetype)
+        placetype = pt.placetype(placetype)
+        placetype_id = placetype.id()
 
         filter = {
-            'term': { 'wof:placetype': esc_placetype }
+            'term': { 'wof:placetype_id': placetype_id }
         }
 
         body['filter'] = filter
@@ -179,11 +180,12 @@ def placetype(placetype):
     if not pt.is_valid_placetype(placetype):
         flask.abort(404)
 
-    esc_placetype = flask.g.search_idx.escape(placetype)
+    placetype = pt.placetype(placetype)
+    placetype_id = placetype.id()
 
     query = {
         'term': {
-            'wof:placetype': esc_placetype
+            'wof:placetype_id': placetype_id
         }
     }
     
@@ -283,10 +285,11 @@ def searchify():
             logging.warning("invalid placetype %s" % placetype)
             flask.abort(404)
 
-        esc_placetype = flask.g.search_idx.escape(placetype)
+        placetype = pt.placetype(placetype)
+        placetype_id = placetype.id()
 
         filters.append({ 'term': {
-            'wof:placetype' : esc_placetype
+            'wof:placetype_id' : placetype_id
         }})
 
     if iso:
