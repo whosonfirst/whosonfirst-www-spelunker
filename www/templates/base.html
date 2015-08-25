@@ -9,14 +9,17 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="HandheldFriendly" content="true" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+    <!-- do we really need this? -->
+    <!-- <script type="text/javascript" src="{{ url_for('static', filename='javascript/bootstrap.min.js') }}"></script> -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.css') }}" />
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/tangram.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.data.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.geojson.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.net.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.enmapify.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/spelunker.css') }}" />
     {% block head %}{% endblock %}
 </head>
