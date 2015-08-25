@@ -17,6 +17,7 @@ import json
 
 import mapzen.whosonfirst.spatial as spatial
 import mapzen.whosonfirst.search as search
+import mapzen.whosonfirst.placetypes as pt
 
 app = flask.Flask('SPELUNKER')
 app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -44,6 +45,7 @@ def info(id):
     doc = get_by_id(id)
     
     if not doc:
+        logging.warning("no record for ID %s" % id)
         flask.abort(404)
 
     hiers = inflate_hierarchy(doc)
@@ -57,11 +59,12 @@ def descendants(id):
     doc = get_by_id(id)
 
     if not doc:
+        logging.warning("no record for ID %s" % id)
         flask.abort(404)
 
     query = {
         'term': {
-            'wof:belongsto': id
+            'wof:belongsto': doc.get('id')
         }
     }
     
@@ -78,8 +81,14 @@ def descendants(id):
 
     if placetype:
 
+        if not pt.is_valid_placetype(placetype):
+            logging.warning("invalid placetype %s" % placetype)
+            flask.abort(404)
+
+        esc_placetype = flask.g.search_idx.escape(placetype)
+
         filter = {
-            'term': { 'wof:placetype': placetype }
+            'term': { 'wof:placetype': esc_placetype }
         }
 
         body['filter'] = filter
@@ -167,9 +176,14 @@ def placetypes():
 @app.route("/placetypes/<placetype>/", methods=["GET"])
 def placetype(placetype):
 
+    if not pt.is_valid_placetype(placetype):
+        flask.abort(404)
+
+    esc_placetype = flask.g.search_idx.escape(placetype)
+
     query = {
         'term': {
-            'wof:placetype': placetype
+            'wof:placetype': esc_placetype
         }
     }
     
@@ -180,10 +194,12 @@ def placetype(placetype):
     iso = flask.request.args.get('iso', None)
 
     if iso:
+
         iso = iso.lower()
+        esc_iso = flask.g.search_idx.escape(iso)
 
         filter = {
-            'term': { 'iso:country': iso }
+            'term': { 'iso:country': esc_iso }
         }
 
         body['filter'] = filter
@@ -248,20 +264,11 @@ def searchify():
     if not q:
         return flask.render_template('search_form.html')
     
-    args = {}
-
-    page = flask.request.args.get('page')
-
-    if page:
-        page = int(page)
-        args['page'] = page
-
-    if page:
-        args['page'] = page
+    esc_q = flask.g.search_idx.escape(q)
     
     query = {
         'query_string': {
-            'query': q
+            'query': esc_q
         }
     }
 
@@ -271,11 +278,25 @@ def searchify():
     iso = flask.request.args.get('iso', None)
 
     if placetype:
-        filters.append({ 'term': { 'wof:placetype' : placetype } })
+
+        if not pt.is_valid_placetype(placetype):
+            logging.warning("invalid placetype %s" % placetype)
+            flask.abort(404)
+
+        esc_placetype = flask.g.search_idx.escape(placetype)
+
+        filters.append({ 'term': {
+            'wof:placetype' : esc_placetype
+        }})
 
     if iso:
+
         iso = iso.lower()
-        filters.append({ 'term': { 'iso:country' : iso } })
+        esc_iso = flask.g.search_idx.escape(iso)
+
+        filters.append({ 'term': {
+            'iso:country' : esc_iso
+        }})
 
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536
@@ -294,6 +315,17 @@ def searchify():
     else:
         
         body = { 'query': query }
+
+    args = {}
+
+    page = flask.request.args.get('page')
+
+    if page:
+        page = int(page)
+        args['page'] = page
+
+    if page:
+        args['page'] = page
 
     rsp = flask.g.search_idx.search(body, **args)
 
