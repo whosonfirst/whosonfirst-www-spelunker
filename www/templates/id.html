@@ -87,7 +87,7 @@ window.onload = function(e){
 
 	tangram.addTo(map);
 
-	mapzen.whosonfirst.spelunker.toggle_data_endpoint();
+	mapzen.whosonfirst.spelunker.toggle_data_endpoint("{{ doc.properties.get("wof:placetype") |e }}");
 
 	mapzen.whosonfirst.enmapify.render_id(map, {{ doc.properties.get("wof:id") |e }});
         return;

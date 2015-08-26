@@ -39,4 +39,13 @@ server {
 	    proxy_pass https://s3.amazonaws.com/com.mapzen.gazetteer/;
         }
 
+	location /venues {
+	
+	    root  /usr/local/mapzen/whosonfirst-venue/data;
+	    rewrite ^/venues/(.*)$	/$1 break;
+
+	    add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET';
+        }
+
 }
