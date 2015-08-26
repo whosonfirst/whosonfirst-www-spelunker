@@ -72,7 +72,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					mapzen.whosonfirst.leaflet.draw_point(map, pt);
 				}
 	
-				if (parent_id == -1){
+				if ((! parent_id) || (parent_id == -1)){
 					mapzen.whosonfirst.net.fetch(child_url, on_child);
 				}
 				

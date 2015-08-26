@@ -11,17 +11,21 @@ mapzen.whosonfirst.leaflet = (function(){
 						"color": "#fff",
 						"weight": 3,
 						"opacity": 1,
-						"radius": 5,
+						"radius": 12,
+						"fillColor": "#ff7800",
 						"fillOpacity": 0.5
 					};
 				}
-				
+
+				// this is still trying to draw a regular (icon) marker
+				// for some reason... (20150825/thisisaaronland)
+
 				var layer = L.geoJson(geojson, {
-						'style': style,
-						'pointToLayer': function (feature, latlng) {
-							return L.circleMarker(latlng, style);
-						}
-					});
+					'style': style,
+					'pointToLayer': function (feature, latlng) {
+						return L.circleMarker(latlng, style);
+					}
+				});
 				
 				layer.addTo(map);
 			},
