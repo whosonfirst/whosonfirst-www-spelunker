@@ -43,7 +43,7 @@
 <ul>
 <li><a href="/id/{{ doc.properties.get("wof:id") |e }}/descendants/">See all the descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
 
-<li><a href="https://54.148.56.3/?latitude={{ doc.properties.get("geom:latitude") |e }}&longitude={{ doc.properties.get("geom:longitude") |e }}" target="_reversegeo">Reverse geocode</a> ({{ doc.properties.get("geom:latitude") |e }}, {{ doc.properties.get("geom:longitude") |e }})</li>
+<li><a href="/reverse/?latitude={{ doc.properties.get("geom:latitude") |e }}&longitude={{ doc.properties.get("geom:longitude") |e }}" target="_reversegeo">Reverse geocode</a> ({{ doc.properties.get("geom:latitude") |e }}, {{ doc.properties.get("geom:longitude") |e }})</li>
 
 <li><a href="http://whosonfirst.mapzen.com/data/{{ doc.properties.get("wof:path") |e }}" target="data">Raw data (GeoJSON)</a></li>
 
