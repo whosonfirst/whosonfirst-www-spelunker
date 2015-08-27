@@ -70,6 +70,28 @@ mapzen.whosonfirst.enmapify = (function(){
 					};
 					
 					mapzen.whosonfirst.leaflet.draw_point(map, pt);
+
+					if ((props['lbl:latitude']) && (props['lbl:longitude'])){
+
+						var lat = props['lbl:latitude'];
+						var lon = props['lbl:longitude'];
+					
+						var pt = {
+							'type': 'Feature',
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] }
+						};
+
+						var style = {
+							"color": "#fff",
+							"weight": 3,
+							"opacity": 1,
+							"radius": 12,
+							"fillColor": "#ff0000",
+							"fillOpacity": 0.5
+						};
+					
+						mapzen.whosonfirst.leaflet.draw_point(map, pt, style);
+					}
 				}
 	
 				if ((! parent_id) || (parent_id == -1)){
