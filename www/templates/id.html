@@ -1,7 +1,10 @@
-{% set page_title = doc.properties.get("wof:name")  %}
 {% extends "base.html" %}
 {% block title %}{{ doc.properties.get("wof:id") |e }} | {{ doc.properties.get("wof:name") |e }}{% endblock %}
 {% block content %}
+
+<div class="row">
+<h2>{{ doc.properties.get("wof:name") |e }} <small>{{doc.properties.get("wof:path") |e }}</small></h2>
+</div>
 
 <div class="row">
 <div class="col-md-12" id="map"></div>
