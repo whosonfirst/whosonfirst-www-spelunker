@@ -38,6 +38,11 @@ def init():
     flask.g.spatial_db = spatial_db
     flask.g.search_idx = search_idx
 
+@app.route("/", methods=["GET"])
+def index():
+
+    return flask.render_template('index.html')
+
 @app.route("/id/<int:id>", methods=["GET"])
 @app.route("/id/<int:id>/", methods=["GET"])
 def info(id):
@@ -256,7 +261,6 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets)
 
-@app.route("/", methods=["GET"])
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
 def searchify():
