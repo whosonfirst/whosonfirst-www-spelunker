@@ -36,6 +36,7 @@ server {
 	    add_header 'Access-Control-Allow-Origin' '*';
             add_header 'Access-Control-Allow-Methods' 'GET';
 
+	    proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/data/;
 	    proxy_pass https://s3.amazonaws.com/com.mapzen.gazetteer/;
         }
 
