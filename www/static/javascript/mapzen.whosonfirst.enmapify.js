@@ -35,45 +35,23 @@ mapzen.whosonfirst.enmapify = (function(){
 				
 				var on_parent = function(parent_feature){
 					
-					var style = {
-						"color": "#ffff00",
-						"weight": 3,
-						"opacity": 1,
-						"fillOpacity": 0.8
-					};
-					
 					mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
 
 					parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
-					mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, style);
+					mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 					
 					mapzen.whosonfirst.net.fetch(child_url, on_child);			
 				};
 	
 				var on_child = function(child_feature){
-		
-					var style = {
-						"color": "#ff69b4",
-						"weight": 3,
-						"opacity": 1,
-						"fillOpacity": 0.8
-					};
 
-					var style2 = {
-						"color": "#000000",
-						"weight": .5,
-						"opacity": 1,
-						"fillColor": "#000000",
-						"fillOpacity": .4,
-					};
-					
 					mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
 
 					child_feature['properties']['lflt:label_text'] = "";
-					mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, style2);
+					mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
 
 					child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
-					mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, style);
+					mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
 		
 					var props = child_feature['properties'];
 					var lat = props['geom:latitude'];
@@ -88,7 +66,7 @@ mapzen.whosonfirst.enmapify = (function(){
 						'properties': { 'lflt:label_text': label_text }
 					};
 					
-					mapzen.whosonfirst.leaflet.draw_point(map, pt);
+					mapzen.whosonfirst.leaflet.draw_point(map, pt, mapzen.whosonfirst.leaflet.styles.math_centroid());
 
 					if ((props['lbl:latitude']) && (props['lbl:longitude'])){
 
@@ -108,16 +86,7 @@ mapzen.whosonfirst.enmapify = (function(){
 							'properties': { 'lflt:label_text': label_text },
 						};
 
-						var style = {
-							"color": "#fff",
-							"weight": 3,
-							"opacity": 1,
-							"radius": 10,
-							"fillColor": "#ff0000",
-							"fillOpacity": .7
-						};
-					
-						mapzen.whosonfirst.leaflet.draw_point(map, pt, style);
+						mapzen.whosonfirst.leaflet.draw_point(map, pt, mapzen.whosonfirst.leaflet.styles.label_centroid());
 					}
 				}
 	

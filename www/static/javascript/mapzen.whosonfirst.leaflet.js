@@ -6,10 +6,6 @@ mapzen.whosonfirst.leaflet = (function(){
 	var self = {
 		'draw_point': function(map, geojson, style){
 			
-			if (! style){
-				style = self.point_style('default');
-			}
-			
 			// this is still trying to draw a regular (icon) marker
 			// for some reason... (20150825/thisisaaronland)
 			
@@ -42,10 +38,6 @@ mapzen.whosonfirst.leaflet = (function(){
 		},
 		
 		'draw_poly': function(map, geojson, style){
-			
-			if (! style){
-				style = self.poly_style('default');
-			}
 				
 			var layer = L.geoJson(geojson, {
 				'style': style				
@@ -70,9 +62,11 @@ mapzen.whosonfirst.leaflet = (function(){
 		},
 		
 		'draw_bbox': function(map, geojson, style){
-		
-			if (! geojson['bbox']){
-				console.log("please to implement derive bbox code");
+
+			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
+			
+			if (! bbox){
+				console.log("no bounding box");
 				return false;
 			}
 
@@ -110,8 +104,6 @@ mapzen.whosonfirst.leaflet = (function(){
 				return false;
 			}
 			
-			// var bbox = geojson['bbox'];
-			
 			if ((bbox[1] == bbox[3]) && (bbox[2] == bbox[4])){
 				map.setView([bbox[1], bbox[0]], 14);
 				return;
@@ -146,27 +138,6 @@ mapzen.whosonfirst.leaflet = (function(){
 			if (redraw){
 				map.fitBounds(bounds);
 			}
-		},
-		
-		'point_style': function(context){
-			
-			return {
-				"color": "#fff",
-				"weight": 3,
-				"opacity": 1,
-				"radius": 8,
-				"fillColor": "#ff7800",
-				"fillOpacity": 0.5
-			};
-		},
-
-		'poly_style': function(context){
-
-			return {
-				"color": "#ff7800",
-				"weight": 3,
-				"opacity": 1
-			};
 		}
 	};
 	
