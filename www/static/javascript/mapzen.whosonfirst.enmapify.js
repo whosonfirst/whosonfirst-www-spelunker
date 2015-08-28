@@ -56,8 +56,19 @@ mapzen.whosonfirst.enmapify = (function(){
 						"opacity": 1,
 						"fillOpacity": 0.8
 					};
+
+					var style2 = {
+						"color": "#000000",
+						"weight": .5,
+						"opacity": 1,
+						"fillColor": "#000000",
+						"fillOpacity": .4,
+					};
 					
 					mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
+
+					mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, style2);
+
 					mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, style);
 		
 					var props = child_feature['properties'];
@@ -85,9 +96,9 @@ mapzen.whosonfirst.enmapify = (function(){
 							"color": "#fff",
 							"weight": 3,
 							"opacity": 1,
-							"radius": 12,
+							"radius": 10,
 							"fillColor": "#ff0000",
-							"fillOpacity": 0.5
+							"fillOpacity": .7
 						};
 					
 						mapzen.whosonfirst.leaflet.draw_point(map, pt, style);
