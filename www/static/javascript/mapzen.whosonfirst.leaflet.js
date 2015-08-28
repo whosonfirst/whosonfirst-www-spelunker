@@ -22,8 +22,12 @@ mapzen.whosonfirst.leaflet = (function(){
 					// https://github.com/Leaflet/Leaflet.label
 					
 					try {
-						var label = latlng.lat + ", " + latlng.lng;
-						m.bindLabel(label, { noHide: false });
+						var props = feature['properties'];
+						var label = props['lflt:label_text'];
+
+						if (label){
+							m.bindLabel(label, { noHide: false });
+						}
 					}
 					
 					catch (e){
@@ -51,8 +55,11 @@ mapzen.whosonfirst.leaflet = (function(){
 			
 			try {
 				var props = geojson['properties'];
-				var name = props['wof:name'];
-				layer.bindLabel(name, {noHide: true });
+				var label = props['lflt:label_text'];
+
+				if (label){
+					layer.bindLabel(label, {noHide: true });
+				}
 			}
 			
 			catch (e){

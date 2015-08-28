@@ -43,6 +43,8 @@ mapzen.whosonfirst.enmapify = (function(){
 					};
 					
 					mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
+
+					parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 					mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, style);
 					
 					mapzen.whosonfirst.net.fetch(child_url, on_child);			
@@ -67,17 +69,23 @@ mapzen.whosonfirst.enmapify = (function(){
 					
 					mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
 
+					child_feature['properties']['lflt:label_text'] = "";
 					mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, style2);
 
+					child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
 					mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, style);
 		
 					var props = child_feature['properties'];
 					var lat = props['geom:latitude'];
 					var lon = props['geom:longitude'];
 					
+					var label_text = 'math centroid (shapely) is ';
+					label_text += lat + ", " + lon;
+
 					var pt = {
 						'type': 'Feature',
-						'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] }
+						'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+						'properties': { 'lflt:label_text': label_text }
 					};
 					
 					mapzen.whosonfirst.leaflet.draw_point(map, pt);
@@ -86,10 +94,18 @@ mapzen.whosonfirst.enmapify = (function(){
 
 						var lat = props['lbl:latitude'];
 						var lon = props['lbl:longitude'];
-					
+
+						var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
+
+						var label_text = "label centroid (";
+						label_text += label_src;
+						label_text += ") is ";
+						label_text += lat + ", " + lon;
+
 						var pt = {
 							'type': 'Feature',
-							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] }
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+							'properties': { 'lflt:label_text': label_text },
 						};
 
 						var style = {
