@@ -282,6 +282,7 @@ def searchify():
 
     placetype = flask.request.args.get('placetype', None)
     iso = flask.request.args.get('iso', None)
+    tag = flask.request.args.get('tag', None)
 
     if placetype:
 
@@ -305,6 +306,14 @@ def searchify():
             'iso:country' : esc_iso
         }})
 
+    if tag:
+
+        esc_tag = flask.g.search_idx.escape(tag)
+
+        filters.append({ 'term': {
+            'sg:tags' : esc_tag
+        }})
+
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536
 
@@ -322,6 +331,9 @@ def searchify():
     else:
         
         body = { 'query': query }
+
+    print body
+
 
     args = {}
 
@@ -355,7 +367,18 @@ def searchify():
             }
         }
     }
-        
+
+    entagify = True
+
+    if entagify:
+
+        aggrs['tags'] = {
+            'terms': {
+                'field': 'sg:tags',
+                'size': 0
+            }
+        }
+
     body = {
         'query': query,
         'aggregations': aggrs,
@@ -376,6 +399,10 @@ def searchify():
         'placetypes': placetypes.get('buckets', []),
         'countries': countries.get('buckets', []),
     }
+
+    if entagify:
+        tags = aggregations.get('tags', {})
+        facets['tags'] =  tags.get('buckets', [])
 
     #
 
