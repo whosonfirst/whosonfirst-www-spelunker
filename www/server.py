@@ -326,7 +326,14 @@ def searchify():
                 }
         }
 
-    body = { 'query': query }
+    sort = [
+        { 'gn:population' : 'desc' }
+    ]
+
+    body = {
+        # 'sort': 'sort',
+        'query': query
+    }
 
     args = {}
 
