@@ -319,21 +319,14 @@ def searchify():
 
     if len(filters):
 
-        body = {
-            'query': {
-                'filtered': {
-                    'query': query,
-                    'filter': { 'and': filters }
+        query = {
+            'filtered': {
+                'query': query,
+                'filter': { 'and': filters }
                 }
-            }
         }
 
-    else:
-        
-        body = { 'query': query }
-
-    print body
-
+    body = { 'query': query }
 
     args = {}
 
@@ -387,6 +380,8 @@ def searchify():
     query_str = { 
         'search_type': 'count'
     }
+
+    print body
 
     args = { 'body': body, 'query': query_str }
     rsp = flask.g.search_idx.search_raw(**args)
