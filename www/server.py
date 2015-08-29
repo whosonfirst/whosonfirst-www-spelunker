@@ -372,6 +372,18 @@ def searchify():
             }
         }
 
+        # sudo what is syntax anyway?
+        # (20150828/thisisaaronland)
+
+        """
+        aggrs['categories'] = {
+            'terms': {
+                'field': 'sg:classfiers.category',
+                'size': 0
+            }
+        }
+        """
+
     body = {
         'query': query,
         'aggregations': aggrs,
@@ -381,12 +393,11 @@ def searchify():
         'search_type': 'count'
     }
 
-    print body
-
     args = { 'body': body, 'query': query_str }
     rsp = flask.g.search_idx.search_raw(**args)
 
     aggregations = rsp.get('aggregations', {})
+
     placetypes = aggregations.get('placetypes', {})
     countries = aggregations.get('countries', {})
 

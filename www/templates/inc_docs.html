@@ -1,6 +1,6 @@
 <ol class="list">
 {% for doc in docs %}
-<li>
+<li class="loc" data-latitude="{{ doc['properties']['geom:latitude'] | e}}" data-longitude="{{ doc['properties']['geom:longitude'] | e}}">
   <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
   <code>{{ doc['properties']['wof:id'] |e }}</code>
   <small>
@@ -14,5 +14,3 @@
 </li>
 {% endfor %}
 </ol>
-
-

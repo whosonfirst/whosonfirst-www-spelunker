@@ -39,6 +39,18 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 				"fillOpacity": 0.8
 			};
 		},
+
+		'search_centroid': function(){
+
+			return {
+				"color": "#fff",
+				"weight": 2,
+				"opacity": 1,
+				"radius": 6,
+				"fillColor": "#000ccc",
+				"fillOpacity": 0.8
+			};
+		},
 		
 		'consensus_polygon': function(){
 
