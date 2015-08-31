@@ -22,7 +22,8 @@ mapzen.whosonfirst.enmapify = (function(){
 		},
 		
 		'render_feature': function(map, feature){
-			
+
+			console.log("WAH WAH WAH");
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
 			
 			var props = feature['properties'];
@@ -44,16 +45,16 @@ mapzen.whosonfirst.enmapify = (function(){
 			};
 			
 			var on_child = function(child_feature){
-				
+
+				console.log("CHILD IT UP");
 				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
 				
 				child_feature['properties']['lflt:label_text'] = "";
 				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
 				
-				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
-				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-				
+				var geom = child_feature['geometry'];
 				var props = child_feature['properties'];
+
 				var lat = props['geom:latitude'];
 				var lon = props['geom:longitude'];
 				
@@ -66,6 +67,23 @@ mapzen.whosonfirst.enmapify = (function(){
 					'properties': { 'lflt:label_text': label_text }
 				};
 				
+				if (geom['type'] == 'Point'){
+
+					var label_text = 'geom centroid (the DATA) is ';
+					label_text += lat + ", " + lon;
+
+					pt['properties']['lflt:label_text'] = label_text;
+
+					var style = mapzen.whosonfirst.leaflet.styles.geom_centroid();
+					var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
+
+					mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+					return;
+				}
+
+				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
+				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+						
 				var style = mapzen.whosonfirst.leaflet.styles.math_centroid();
 				var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
