@@ -60,38 +60,9 @@
 
 window.onload = function(e){
 
-	/*
-	try {
-		var props = document.getElementById("props");
-		props = props.innerHTML;
-		props = JSON.parse(props);
-	}
-
-	catch (e){
-		console.log("failed to parse props because " + e);
-	}
-	*/
-
-	var map = L.map('map');
-
-{% if doc.bbox.1 == doc.bbox.3 and doc.bbox.0 == doc.bbox.2 %}
-	map.setView([{{ doc.bbox.1|e}} , {{ doc.bbox.0|e}} ], 14)
-{% else %}
-	map.fitBounds([[{{ doc.bbox.1|e }},{{ doc.bbox.0|e }}], [ {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }} ]]);
-{% endif %}
-
-	var scene = "{{ url_for('static', filename='tangram/scene.yaml') }}";
-
-	var tangram = Tangram.leafletLayer({
-		scene: scene,
-		numWorkers: 2,
-        	unloadInvisibleTiles: false,
-		updateWhenIdle: false
-	});
-
-	tangram.addTo(map);
-
 	mapzen.whosonfirst.spelunker.toggle_data_endpoint("{{ doc.properties.get("wof:placetype") |e }}");
+
+	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', {{ doc.bbox.1|e }},{{ doc.bbox.0|e }}, {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }});
 
 	mapzen.whosonfirst.enmapify.render_id(map, {{ doc.properties.get("wof:id") |e }});
         return;
