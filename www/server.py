@@ -56,7 +56,12 @@ def info(id):
 
     hiers = inflate_hierarchy(doc)
 
-    return flask.render_template('id.html', doc=doc, hierarchies=hiers)
+    template_args = {
+        'doc': doc,
+        'hierarchies': hiers
+    }
+
+    return flask.render_template('id.html', **template_args)
 
 @app.route("/id/<int:id>/descendants", methods=["GET"])
 @app.route("/id/<int:id>/descendants/", methods=["GET"])
@@ -144,7 +149,15 @@ def descendants(id):
 
     pagination_url = build_pagination_url()
 
-    return flask.render_template('descendants.html', docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets, doc=doc)
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'facets': facets,
+        'doc': doc
+    }
+
+    return flask.render_template('descendants.html', **template_args)
 
 @app.route("/megacities", methods=["GET"])
 @app.route("/megacities/", methods=["GET"])
@@ -247,6 +260,9 @@ def placetype(placetype):
     body = {
         'query': query,
     }
+
+    # just do enfilterify here (and enfacetify below)?
+    # (20150831/thisisaaronland)
 
     iso = get_str('iso')
 
