@@ -8,9 +8,9 @@
 
 <div class="row"><h3>
 {% if pagination.total == 1 %}
-There is <span class="hey-look">one place</span> matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q>
+There is <span class="hey-look">one place</span> classified as a <span class="hey-look">megacity</span></q>
 {% else %}
-There are <span class="hey-look">{{ pagination.total|e }} places</span> matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q>
+There are <span class="hey-look">{{ pagination.total|e }} places</span> classified as <q class="hey-look">megacities</q>
 {% if pagination.pages > 1 %}
 and this <span class="hey-look">page {{ pagination.page|e }}</span> of {{ pagination.pages|e }}
 {% endif %}

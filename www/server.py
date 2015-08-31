@@ -146,6 +146,40 @@ def descendants(id):
 
     return flask.render_template('descendants.html', docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets, doc=doc)
 
+@app.route("/megacities", methods=["GET"])
+@app.route("/megacities/", methods=["GET"])
+def megacities():
+
+    query = {
+        'term': {
+            'wof:megacity': '1'
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    args = {}
+
+    page = get_int('page')
+
+    if page:
+        args['page'] = page
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    pagination_url = build_pagination_url()
+
+    return flask.render_template('megacities.html', docs=docs, pagination=pagination, pagination_url=pagination_url)
+
+
 @app.route("/placetypes", methods=["GET"])
 @app.route("/placetypes/", methods=["GET"])
 def placetypes():
