@@ -67,46 +67,12 @@ mapzen.whosonfirst.spelunker = (function(){
 			}
 
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
-			var map = L.map('map');
-			
-			map.fitBounds([[swlat, swlon], [ nelat, nelon ]]);
-			
-			var scene = "/static/tangram/scene.yaml";
-			
-			var tangram = Tangram.leafletLayer({
-				scene: scene,
-				numWorkers: 2,
-        			unloadInvisibleTiles: false,
-				updateWhenIdle: false
-			});
-			
-			tangram.addTo(map);
+
+			var map = mapzen.whosonfirst.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
 			
 			var style = mapzen.whosonfirst.leaflet.styles.search_centroid();
+			var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
-			// sudo put in a library...
-			var handler = function (feature, latlng) {
-					
-				var m = L.circleMarker(latlng, style);
-				
-				// https://github.com/Leaflet/Leaflet.label
-				
-				try {
-					var props = feature['properties'];
-					var label = props['lflt:label_text'];
-					
-					if (label){
-						m.bindLabel(label, { noHide: false });
-					}
-				}
-				
-				catch (e){
-					console.log("failed to bind label because " + e);
-				}
-				
-				return m;
-			};
-			
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
