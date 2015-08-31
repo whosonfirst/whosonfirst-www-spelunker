@@ -30,8 +30,6 @@ mapzen.whosonfirst.tangram = (function(){
 		
 		'map': function(id){
 
-			console.log("load map " + id);
-
 			if (! _cache[id]){
 				var map = L.map(id);
 
