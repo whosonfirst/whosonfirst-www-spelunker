@@ -156,8 +156,19 @@ def megacities():
         }
     }
 
+    query = enfilterify(query)
+
+    # these won't work as expected until I fix the import
+    # thingy (20150831/thisisaaronland)
+
+    sort = [
+        { 'gn:population' : 'desc' },
+        { 'geom:area' : 'desc' }
+    ]
+
     body = {
-        'query': query
+        'query': query,
+        'sort': sort
     }
 
     args = {}
@@ -167,17 +178,23 @@ def megacities():
     if page:
         args['page'] = page
 
-    if page:
-        args['page'] = page
-
     rsp = flask.g.search_idx.search(body, **args)
+
+    facets = facetify(query)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
 
     pagination_url = build_pagination_url()
 
-    return flask.render_template('megacities.html', docs=docs, pagination=pagination, pagination_url=pagination_url)
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        # 'facets': facets,
+        'pagination_url': pagination_url,
+    }
+
+    return flask.render_template('megacities.html', **template_args)
 
 
 @app.route("/placetypes", methods=["GET"])
@@ -291,7 +308,15 @@ def placetype(placetype):
 
     pagination_url = build_pagination_url()
 
-    return flask.render_template('placetype.html', placetype=placetype, docs=docs, pagination=pagination, pagination_url=pagination_url, facets=facets)
+    template_args = {
+        'placetype': placetype,
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'facets': facets
+    }
+
+    return flask.render_template('placetype.html', **template_args)
 
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
@@ -309,6 +334,107 @@ def searchify():
             'query': esc_q
         }
     }
+
+    query = enfilterify(query)
+
+    # these won't work as expected until I fix the import
+    # thingy (20150831/thisisaaronland)
+
+    sort = [
+        { 'gn:population' : 'desc' }
+    ]
+
+    body = {
+        'query': query,
+        'sort': sort,
+    }
+
+    args = {}
+
+    page = get_int('page')
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'query': q,
+        'facets': facets,
+    }
+
+    return flask.render_template('search_results.html', **template_args)
+
+def facetify(query):
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'wof:placetype',
+                'size': 0
+            }
+        },
+        'countries': {
+            'terms': {
+                'field': 'iso:country',
+                'size': 0
+            }
+        },
+        'tags': {
+            'terms': {
+                'field': 'sg:tags',
+                'size': 0
+            }
+        }
+    }
+
+    # sudo what is syntax anyway?
+    # (20150828/thisisaaronland)
+
+    """
+    aggrs['categories'] = {
+    'terms': {
+    'field': 'sg:classfiers.category',
+    'size': 0
+    }
+    }
+    """
+    
+    body = {
+        'query': query,
+        'aggregations': aggrs,
+    }
+
+    query_str = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query_str }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+
+    placetypes = aggregations.get('placetypes', {})
+    countries = aggregations.get('countries', {})
+
+    facets = {
+        'placetypes': placetypes.get('buckets', []),
+        'countries': countries.get('buckets', []),
+        'tags': aggregations.get('tags', {})
+    }
+
+    return facets
+
+def enfilterify(query):
 
     filters = []
 
@@ -358,101 +484,7 @@ def searchify():
                 }
         }
 
-    sort = [
-        { 'gn:population' : 'desc' }
-    ]
-
-    body = {
-        # 'sort': 'sort',
-        'query': query
-    }
-
-    args = {}
-
-    page = get_int('page')
-
-    if page:
-        args['page'] = page
-
-    if page:
-        args['page'] = page
-
-    rsp = flask.g.search_idx.search(body, **args)
-
-    pagination = rsp['pagination']
-    docs = rsp['rows']
-
-    # facet
-
-    aggrs = {
-        'placetypes': {
-            'terms': {
-                'field': 'wof:placetype',
-                'size': 0
-            }
-        },
-        'countries': {
-            'terms': {
-                'field': 'iso:country',
-                'size': 0
-            }
-        }
-    }
-
-    entagify = True
-
-    if entagify:
-
-        aggrs['tags'] = {
-            'terms': {
-                'field': 'sg:tags',
-                'size': 0
-            }
-        }
-
-        # sudo what is syntax anyway?
-        # (20150828/thisisaaronland)
-
-        """
-        aggrs['categories'] = {
-            'terms': {
-                'field': 'sg:classfiers.category',
-                'size': 0
-            }
-        }
-        """
-
-    body = {
-        'query': query,
-        'aggregations': aggrs,
-    }
-
-    query_str = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query_str }
-    rsp = flask.g.search_idx.search_raw(**args)
-
-    aggregations = rsp.get('aggregations', {})
-
-    placetypes = aggregations.get('placetypes', {})
-    countries = aggregations.get('countries', {})
-
-    facets = {
-        'placetypes': placetypes.get('buckets', []),
-        'countries': countries.get('buckets', []),
-    }
-
-    if entagify:
-        tags = aggregations.get('tags', {})
-        facets['tags'] =  tags.get('buckets', [])
-
-    #
-
-    pagination_url = build_pagination_url()
-
-    return flask.render_template('search_results.html', docs=docs, pagination=pagination, pagination_url=pagination_url, query=q, facets=facets)
+    return query
 
 def build_pagination_url():
 
