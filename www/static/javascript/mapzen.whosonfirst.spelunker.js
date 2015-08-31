@@ -68,7 +68,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
-			var map = mapzen.whosonfirst.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
+			var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
 			
 			var style = mapzen.whosonfirst.leaflet.styles.search_centroid();
 			var handler = mapzen.whosonfirst.leaflet.handlers.point(style);

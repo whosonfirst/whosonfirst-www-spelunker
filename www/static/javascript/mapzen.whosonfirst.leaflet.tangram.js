@@ -1,7 +1,8 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
+mapzen.whosonfirst.leaflet = mapzen.whosonfirst.leaflet || {};
 
-mapzen.whosonfirst.tangram = (function(){
+mapzen.whosonfirst.leaflet.tangram = (function(){
 
 	var _scenefile = '/static/tangram/scene.yaml'
 	var _cache = {};
