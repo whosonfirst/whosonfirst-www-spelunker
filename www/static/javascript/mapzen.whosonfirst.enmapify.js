@@ -89,7 +89,10 @@ mapzen.whosonfirst.enmapify = (function(){
 						'properties': { 'lflt:label_text': label_text },
 					};
 					
-					mapzen.whosonfirst.leaflet.draw_point(map, pt, mapzen.whosonfirst.leaflet.styles.label_centroid());
+					var style = mapzen.whosonfirst.leaflet.styles.label_centroid();
+					var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
+
+					mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
 				}
 			}
 			
