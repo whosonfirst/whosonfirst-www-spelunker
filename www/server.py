@@ -5,6 +5,7 @@ import os
 import logging
 import urlparse
 import urllib
+import codecs
 
 import flask
 import werkzeug
@@ -82,7 +83,7 @@ def descendants(id):
         'query': query
     }
 
-    placetype = flask.request.args.get('placetype', None)
+    placetype = get_str('placetype')
 
     if placetype:
 
@@ -101,11 +102,7 @@ def descendants(id):
 
     args = {}
 
-    page = flask.request.args.get('page')
-
-    if page:
-        page = int(page)
-        args['page'] = page
+    page = get_int('page')
 
     if page:
         args['page'] = page
@@ -182,6 +179,8 @@ def placetypes():
 @app.route("/placetypes/<placetype>/", methods=["GET"])
 def placetype(placetype):
 
+    placetype = sanitize_str(placetype)
+
     if not pt.is_valid_placetype(placetype):
         flask.abort(404)
 
@@ -198,7 +197,7 @@ def placetype(placetype):
         'query': query,
     }
 
-    iso = flask.request.args.get('iso', None)
+    iso = get_str('iso')
 
     if iso:
 
@@ -213,10 +212,9 @@ def placetype(placetype):
 
     args = {}
 
-    page = flask.request.args.get('page')
+    page = get_int('page')
 
     if page:
-        page = int(page)
         args['page'] = page
 
     if page:
@@ -265,13 +263,13 @@ def placetype(placetype):
 @app.route("/search/", methods=["GET"])
 def searchify():
 
-    q = flask.request.args.get('q')
+    q = get_str('q')
 
-    if not q:
+    if not q or q == '':
         return flask.render_template('search_form.html')
     
     esc_q = flask.g.search_idx.escape(q)
-    
+
     query = {
         'query_string': {
             'query': esc_q
@@ -280,9 +278,9 @@ def searchify():
 
     filters = []
 
-    placetype = flask.request.args.get('placetype', None)
-    iso = flask.request.args.get('iso', None)
-    tag = flask.request.args.get('tag', None)
+    placetype = get_str('placetype')
+    iso = get_str('iso')
+    tag = get_str('tag')
 
     if placetype:
 
@@ -337,10 +335,9 @@ def searchify():
 
     args = {}
 
-    page = flask.request.args.get('page')
+    page = get_int('page')
 
     if page:
-        page = int(page)
         args['page'] = page
 
     if page:
@@ -478,6 +475,36 @@ def inflate_hierarchy(doc):
         hiers.append(inflated)
 
     return hiers
+
+# please put me in a library somewhere...
+# please to be porting this at the same time...
+# https://github.com/exflickr/flamework/blob/master/www/include/lib_sanitize.php
+# (20150831/thisisaaronland)
+
+def get_str(k):
+
+    str = flask.request.args.get(k, None)
+    return sanitize_str(str)
+
+def get_int(k):
+
+    i = flask.request.args.get(k, None)
+    return sanitize_int(i)
+
+def sanitize_str(str):
+
+    if str:
+        str = codecs.encode(str, 'utf-8')
+        str = str.strip()
+
+    return str
+    
+def sanitize_int(i):
+
+    if i:
+        i = int(i)
+
+    return i
 
 if __name__ == '__main__':
 
