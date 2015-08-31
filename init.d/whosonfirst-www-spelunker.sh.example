@@ -33,9 +33,8 @@ case $1 in
 	cd ${GUNICORN_APP_ROOT} 
         echo "Starting ${GUNICORN_APP_NAME} (in debug mode)"
 
-	echo sudo $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app
-
-	sudo $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app
+	echo sudo -u ${GUNICORN_USER} $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app
+	sudo -u ${GUNICORN_USER} $GUNICORN $GUNICORN_OPTS ${GUNICORN_APP_NAME}:app
 
         ;;
     start)
