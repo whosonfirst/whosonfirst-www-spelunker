@@ -199,11 +199,13 @@ def megacities():
     docs = rsp['rows']
 
     pagination_url = build_pagination_url()
+    facet_url = pagination_url
 
     template_args = {
         'docs': docs,
         'pagination': pagination,
-        # 'facets': facets,
+        'facets': facets,
+        'facet_url': facet_url,
         'pagination_url': pagination_url,
     }
 
@@ -379,6 +381,7 @@ def searchify():
     facets = facetify(query)
 
     pagination_url = build_pagination_url()
+    facet_url = pagination_url
 
     template_args = {
         'docs': docs,
@@ -386,6 +389,7 @@ def searchify():
         'pagination_url': pagination_url,
         'query': q,
         'facets': facets,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('search_results.html', **template_args)
