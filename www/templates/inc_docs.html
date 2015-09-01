@@ -19,6 +19,11 @@
     this is a <a href="/placetypes/{{ doc['properties']['wof:placetype'] |e }}/">{{ doc['properties']['wof:placetype'] |e }}</a>
     {% endif %}
   </small>
+  {% if doc.properties.get('gn:population', None) %}
+  <small>
+    and its <span class="hey-look">population</span> is {{ doc.properties.get('gn:population') |number_format|e }}
+  </small>
+  {% endif %}
 </li>
 {% endfor %}
 </ol>
