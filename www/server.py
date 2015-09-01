@@ -392,9 +392,13 @@ def searchify():
 
     sort = [
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
-        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
+        { 'wof:name' : {'order': 'desc' } },
+        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
+        { 'geom:area': {'order': 'desc', 'mode': 'max'} },
     ]
+
+    # TO DO: boost wof:name and name fields
 
     body = {
         'query': query,
