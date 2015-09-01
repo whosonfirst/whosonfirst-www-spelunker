@@ -210,12 +210,9 @@ def megacities():
 
     query = enfilterify(query)
 
-    # these won't work as expected until I fix the import
-    # thingy (20150831/thisisaaronland)
-
     sort = [
-        { 'geom:area' : 'desc' },
-        { 'gn:population' : 'desc' },
+        { 'gn:population': {'order': 'desc', 'mode': 'max'} },
+        { 'geom:area': {'order': 'desc', 'mode': 'max'} },
     ]
 
     body = {
@@ -223,7 +220,6 @@ def megacities():
         'sort': sort
     }
 
-    print body
     args = {}
 
     page = get_int('page')
@@ -232,11 +228,10 @@ def megacities():
         args['page'] = page
 
     rsp = flask.g.search_idx.search(body, **args)
-
-    facets = facetify(query)
-
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    facets = facetify(query)
 
     pagination_url = build_pagination_url()
     facet_url = pagination_url
@@ -395,11 +390,10 @@ def searchify():
 
     query = enfilterify(query)
 
-    # these won't work as expected until I fix the import
-    # thingy (20150831/thisisaaronland)
-
     sort = [
-        { 'gn:population' : 'desc' }
+        { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
+        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
+        { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
     ]
 
     body = {
@@ -415,6 +409,7 @@ def searchify():
         args['page'] = page
 
     rsp = flask.g.search_idx.search(body, **args)
+
     pagination = rsp['pagination']
     docs = rsp['rows']
 
