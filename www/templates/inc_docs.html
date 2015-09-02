@@ -55,6 +55,26 @@
 {% endfor %}
 </ul>
 
+<h4>by category</h4>
+
+<ul class="list-inline">
+{% for f in facets['categories'] %}
+<li>{{ f.key | e }} <small>{{ f.doc_count | e }}</small></li>
+{% if 0 %}<li><a href="{{ facet_url}}&tag={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>{% endif %}
+{% endfor %}
+</ul>
+
+<h4>by locality <small>with 10+ results</small></h4>
+
+<ul class="list-inline">
+{% for f in facets['localities'] %}
+<li>{{ f.key | e }} <small>{{ f.doc_count | e }}</small></li>
+{% if 0 %}<li><a href="{{ facet_url}}&tag={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>{% endif %}
+{% endfor %}
+</ul>
+
+{% if 0 %}<pre>{{ facets |e }}</pre>{% endif %}
+
 {% endif %}
 
 </div>

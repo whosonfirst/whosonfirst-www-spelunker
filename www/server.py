@@ -453,20 +453,20 @@ def facetify(query):
                 'field': 'sg:tags',
                 'size': 0
             }
+        },
+        'categories': {
+            'terms': {
+                'field': 'category',	# as in sg:classfiers.category
+                'size': 0
+            }
+        },
+        'localities': {
+            'terms': {
+                'field': 'locality_id',
+                'size': 10
+            }
         }
     }
-
-    # sudo what is syntax anyway?
-    # (20150828/thisisaaronland)
-
-    """
-    aggrs['categories'] = {
-    'terms': {
-    'field': 'sg:classfiers.category',
-    'size': 0
-    }
-    }
-    """
     
     body = {
         'query': query,
@@ -482,14 +482,12 @@ def facetify(query):
 
     aggregations = rsp.get('aggregations', {})
 
-    placetypes = aggregations.get('placetypes', {})
-    countries = aggregations.get('countries', {})
+    facets = {}
 
-    facets = {
-        'placetypes': placetypes.get('buckets', []),
-        'countries': countries.get('buckets', []),
-        'tags': aggregations.get('tags', {})
-    }
+    for k, ignore in aggrs.items():
+        results = aggregations.get(k, {})
+        results = results.get('buckets', [])
+        facets[k] = results
 
     return facets
 
