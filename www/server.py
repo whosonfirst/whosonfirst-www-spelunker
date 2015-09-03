@@ -321,9 +321,6 @@ def placetype(placetype):
     if page:
         args['page'] = page
 
-    if page:
-        args['page'] = page
-
     rsp = flask.g.search_idx.search(body, **args)
 
     pagination = rsp['pagination']
