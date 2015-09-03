@@ -293,26 +293,12 @@ def placetype(placetype):
             'wof:placetype_id': placetype_id
         }
     }
+
+    query = enfilterify(query)
     
     body = {
         'query': query,
     }
-
-    # just do enfilterify here (and enfacetify below)?
-    # (20150831/thisisaaronland)
-
-    iso = get_str('iso')
-
-    if iso:
-
-        iso = iso.lower()
-        esc_iso = flask.g.search_idx.escape(iso)
-
-        filter = {
-            'term': { 'iso:country': esc_iso }
-        }
-
-        body['filter'] = filter
 
     args = {}
 
@@ -326,44 +312,18 @@ def placetype(placetype):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
-    # facets
-
-    aggrs = {
-        'countries': {
-            'terms': {
-                'field': 'iso:country',
-                'size': 0
-            }
-        }
-    }
-
-    body = {
-        'query': query,
-        'aggregations': aggrs,
-    }
-
-    query_str = { 
-        'search_type': 'count',
-    }
-
-    args = { 'body': body, 'query': query_str }
-    rsp = flask.g.search_idx.search_raw(**args)
-
-    aggregations = rsp.get('aggregations', {})
-    countries = aggregations.get('countries', {})
-
-    facets = {
-        'countries': countries.get('buckets', []),
-    }
-
+    facets = facetify(query)
+    
     pagination_url = build_pagination_url()
+    facet_url = pagination_url
 
     template_args = {
         'placetype': placetype,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        'facets': facets
+        'facets': facets,
+        'facet_url': facet_url
     }
 
     return flask.render_template('placetype.html', **template_args)
