@@ -391,6 +391,7 @@ def searchify():
         'pagination': pagination,
         'pagination_url': pagination_url,
         'query': q,
+        'es_query': query,
         'facets': facets,
         'facet_url': facet_url,
     }
@@ -460,54 +461,95 @@ def enfilterify(query):
     filters = []
 
     placetype = get_str('placetype')
-    placetype = get_single(placetype)
 
     iso = get_str('iso')
-    iso = get_single(iso)
-
     tag = get_str('tag')
-    tag = get_single(tag)
 
     category = get_str('category')
-    category = get_single(category)
 
     if placetype:
 
-        if not pt.is_valid_placetype(placetype):
-            logging.warning("invalid placetype %s" % placetype)
-            flask.abort(404)
+        ids = []
 
-        placetype = pt.placetype(placetype)
-        placetype_id = placetype.id()
+        for p in placetype:
 
-        filters.append({ 'term': {
-            'wof:placetype_id' : placetype_id
-        }})
+            if not pt.is_valid_placetype(p):
+                logging.warning("invalid placetype %s" % p)
+                flask.abort(404)
+
+            placetype = pt.placetype(p)
+            ids.append(placetype.id())
+
+        if len(ids) == 1:
+
+            filters.append({ 'term': {
+                'wof:placetype_id' : ids[0]
+            }})
+
+        else:
+
+            filters.append({ 'terms': {
+                'wof:placetype_id' : ids
+            }})
+
 
     if iso:
 
-        iso = iso.lower()
-        esc_iso = flask.g.search_idx.escape(iso)
+        if len(iso) == 1:
 
-        filters.append({ 'term': {
-            'iso:country' : esc_iso
-        }})
+            iso = get_single(iso)
+            iso = iso.lower()
+            esc_iso = flask.g.search_idx.escape(iso)
+            
+            filters.append({ 'term': {
+                'iso:country' : esc_iso
+            }})
 
+        else:
+
+            esc_iso = []
+
+            for i in iso:
+                i = i.lower()
+                esc_iso.append(flask.g.search_idx.escape(i))
+
+            filters.append({ 'terms': {
+                'iso:country' : esc_iso
+            }})
+                
     if tag:
 
-        esc_tag = flask.g.search_idx.escape(tag)
+        if len(tag) == 1:
 
-        filters.append({ 'term': {
-            'sg:tags' : esc_tag
-        }})
+            tag = get_single(tag)
+            esc_tag = flask.g.search_idx.escape(tag)
+
+            filters.append({ 'term': {
+                'sg:tags' : esc_tag
+            }})
+        else:
+
+            esc_tags = map(flask.g.search_idx.escape, tag)
+
+            filters.append({ 'terms': {
+                'sg:tags' : esc_tags
+            }})
 
     if category:
 
-        esc_cat = flask.g.search_idx.escape(category)
+        if len(category) == 1:
+            category = get_single(category)
+            esc_cat = flask.g.search_idx.escape(category)
+            
+            filters.append({ 'term': {
+                'category' : esc_cat
+            }})
+        else:
+            esc_cat = map(flask.g.search_idx.escape, category)
 
-        filters.append({ 'term': {
-            'category' : esc_cat
-        }})
+            filters.append({ 'terms': {
+                'category' : esc_cat
+            }})
 
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536

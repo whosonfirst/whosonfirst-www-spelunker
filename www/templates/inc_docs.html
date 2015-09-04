@@ -1,7 +1,7 @@
-{% if query %}
+{% if es_query %}
 <div class="row">
 <div style="max-height:400px;overflow:scroll;">
-<pre>{{ query|pprint|e }}</pre>
+<pre>{{ es_query|pprint|e }}</pre>
 </div>
 </div>
 {% endif %}
