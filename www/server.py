@@ -195,7 +195,8 @@ def descendants(id):
         'pagination_url': pagination_url,
         'facets': facets,
         'facet_url': facet_url,
-        'doc': doc
+        'doc': doc,
+        'es_query': query,
     }
 
     return flask.render_template('descendants.html', **template_args)
@@ -245,6 +246,7 @@ def megacities():
         'facets': facets,
         'facet_url': facet_url,
         'pagination_url': pagination_url,
+        'es_query': query,
     }
 
     return flask.render_template('megacities.html', **template_args)
@@ -322,7 +324,7 @@ def placetype(placetype):
     facet_url = pagination_url
 
     template_args = {
-        'query': query,
+        'es_query': query,
         'placetype': placetype,
         'docs': docs,
         'pagination': pagination,
@@ -467,6 +469,8 @@ def enfilterify(query):
 
     category = get_str('category')
 
+    locality = get_int('locality_id')
+
     if placetype:
 
         ids = []
@@ -549,6 +553,26 @@ def enfilterify(query):
 
             filters.append({ 'terms': {
                 'category' : esc_cat
+            }})
+
+    if locality:
+
+        print locality
+
+        if len(locality) == 1:
+
+            locality = get_single(locality)
+            esc_loc = locality
+
+            filters.append({ 'term': {
+                'locality_id' : esc_loc
+            }})
+        else:
+
+            esc_locs = locality
+
+            filters.append({ 'terms': {
+                'locality_id' : esc_locs
             }})
 
     # oh elasticsearch... Y U MOON LANGUAGE?
