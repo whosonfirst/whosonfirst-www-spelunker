@@ -126,6 +126,7 @@ def descendants(id):
     }
 
     placetype = get_str('placetype')
+    placetype = get_single(placetype)
 
     if placetype:
 
@@ -145,6 +146,7 @@ def descendants(id):
     args = {'per_page': 40}
 
     page = get_int('page')
+    page = get_single(page)
 
     if page:
         args['page'] = page
@@ -223,6 +225,7 @@ def megacities():
     args = {'per_page': 40}
 
     page = get_int('page')
+    page = get_single(page)
 
     if page:
         args['page'] = page
@@ -303,6 +306,7 @@ def placetype(placetype):
     args = {'per_page': 40}
 
     page = get_int('page')
+    page = get_single(page)
 
     if page:
         args['page'] = page
@@ -334,6 +338,7 @@ def placetype(placetype):
 def searchify():
 
     q = get_str('q')
+    q = get_single(q)
 
     if not q or q == '':
         return flask.render_template('search_form.html')
@@ -366,6 +371,7 @@ def searchify():
     args = {'per_page': 40}
 
     page = get_int('page')
+    page = get_single(page)
 
     if page:
         args['page'] = page
@@ -454,9 +460,16 @@ def enfilterify(query):
     filters = []
 
     placetype = get_str('placetype')
+    placetype = get_single(placetype)
+
     iso = get_str('iso')
+    iso = get_single(iso)
+
     tag = get_str('tag')
+    tag = get_single(tag)
+
     category = get_str('category')
+    category = get_single(category)
 
     if placetype:
 
@@ -571,15 +584,40 @@ def inflate_hierarchy(doc):
 # https://github.com/exflickr/flamework/blob/master/www/include/lib_sanitize.php
 # (20150831/thisisaaronland)
 
+def get_param(k, sanitize=None):
+
+    param = flask.request.args.getlist(k)
+    
+    if len(param) == 0:
+        return None
+        
+    if sanitize:
+        param = map(sanitize, param)
+
+    return param
+
+def get_single(v):
+
+    if v and type(v) == types.ListType:
+        v = v[0]
+
+    return v
+
 def get_str(k):
 
-    str = flask.request.args.get(k, None)
-    return sanitize_str(str)
+    param = get_param(k, sanitize_str)
+    return param
+
+    # str = flask.request.args.get(k, None)
+    # return sanitize_str(str)
 
 def get_int(k):
 
-    i = flask.request.args.get(k, None)
-    return sanitize_int(i)
+    param = get_param(k, sanitize_int)
+    return param
+
+    # i = flask.request.args.get(k, None)
+    # return sanitize_int(i)
 
 def sanitize_str(str):
 
