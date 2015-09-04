@@ -115,6 +115,8 @@ def descendants(id):
             'wof:belongsto': doc.get('id')
         }
     }
+
+    query = enfilterify(query)
     
     sort = [
         { 'wof:name' : 'asc' }
@@ -124,24 +126,6 @@ def descendants(id):
         'sort': sort,
         'query': query
     }
-
-    placetype = get_str('placetype')
-    placetype = get_single(placetype)
-
-    if placetype:
-
-        if not pt.is_valid_placetype(placetype):
-            logging.warning("invalid placetype %s" % placetype)
-            flask.abort(404)
-
-        placetype = pt.placetype(placetype)
-        placetype_id = placetype.id()
-
-        filter = {
-            'term': { 'wof:placetype_id': placetype_id }
-        }
-
-        body['filter'] = filter
 
     args = {'per_page': 40}
 
@@ -156,35 +140,7 @@ def descendants(id):
     docs = rsp['rows']
     pagination = rsp['pagination']
 
-    # facets
-
-    aggrs = {
-        'placetypes': {
-            'terms': {
-                'field': 'wof:placetype',
-                'size': 0,
-            }
-        }
-    }
-        
-    body = {
-        'query': query,
-        'aggregations': aggrs,
-    }
-
-    query_str = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query_str }
-    rsp = flask.g.search_idx.search_raw(**args)
-
-    aggregations = rsp.get('aggregations', {})
-    results = aggregations.get('placetypes', {})
-    
-    facets = {
-        'placetypes': results.get('buckets', [])
-    }
+    facets = facetify(query)
 
     pagination_url = build_pagination_url()
     facet_url = pagination_url

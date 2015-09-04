@@ -79,6 +79,37 @@ mapzen.whosonfirst.spelunker = (function(){
 			});
 			
 			layer.addTo(map);
+		},
+
+		'draw_names': function(cls){
+
+			var locs = document.getElementsByClassName(cls);  
+			var count = locs.length;
+			
+			for (var i=0; i < count; i++){
+				var loc = locs[i];
+				var id = loc.getAttribute("data-value");
+				
+				if (! id){
+					continue;
+				}
+				
+				var url = mapzen.whosonfirst.data.id2abspath(id);
+				console.log(url);
+				
+				var cb = function(feature){
+					var props = feature['properties'];
+					var name = props['wof:name'];
+					var id = props['wof:id'];
+					
+					var _id = cls + "_" + id;
+					console.log("set name for " + _id + " to " + name);
+					var el = document.getElementById(_id);
+					el.innerHTML = name;		    
+				};		       
+				
+				mapzen.whosonfirst.net.fetch(url, cb);		    
+			}
 		}
 	};
 
