@@ -106,6 +106,30 @@ def info(id):
 
     return flask.render_template('id.html', **template_args)
 
+@app.route("/geoplanet/id/<int:id>", methods=["GET"])
+@app.route("/geoplanet/id/<int:id>/", methods=["GET"])
+@app.route("/woe/id/<int:id>", methods=["GET"])
+@app.route("/woe/id/<int:id>/", methods=["GET"])
+def info_geoplanet(id):
+    return info_concordance(id, 'gp:id')
+
+def info_concordance(id, src):
+
+    doc = get_by_concordance(id, src)
+
+    if not doc:
+        logging.warning("no record for ID %s" % id)
+        flask.abort(404)
+
+    hiers = inflate_hierarchy(doc)
+
+    template_args = {
+        'doc': doc,
+        'hierarchies': hiers
+    }
+
+    return flask.render_template('id.html', **template_args)
+
 @app.route("/id/<int:id>/descendants", methods=["GET"])
 @app.route("/id/<int:id>/descendants/", methods=["GET"])
 def descendants(id):
@@ -590,6 +614,30 @@ def get_by_id(id):
     query = {
         'ids': {
             'values': [id]
+        }
+    }
+    
+    body = {
+        'query': query
+    }
+
+    rsp = flask.g.search_idx.search(body)
+    docs = rsp['rows']
+
+    try:
+        return docs[0]
+    except Exception, e:
+        print "failed to retrieve %s" % id
+        return None
+
+# this doesn't work yet because... ? 
+# (21050904/thisisaaronland)
+
+def get_by_concordance(id, src):
+
+    query = {
+        'term': {
+            src: id
         }
     }
     
