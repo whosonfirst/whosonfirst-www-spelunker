@@ -432,6 +432,12 @@ def facetify(query):
                 'field': 'locality_id',
                 'size': 10
             }
+        },
+        'region_id': {
+            'terms': {
+                'field': 'region_id',
+                'size': 0
+            }
         }
     }
     
@@ -463,13 +469,13 @@ def enfilterify(query):
     filters = []
 
     placetype = get_str('placetype')
-
     iso = get_str('iso')
-    tag = get_str('tag')
 
+    tag = get_str('tag')
     category = get_str('category')
 
     locality = get_int('locality_id')
+    region = get_int('region_id')
 
     if placetype:
 
@@ -557,8 +563,6 @@ def enfilterify(query):
 
     if locality:
 
-        print locality
-
         if len(locality) == 1:
 
             locality = get_single(locality)
@@ -573,6 +577,24 @@ def enfilterify(query):
 
             filters.append({ 'terms': {
                 'locality_id' : esc_locs
+            }})
+
+    if region:
+
+        if len(region) == 1:
+
+            region = get_single(region)
+            esc_loc = region
+
+            filters.append({ 'term': {
+                'region_id' : esc_loc
+            }})
+        else:
+
+            esc_locs = region
+
+            filters.append({ 'terms': {
+                'region_id' : esc_locs
             }})
 
     # oh elasticsearch... Y U MOON LANGUAGE?
