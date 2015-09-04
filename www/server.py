@@ -142,7 +142,7 @@ def descendants(id):
 
         body['filter'] = filter
 
-    args = {}
+    args = {'per_page': 40}
 
     page = get_int('page')
 
@@ -220,7 +220,7 @@ def megacities():
         'sort': sort
     }
 
-    args = {}
+    args = {'per_page': 40}
 
     page = get_int('page')
 
@@ -300,7 +300,7 @@ def placetype(placetype):
         'query': query,
     }
 
-    args = {}
+    args = {'per_page': 40}
 
     page = get_int('page')
 
@@ -318,6 +318,7 @@ def placetype(placetype):
     facet_url = pagination_url
 
     template_args = {
+        'query': query,
         'placetype': placetype,
         'docs': docs,
         'pagination': pagination,
@@ -362,7 +363,7 @@ def searchify():
         'sort': sort,
     }
 
-    args = {}
+    args = {'per_page': 40}
 
     page = get_int('page')
 
@@ -393,31 +394,31 @@ def searchify():
 def facetify(query):
 
     aggrs = {
-        'placetypes': {
+        'placetype': {
             'terms': {
                 'field': 'wof:placetype',
                 'size': 0
             }
         },
-        'countries': {
+        'iso': {
             'terms': {
                 'field': 'iso:country',
                 'size': 0
             }
         },
-        'tags': {
+        'tag': {
             'terms': {
                 'field': 'sg:tags',
                 'size': 0
             }
         },
-        'categories': {
+        'category': {
             'terms': {
                 'field': 'category',	# as in sg:classfiers.category
                 'size': 0
             }
         },
-        'localities': {
+        'locality_id': {
             'terms': {
                 'field': 'locality_id',
                 'size': 10
@@ -455,6 +456,7 @@ def enfilterify(query):
     placetype = get_str('placetype')
     iso = get_str('iso')
     tag = get_str('tag')
+    category = get_str('category')
 
     if placetype:
 
@@ -484,6 +486,14 @@ def enfilterify(query):
 
         filters.append({ 'term': {
             'sg:tags' : esc_tag
+        }})
+
+    if category:
+
+        esc_cat = flask.g.search_idx.escape(category)
+
+        filters.append({ 'term': {
+            'category' : esc_cat
         }})
 
     # oh elasticsearch... Y U MOON LANGUAGE?

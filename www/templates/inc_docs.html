@@ -1,3 +1,11 @@
+{% if query %}
+<div class="row">
+<div style="max-height:400px;overflow:scroll;">
+<pre>{{ query|pprint|e }}</pre>
+</div>
+</div>
+{% endif %}
+
 <div class="row">
 <div id="map"></div>
 </div>
@@ -9,8 +17,8 @@
 <ol class="list">
 {% for doc in docs %}
 <li class="loc" data-latitude="{{ doc['properties']['geom:latitude'] | e}}" data-longitude="{{ doc['properties']['geom:longitude'] | e}}">
-  <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
   <code>{{ doc['properties']['wof:id'] |e }}</code>
+  <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
   <small>
     &#8212;
     {% if doc['properties']['iso:country'] |e %}
@@ -33,48 +41,18 @@
 <div class="col-md-5">
 
 {% if facets %}
-<h4>by placetype</h4>
+{% for k in facets.keys() %}
+<h4>filter by <span class="hey-look">{{ k|e }}</span></h4>
+
+<div style="max-height:200px;overflow:scroll;border-bottom:solid thin;margin-bottom:2em;">
 <ul class="list-inline">
-{% for f in facets['placetypes'] %}
-<li><a href="{{ facet_url}}&placetype={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
+{% for f in facets[ k ] %}
+<li><a href="{{ facet_url}}&{{k|e}}={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count |number_format|e }}</small></li>
 {% endfor %}
 </ul>
+</div>
 
-<h4>by ISO</h4>
-<ul class="list-inline">
-{% for f in facets['countries'] %}
-<li><a href="{{ facet_url}}&iso={{ f.key | e}}">{{ f.key.upper() | e }}</a> <small>{{ f.doc_count | e }}</small></li>
 {% endfor %}
-</ul>
-
-<h4>by tag</h4>
-
-<ul class="list-inline">
-{% for f in facets['tags'] %}
-<li><a href="{{ facet_url}}&tag={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>
-{% endfor %}
-</ul>
-
-<h4>by category</h4>
-
-<ul class="list-inline">
-{% for f in facets['categories'] %}
-<li>{{ f.key | e }} <small>{{ f.doc_count | e }}</small></li>
-{% if 0 %}<li><a href="{{ facet_url}}&tag={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>{% endif %}
-{% endfor %}
-</ul>
-
-<h4>by locality <small>with 10+ results</small></h4>
-
-<ul class="list-inline">
-{% for f in facets['localities'] %}
-<li>{{ f.key | e }} <small>{{ f.doc_count | e }}</small></li>
-{% if 0 %}<li><a href="{{ facet_url}}&tag={{ f.key | e}}">{{ f.key | e }}</a> <small>{{ f.doc_count | e }}</small></li>{% endif %}
-{% endfor %}
-</ul>
-
-{% if 0 %}<pre>{{ facets |e }}</pre>{% endif %}
-
 {% endif %}
 
 </div>
