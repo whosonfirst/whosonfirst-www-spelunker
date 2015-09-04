@@ -37,7 +37,7 @@
 </head>
 <body>
   <div id="nav" class="container">
-    <div id="nav-search-x">
+    <div id="nav-search-x" class="pull-right">
       <form method="GET" action="https://{{ request.host }}/search/" class="form-inline" role="form">
 
 	<div class="form-group">
@@ -52,6 +52,12 @@
 
     <div class="container" id="content">
       {% block content %}{% endblock %}
+    </div>
+
+    <div class="container">
+      <div class="footer">
+	<p class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <a href="/about/">read about the details</a> over on the handy <a href="/about/">about page</p>
+      </div>
     </div>
 </body>
 </html>

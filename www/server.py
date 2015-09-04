@@ -81,6 +81,12 @@ def index():
 
     return flask.render_template('index.html')
 
+@app.route("/about", methods=["GET"])
+@app.route("/about/", methods=["GET"])
+def about():
+
+    return flask.render_template('about.html')
+
 @app.route("/id/<int:id>", methods=["GET"])
 @app.route("/id/<int:id>/", methods=["GET"])
 def info(id):

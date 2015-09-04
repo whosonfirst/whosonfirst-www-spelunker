@@ -6,6 +6,14 @@ body {
     line-height: 1.4em;
 }
 
+.footer {
+    margin-top:5em;
+    padding-top:2em;
+    margin-bottom:2em;
+    border-top: .5px dotted #ededed;
+    font-size:small;
+}
+
 .debug {
     /* border: 1px solid red; */
 }
