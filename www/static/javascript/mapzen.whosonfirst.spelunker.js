@@ -114,22 +114,52 @@ mapzen.whosonfirst.spelunker = (function(){
 
 		'render_properties': function(props){
 
-			var render = function(d){
+			var render = function(d, ctx){
 
 				if (Array.isArray(d)){
-					return render_list(d);
+					return render_list(d, ctx);
 				}
 
 				else if (typeof(d) == "object"){
-					return render_dict(d);
+					return render_dict(d, ctx);
 				}
 
 				else {
-					return render_text(d);
+
+					var possible_wof = [
+						'belongsto',
+						'parent_id',
+						// TO DO : please to write js-whosonfirst-placetypes...
+						'continent_id', 'country_id', 'region_id', 'locality_id', 'neighbourhood_id'
+					];
+
+					if ((ctx) && (d)){
+
+						if (in_array(ctx, possible_wof)){
+							var link = "/id/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+							
+							// TO DO: attach callbacks to set name here
+						}
+
+						else if (ctx == 'placetype'){
+
+							var link = "/placetypes/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+						}
+
+						else {
+							return render_text(d, ctx);
+						}
+					  }
+
+					  else {
+						return render_text(d, ctx);
+					}
 				}
 			};
 
-			var render_dict = function(d){
+			var render_dict = function(d, ctx){
 
 				var table = document.createElement("table");
 
@@ -141,7 +171,8 @@ mapzen.whosonfirst.spelunker = (function(){
 					header.appendChild(label);
 
 					var content = document.createElement("td");
-					var body = render(d[k]);
+					var body = render(d[k], k);
+
 					content.appendChild(body);
 
 					row.appendChild(header);
@@ -153,16 +184,16 @@ mapzen.whosonfirst.spelunker = (function(){
 				return table;
 			};
 
-			var render_list = function(d){
+			var render_list = function(d, ctx){
 
 				var count = d.length;
 
 				if (count == 0){
-					return render_text("–");
+					return render_text("–", ctx);
 				}
 
 				if (count <= 1){
-					return render(d[0]);
+					return render(d[0], ctx);
 				}
 
 				var list = document.createElement("ul");
@@ -170,7 +201,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				for (var i=0; i < count; i++){
 					
 					var item = document.createElement("li");
-					var body = render(d[i]);
+					var body = render(d[i], ctx);
 
 					item.appendChild(body);
 					list.appendChild(item);
@@ -183,7 +214,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				// please write me
 			};
 
-			var render_text = function(d){
+			var render_text = function(d, ctx){
 
 				var text = htmlspecialchars(d);
 
@@ -194,7 +225,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				return span;
 			};
 
-			var render_link = function(link, text){
+			var render_link = function(link, text, ctx){
 
 				var anchor = document.createElement("a");
 				anchor.setAttribute("href", link);
