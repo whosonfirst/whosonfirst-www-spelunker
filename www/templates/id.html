@@ -25,7 +25,9 @@
 <div class="col-md-7 debug">
 
 <h3>Properties</h3>
-<pre id="props">{{ doc['properties'] |pprint|e }}</pre>
+<div id="props-wrapper">
+<pre id="props-raw">{{ doc['properties'] |pprint|e }}</pre>
+</div>
 
 <h3>Bounding box</h3>
 <pre>{{ doc['bbox'] |pprint|e }}</pre>
@@ -72,6 +74,18 @@ window.onload = function(e){
 	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', {{ doc.bbox.1|e }},{{ doc.bbox.0|e }}, {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }});
 
 	mapzen.whosonfirst.enmapify.render_id(map, {{ doc.properties.get("wof:id") |e }});
+
+	var url = mapzen.whosonfirst.data.id2abspath({{ doc.properties.get("wof:id") |e }});
+
+	var cb = function(feature){
+		var pretty = mapzen.whosonfirst.spelunker.render_properties(feature['properties']);
+		var wrapper = document.getElementById("props-wrapper");
+		var raw = wrapper.children[0]
+		wrapper.replaceChild(pretty, raw);
+	}
+
+	mapzen.whosonfirst.net.fetch(url, cb);
+	
         return;
 };
 

@@ -110,6 +110,179 @@ mapzen.whosonfirst.spelunker = (function(){
 				
 				mapzen.whosonfirst.net.fetch(url, cb);		    
 			}
+		},
+
+		'render_properties': function(props){
+
+			var render = function(d){
+
+				if (Array.isArray(d)){
+					return render_list(d);
+				}
+
+				else if (typeof(d) == "object"){
+					return render_dict(d);
+				}
+
+				else {
+					return render_text(d);
+				}
+			};
+
+			var render_dict = function(d){
+
+				var table = document.createElement("table");
+				table.setAttribute("style", "width:100%; line-height:1.7em;");
+				table.setAttribute("valign", "top");
+
+				for (k in d){
+					var row = document.createElement("tr");
+					row.setAttribute("style", "min-width:35%; max-width:35%; vertical-align:top;");
+					
+					var header = document.createElement("th");
+					var label = document.createTextNode(k);
+					header.appendChild(label);
+
+					var content = document.createElement("td");
+					var body = render(d[k]);
+					content.appendChild(body);
+
+					row.appendChild(header);
+					row.appendChild(content);
+
+					table.appendChild(row);
+				}
+
+				return table;
+			};
+
+			var render_list = function(d){
+
+				var count = d.length;
+
+				if (count == 0){
+					return render_text("–");
+				}
+
+				if (count <= 1){
+					return render(d[0]);
+				}
+
+				var list = document.createElement("ul");
+				list.setAttribute("style", "list-style-type:none;padding:0px;margin:0px;");
+				
+				for (var i=0; i < count; i++){
+					
+					var item = document.createElement("li");
+					item.setAttribute("style", "list-style-type:none;padding:0px;margin:0px;");
+					var body = render(d[i]);
+
+					item.appendChild(body);
+					list.appendChild(item);
+				}
+
+				return list;
+			};
+
+			var render_text = function(d){
+				var span = document.createElement("span");
+				span.setAttribute("style", "font-family:monospace");
+				var el = document.createTextNode(d);
+				span.appendChild(el);
+				return span;
+			};
+
+			var render_link = function(link, text){
+
+				var anchor = document.createElement("a");
+				anchor.setAttribute("href", link);
+
+				var body = render_text(text);
+				anchor.appendChild(body);
+				return anchor;
+			}
+
+			var bucket_props = function(props){
+
+				buckets = {};
+
+				for (k in props){
+					parts = k.split(":");
+					ns = parts[0];
+					pred = parts[1];
+					console.log(ns + " has " + pred);
+					
+					if (! buckets[ns]){
+						buckets[ns] = {};					
+					}
+					
+					buckets[ns][pred] = props[k];
+				}
+				
+				return buckets;
+			};
+
+			var sort_bucket = function(bucket){
+
+				var sorted = {};
+
+				var keys = Object.keys(bucket);
+				keys = keys.sort();
+
+				var count_keys = keys.length;
+
+				for (var j=0; j < count_keys; j++){
+					var k = keys[j];
+					sorted[k] = bucket[k];
+				}
+
+				return sorted;
+			};
+
+			var render_bucket = function(ns, bucket){
+
+				var wrapper = document.createElement("div");
+
+				var header = document.createElement("h3");
+				var content = document.createTextNode(ns);
+				header.appendChild(content);
+			
+				var sorted = sort_bucket(bucket);
+				var body = render(sorted);
+				
+				wrapper.appendChild(header);
+				wrapper.appendChild(body);
+
+				return wrapper;
+			};
+
+			buckets = bucket_props(props);
+
+			var pretty = document.createElement("div");
+			pretty.setAttribute("id", "props-pretty");
+			
+			wof_bucket = render_bucket('wof', buckets['wof'])
+			pretty.appendChild(wof_bucket);
+			
+			name_bucket = render_bucket('name', buckets['name'])
+			pretty.appendChild(name_bucket);
+
+			delete buckets['wof']
+			delete buckets['name']
+
+			var namespaces = Object.keys(buckets);
+			namespaces = namespaces.sort();
+
+			var count_ns = namespaces.length;
+
+			for (var i=0; i < count_ns; i++){
+
+				var ns = namespaces[i]
+				var dom = render_bucket(ns, buckets[ns]);
+				pretty.appendChild(dom);
+			}
+
+			return pretty;
 		}
 	};
 
