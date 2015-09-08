@@ -148,6 +148,21 @@ mapzen.whosonfirst.spelunker = (function(){
 							return render_link(link, d, ctx);
 						}
 
+						else if (ctx == 'gn:id'){
+							var link = "http://geonames.org/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);							
+						}
+
+						else if (ctx == 'gp:id'){
+							var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);							
+						}
+
+						else if (ctx == 'tgn:id'){
+							var link = "http://http://vocab.getty.edu/tgn/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);							
+						}
+
 						else {
 							return render_text(d, ctx);
 						}
@@ -229,7 +244,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				var anchor = document.createElement("a");
 				anchor.setAttribute("href", link);
-
+				anchor.setAttribute("target", "_wof");
 				var body = render_text(text);
 				anchor.appendChild(body);
 				return anchor;
