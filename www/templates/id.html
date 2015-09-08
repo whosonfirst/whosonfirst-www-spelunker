@@ -82,10 +82,12 @@ window.onload = function(e){
 		var wrapper = document.getElementById("props-wrapper");
 		var raw = wrapper.children[0]
 		wrapper.replaceChild(pretty, raw);
+
+		mapzen.whosonfirst.spelunker.draw_names("props-uoc-name");
 	}
 
 	mapzen.whosonfirst.net.fetch(url, cb);
-	
+
         return;
 };
 
