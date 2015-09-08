@@ -198,8 +198,10 @@ mapzen.whosonfirst.spelunker = (function(){
 				for (k in d){
 					var row = document.createElement("tr");
 					
+					// adjust k based on ctx here...
+
 					var header = document.createElement("th");
-					var label = document.createTextNode(k);
+					var label = document.createTextNode(htmlspecialchars(k));
 					header.appendChild(label);
 
 					var _ctx = (ctx) ? ctx + "-" + k : k;
