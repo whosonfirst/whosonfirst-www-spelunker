@@ -184,9 +184,12 @@ mapzen.whosonfirst.spelunker = (function(){
 			};
 
 			var render_text = function(d){
+
+				var text = htmlspecialchars(d);
+
 				var span = document.createElement("span");
 				span.setAttribute("class", "props-uoc");
-				var el = document.createTextNode(d);
+				var el = document.createTextNode(text);
 				span.appendChild(el);
 				return span;
 			};

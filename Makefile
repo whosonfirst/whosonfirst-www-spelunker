@@ -1,7 +1,7 @@
 bundle-js: bundle-dependencies bundle-app
 
 bundle-dependencies:
-	cat www/static/javascript/leaflet.min.js www/static/javascript/leaflet.label.min.js www/static/javascript/tangram.min.js > www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
+	cat www/static/javascript/phpjs.htmlspecialchars.js www/static/javascript/leaflet.min.js www/static/javascript/leaflet.label.min.js www/static/javascript/tangram.min.js > www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 	echo "" >> www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 
