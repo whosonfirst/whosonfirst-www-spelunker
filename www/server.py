@@ -113,13 +113,57 @@ def info(id):
 def info_geoplanet(id):
     return info_concordance(id, 'gp:id')
 
+@app.route("/geonames/id/<int:id>", methods=["GET"])
+@app.route("/geonames/id/<int:id>/", methods=["GET"])
+def info_geonames(id):
+    return info_concordance(id, 'gn:id')
+
+@app.route("/quattroshapes/id/<int:id>", methods=["GET"])
+@app.route("/quattroshapes/id/<int:id>/", methods=["GET"])
+def info_quattroshapes(id):
+    return info_concordance(id, 'qs:id')
+
+@app.route("/factual/id/<id>", methods=["GET"])
+@app.route("/factual/id/<id>/", methods=["GET"])
+def info_factual(id):
+    return info_concordance(id, 'fct:id')
+
+@app.route("/faa/id/<id>", methods=["GET"])
+@app.route("/faa/id/<id>/", methods=["GET"])
+def info_faa(id):
+    return info_concordance(id, 'faa:code')
+
+@app.route("/iata/id/<id>", methods=["GET"])
+@app.route("/iata/id/<id>/", methods=["GET"])
+def info_iata(id):
+    return info_concordance(id, 'iata:code')
+
+@app.route("/icao/id/<id>", methods=["GET"])
+@app.route("/icao/id/<id>/", methods=["GET"])
+def info_icao(id):
+    return info_concordance(id, 'icao:code')
+
+@app.route("/ourairports/id/<int:id>", methods=["GET"])
+@app.route("/ourairports/id/<int:id>/", methods=["GET"])
+def info_ourairports(id):
+    return info_concordance(id, 'oa:id')
+
 def info_concordance(id, src):
 
+    if type(id) == types.IntType:
+        id = sanitize_int(id)
+    else:
+        id = sanitize_str(id)
+        id = flask.g.search_idx.escape(id)
+        
     doc = get_by_concordance(id, src)
 
     if not doc:
         logging.warning("no record for ID %s" % id)
         flask.abort(404)
+
+    # Maybe redirect instead?
+    # (21050908/thisisaaronland)
 
     hiers = inflate_hierarchy(doc)
 
@@ -630,15 +674,12 @@ def get_by_id(id):
         print "failed to retrieve %s" % id
         return None
 
-# this doesn't work yet because... ? 
-# (21050904/thisisaaronland)
-
 def get_by_concordance(id, src):
 
+    concordance = "wof:concordances.%s" % src
+
     query = {
-        'term': {
-            src: id
-        }
+        'match': { concordance : id }
     }
     
     body = {
