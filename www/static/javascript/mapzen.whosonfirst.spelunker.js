@@ -96,16 +96,21 @@ mapzen.whosonfirst.spelunker = (function(){
 				}
 				
 				var url = mapzen.whosonfirst.data.id2abspath(id);
-				console.log(url);
 				
 				var cb = function(feature){
 					var props = feature['properties'];
 					var name = props['wof:name'];
 					var id = props['wof:id'];
 					
-					var _id = cls + "_" + id;
-					var el = document.getElementById(_id);
-					el.innerHTML = htmlspecialchars(name);
+					var cls_id = cls + "_" + id;
+
+					var els = document.getElementsByClassName(cls_id);  
+					var count_els = els.length;
+
+					for (var j=0; j < count_els; j++){
+						var el = els[j];
+						el.innerHTML = htmlspecialchars(name) + " <code><small>" + htmlspecialchars(id) + "</small></code>";
+					}
 				};		       
 				
 				mapzen.whosonfirst.net.fetch(url, cb);		    
@@ -142,16 +147,20 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					if ((ctx) && (d)){
 
-						if (in_array(ctx, possible_wof)){							
+						if (in_array(ctx, possible_wof)){
+				
 							var link = "/id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
 
 							var text = el.children[0];
 							text.setAttribute("data-value", htmlspecialchars(d));
-							text.setAttribute("id", "props-uoc-name_" + htmlspecialchars(d));
-							text.setAttribute("class", "props-uoc props-uoc-name");
+							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + htmlspecialchars(d));
 
 							return el;
+						}
+
+						else if (ctx == 'wof-id'){
+							return render_code(d, ctx);
 						}
 
 						else if (ctx == 'wof-placetype'){
@@ -171,15 +180,24 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						else if (ctx == 'wof-concordances-tgn:id'){
 							var link = "http://http://vocab.getty.edu/tgn/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);							
+							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'wof-lastmodified'){
-
 							var dt = new Date(parseInt(d) * 1000);
 							return render_text(dt.toISOString(), ctx);
 						}
 						
+						else if ((ctx == 'wof-megacity') && (d == 1)){
+							var link = "/megacities/";
+							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
+						}
+
+						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
+							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
 						else {
 							return render_text(d, ctx);
 						}
@@ -271,6 +289,14 @@ mapzen.whosonfirst.spelunker = (function(){
 				var body = render_text(text, ctx);
 				anchor.appendChild(body);
 				return anchor;
+			}
+
+			var render_code = function(text, ctx){
+
+				var code = document.createElement("code");
+				var body = render_text(text, ctx);
+				code.appendChild(body);
+				return code;
 			}
 
 			var bucket_props = function(props){
