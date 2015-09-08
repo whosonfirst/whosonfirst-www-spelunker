@@ -132,12 +132,9 @@ mapzen.whosonfirst.spelunker = (function(){
 			var render_dict = function(d){
 
 				var table = document.createElement("table");
-				table.setAttribute("style", "width:100%; line-height:1.7em;");
-				table.setAttribute("valign", "top");
 
 				for (k in d){
 					var row = document.createElement("tr");
-					row.setAttribute("style", "min-width:35%; max-width:35%; vertical-align:top;");
 					
 					var header = document.createElement("th");
 					var label = document.createTextNode(k);
@@ -169,12 +166,10 @@ mapzen.whosonfirst.spelunker = (function(){
 				}
 
 				var list = document.createElement("ul");
-				list.setAttribute("style", "list-style-type:none;padding:0px;margin:0px;");
 				
 				for (var i=0; i < count; i++){
 					
 					var item = document.createElement("li");
-					item.setAttribute("style", "list-style-type:none;padding:0px;margin:0px;");
 					var body = render(d[i]);
 
 					item.appendChild(body);
@@ -184,9 +179,13 @@ mapzen.whosonfirst.spelunker = (function(){
 				return list;
 			};
 
+			var render_editable = function(d){
+				// please write me
+			};
+
 			var render_text = function(d){
 				var span = document.createElement("span");
-				span.setAttribute("style", "font-family:monospace");
+				span.setAttribute("class", "props-uoc");
 				var el = document.createTextNode(d);
 				span.appendChild(el);
 				return span;
@@ -210,8 +209,12 @@ mapzen.whosonfirst.spelunker = (function(){
 					parts = k.split(":");
 					ns = parts[0];
 					pred = parts[1];
-					console.log(ns + " has " + pred);
-					
+
+					if (parts.length != 2){
+						ns = "misc";
+						pred = k;
+					}
+
 					if (! buckets[ns]){
 						buckets[ns] = {};					
 					}
@@ -256,11 +259,13 @@ mapzen.whosonfirst.spelunker = (function(){
 				return wrapper;
 			};
 
-			buckets = bucket_props(props);
-
 			var pretty = document.createElement("div");
 			pretty.setAttribute("id", "props-pretty");
 			
+			buckets = bucket_props(props);
+
+			// these two go first
+
 			wof_bucket = render_bucket('wof', buckets['wof'])
 			pretty.appendChild(wof_bucket);
 			
@@ -269,6 +274,8 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			delete buckets['wof']
 			delete buckets['name']
+
+			// now render the rest of them
 
 			var namespaces = Object.keys(buckets);
 			namespaces = namespaces.sort();

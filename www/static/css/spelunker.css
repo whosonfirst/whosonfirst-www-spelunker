@@ -93,3 +93,46 @@ body {
     color:#ccc;
     font-size: .8em;
 }
+
+#props-pretty {
+    
+}
+
+#props-pretty ul {
+    list-style-type: none;
+    margin:0px;
+    padding:0px;
+}
+
+#props-pretty table {
+    width:100%;
+    line-height:1.8em;
+}
+
+#props-pretty tr {
+    vertical-align: top;
+    padding-top:.5em;
+    padding-bottom:.5em;
+}
+
+#props-pretty th {
+    background-color:#ededed;
+    border-right: .5em solid #fff;
+    padding-left: .5em;
+}
+
+#props-pretty td {
+    border-bottom: 1px solid #ededed;
+    text-align:left;
+    min-width:65%;
+    max-width:65%;
+}
+
+#props-pretty td :last-child {
+    border-bottom:none;
+}
+
+
+.props-uoc {
+    font-family:monospace;
+}
