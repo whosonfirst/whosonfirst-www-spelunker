@@ -19,6 +19,10 @@ cases ever.
 
 ## Sources (the raw data)
 
+You will need to have a copy of [whosonfirst-data
+repository](https://github.com/whosonfirst/whosonfirst-data/) available locally
+on your machine.
+
 ## Sources (for the spelunker):
 
 The spelunker assumes two data sources that it reads from:
