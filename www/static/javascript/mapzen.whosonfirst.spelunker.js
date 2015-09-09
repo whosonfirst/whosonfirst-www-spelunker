@@ -137,7 +137,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					var possible_wof = [
 						'wof-belongsto',
-						'wof-parent_id',
+						'wof-parent_id', 'wof-children',
 						'wof-breaches',
 						'wof-supersedes',
 						'wof-superseded_by',
@@ -174,6 +174,13 @@ mapzen.whosonfirst.spelunker = (function(){
 							var link = "http://geonames.org/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);							
 						}
+
+						/*
+						else if (ctx == 'wof-concordances-mzb:id'){
+							var link = "https://s3.amazonaws.com/osm-polygons.mapzen.com/" + encodeURIComponent(d) + ".tgz";
+							return render_link(link, d, ctx);							
+						}
+						*/
 
 						else if ((ctx == 'wof-concordances-gp:id') || (ctx == 'wof-concordances-woe:id')){
 							var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";

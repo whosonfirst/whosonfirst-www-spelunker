@@ -1,7 +1,7 @@
 #wof-log-container {
     margin-top:3em;
     padding:1em;
-    max-height:300px;
+    max-height:200px;
     overflow:scroll;
     font-size:.9em;
     display:none;
