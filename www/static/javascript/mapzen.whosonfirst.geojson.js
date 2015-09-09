@@ -24,7 +24,7 @@ mapzen.whosonfirst.geojson = (function(){
 				for (var i=0; i < count; i++){
 					
 					var bbox = self.derive_bbox(features[i]);
-					console.log(bbox);
+
 					var _swlat, _swlon, _nelat, _nelon = bbox;
 					
 					if ((! swlat) || (_swlat < swlat)){

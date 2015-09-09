@@ -4,6 +4,7 @@
     max-height:300px;
     overflow:scroll;
     font-size:.8em;
+    display:none;
 }
 
 #wof-log-container:before {

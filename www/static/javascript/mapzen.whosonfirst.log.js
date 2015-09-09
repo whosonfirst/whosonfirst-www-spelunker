@@ -8,11 +8,23 @@ mapzen.whosonfirst.log = (function(){
 	var self = {
 
 		'show': function(){
-
+			self.toggle(true);
 		},
 
 		'hide': function(){
+			self.toggle(false);
+		},
 
+		'toggle': function(show){
+
+			var c = document.getElementById('wof-log-container');
+			
+			if (! c){
+				return false;
+			}
+
+			var style = (show) ? "display:block" : "display:none";
+			c.setAttribute("style", style);
 		},
 
 		'debug': function(msg){
@@ -36,6 +48,7 @@ mapzen.whosonfirst.log = (function(){
 			var el = self._render(msg, cls);
 			self._attach(el);
 
+			self.show();
 		},
 		
 		'_render': function(msg, cls){
@@ -68,6 +81,7 @@ mapzen.whosonfirst.log = (function(){
 		},
 		
 		'_attach': function(el){
+
 			var n = document.getElementById('wof-log');
 
 			if (! n){

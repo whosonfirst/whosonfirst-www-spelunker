@@ -9,7 +9,7 @@ mapzen.whosonfirst.enmapify = (function(){
 			var _self = self;
 			
 			if (! wofid){
-				console.log("missing WOF ID");
+				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
 				return false;
 			}
 			
@@ -23,7 +23,6 @@ mapzen.whosonfirst.enmapify = (function(){
 		
 		'render_feature': function(map, feature){
 
-			console.log("WAH WAH WAH");
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
 			
 			var props = feature['properties'];

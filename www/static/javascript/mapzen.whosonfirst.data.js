@@ -10,6 +10,7 @@ mapzen.whosonfirst.data = (function(){
 		'endpoint': function(e){
 
 			if (e){
+				mapzen.whosonfirst.log.info("set data endpoint to " + e);
 				_endpoint = e;
 			}
 

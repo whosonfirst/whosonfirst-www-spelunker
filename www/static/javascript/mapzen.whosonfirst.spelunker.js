@@ -357,7 +357,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				for (k in props){
 					parts = k.split(":", 2);
-					// console.log(parts);
+
 					ns = parts[0];
 					pred = parts[1];
 
