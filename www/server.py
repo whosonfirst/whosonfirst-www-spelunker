@@ -372,6 +372,59 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', **template_args)
 
+@app.route("/tags/<tag>", methods=["GET"])
+@app.route("/tags/<tag>/", methods=["GET"])
+def tag(tag):
+
+    tag = sanitize_str(tag)
+    esc_tag = flask.g.search_idx.escape(tag)
+
+    query = {
+        'multi_match': {
+            'query': esc_tag,
+            'type': 'best_fields',
+            'fields': [ 'sg:tags', 'wof:tags' ],
+            'operator': 'OR',
+        }
+    }
+
+    query = enfilterify(query)
+
+    body = {
+        'query': query,
+        # 'sort': sort,
+    }
+
+    args = {'per_page': 40}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'tag': tag,
+        'es_query': query,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('tag.html', **template_args)
+
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
 def searchify():

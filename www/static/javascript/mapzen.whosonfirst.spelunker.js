@@ -121,7 +121,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			var render = function(d, ctx){
 
-				console.log("render context is " + ctx);
+				// console.log("render context is " + ctx);
 
 				if (Array.isArray(d)){
 					return render_list(d, ctx);
