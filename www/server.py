@@ -864,21 +864,25 @@ def inflate_hierarchy(doc):
 
     props = doc.get('properties', {})
 
+    placetype = pt.placetype(props['wof:placetype'])
+    ancestors = placetype.ancestors(roles=['common', 'common_optional', 'optional'])
+
     hierarchies = props.get('wof:hierarchy', [])
     hiers = []
 
     for hier in hierarchies:
 
-        inflated = {}
+        inflated = []
 
-        for rel, id in hier.items():
+        for a in ancestors:
 
-            if id == props['wof:id']:
-                continue
+            rel = "%s_id" % a
+            id = hier.get(rel, None)
 
-            rel = rel.replace("_id", "")
-            inflated[rel] = get_by_id(id)
+            if id:
+                inflated.append((a, get_by_id(id)))
 
+        inflated.reverse()
         hiers.append(inflated)
 
     return hiers

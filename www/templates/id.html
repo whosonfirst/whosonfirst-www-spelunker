@@ -41,10 +41,10 @@
 {% for hierarchy in hierarchies %}
 <ul>
 {% for w in hierarchy %}
-{% if hierarchy[ w ] %}
-<li>the {{ w|e }} of <a href="/id/{{ hierarchy[ w ]['properties']['wof:id'] | e }}/">{{ hierarchy[ w ]['properties']['wof:name'] | e }}</a></li>
+{% if w[1] %}
+<li>the <span class="hey-look">{{ w[0]|e }}</span> of <a href="/id/{{ w[1]['properties']['wof:id'] | e }}/">{{ w[1]['properties']['wof:name'] | e }}</a></li>
 {% else %}
-<li>a <code>{{ w | escape }}</code> that we aren't able to index correctly because... ?</li>
+<li>a <span class="hey-look">{{ w[0] | escape }}</span> that we aren't able to index correctly because... ?</li>
 {% endif %}
 {% endfor %}
 </ul>
