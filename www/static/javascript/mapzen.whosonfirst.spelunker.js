@@ -142,12 +142,12 @@ mapzen.whosonfirst.spelunker = (function(){
 						// TO DO : please to write js-whosonfirst-placetypes...
 						'wof-hierarchy-continent_id', 'wof-hierarchy-country_id', 'wof-hierarchy-region_id',
 						'wof-hierarchy-county_id', 'wof-hierarchy-locality_id', 'wof-hierarchy-neighbourhood_id',
-						'wof-hierarchy-campus_id',
+						'wof-hierarchy-campus_id', 'wof-hierarchy-venue_id'
 					];
 
 					if ((ctx) && (d)){
 
-						if (in_array(ctx, possible_wof)){
+						if ((in_array(ctx, possible_wof)) && (d > 0)){
 				
 							var link = "/id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
@@ -200,6 +200,11 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						else if (ctx == 'sg-city'){
 							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-postcode'){
+							var link = "/postalcodes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 

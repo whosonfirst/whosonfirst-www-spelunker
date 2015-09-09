@@ -476,6 +476,60 @@ def category(category):
 
     return flask.render_template('category.html', **template_args)
 
+@app.route("/postalcode/<code>", methods=["GET"])
+@app.route("/postalcode/<code>/", methods=["GET"])
+@app.route("/postalcodes/<code>", methods=["GET"])
+@app.route("/postalcodes/<code>/", methods=["GET"])
+def code(code):
+
+    code = sanitize_str(code)
+    esc_code = flask.g.search_idx.escape(code)
+
+    query = {
+        'multi_match': {
+            'query': esc_code,
+            'type': 'best_fields',
+            'fields': [ 'sg:postcode' ],
+            'operator': 'OR',
+        }
+    }
+
+    query = enfilterify(query)
+
+    body = {
+        'query': query,
+    }
+
+    args = {'per_page': 40}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'postcode': code,
+        'es_query': query,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('postcode.html', **template_args)
+
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
 def searchify():
