@@ -128,6 +128,13 @@ def info_quattroshapes(id):
 def info_factual(id):
     return info_concordance(id, 'fct:id')
 
+@app.route("/simplegeo/id/<id>", methods=["GET"])
+@app.route("/simplegeo/id/<id>/", methods=["GET"])
+@app.route("/sg/id/<id>", methods=["GET"])
+@app.route("/sg/id/<id>/", methods=["GET"])
+def info_simplegeo(id):
+    return info_concordance(id, 'sg:id')
+
 @app.route("/faa/id/<id>", methods=["GET"])
 @app.route("/faa/id/<id>/", methods=["GET"])
 def info_faa(id):
