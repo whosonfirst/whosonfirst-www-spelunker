@@ -9,9 +9,16 @@ mapzen.whosonfirst.leaflet = (function(){
 			// this is still trying to draw a regular (icon) marker
 			// for some reason... (20150825/thisisaaronland)
 			
+			var oneach = function(feature, layer){
+				layer.on('click', function(e){
+					console.log(feature);
+				});
+			};
+			
 			var layer = L.geoJson(geojson, {
 				'style': style,
-				'pointToLayer': handler
+				'pointToLayer': handler,
+				// 'onEachFeature': oneach,
 			});
 			
 			layer.addTo(map);
