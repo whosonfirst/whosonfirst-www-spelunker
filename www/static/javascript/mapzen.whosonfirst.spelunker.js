@@ -121,7 +121,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			var render = function(d, ctx){
 
-				// console.log("render context is " + ctx);
+				console.log("render context is " + ctx);
 
 				if (Array.isArray(d)){
 					return render_list(d, ctx);
@@ -179,7 +179,7 @@ mapzen.whosonfirst.spelunker = (function(){
 						}
 
 						else if (ctx == 'wof-concordances-tgn:id'){
-							var link = "http://http://vocab.getty.edu/tgn/" + encodeURIComponent(d) + "/";
+							var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
@@ -195,6 +195,21 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
 							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-city'){
+							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-tags'){
+							var link = "/tags/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+						}
+						
+						else if (ctx.match(/^sg-classifiers-/)){
+							var link = "/categories/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
@@ -215,11 +230,43 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				for (k in d){
 					var row = document.createElement("tr");
-					
-					// adjust k based on ctx here...
+				
+					// console.log("render context is " + ctx);
+
+					var label_text = k;
+
+					if (ctx == 'wof-concordances'){
+
+						if (k == 'gn:id'){
+							label_text = 'geonames';
+						}
+
+						else if ((k == 'gp:id') || (k == 'woe:id')){
+							label_text = 'geoplanet';
+						}
+
+						else if (k == 'fct:id'){
+							label_text = 'factual';
+						}
+
+						else if (k == 'tgn:id'){
+							label_text = 'tgn (getty)';
+						}
+
+						else if (k == 'oa:id'){
+							label_text = 'our airports';
+						}
+
+						else if (k == 'sg:id'){
+							label_text = 'simplegeo';
+						}
+
+						else {}
+
+					}
 
 					var header = document.createElement("th");
-					var label = document.createTextNode(htmlspecialchars(k));
+					var label = document.createTextNode(htmlspecialchars(label_text));
 					header.appendChild(label);
 
 					var _ctx = (ctx) ? ctx + "-" + k : k;

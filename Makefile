@@ -1,4 +1,4 @@
-bundle-js: bundle-dependencies bundle-app
+js: bundle-dependencies bundle-app
 
 bundle-dependencies:
 	cat www/static/javascript/phpjs.htmlspecialchars.js www/static/javascript/phpjs.in_array.js www/static/javascript/leaflet.min.js www/static/javascript/leaflet.label.min.js www/static/javascript/tangram.min.js > www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
