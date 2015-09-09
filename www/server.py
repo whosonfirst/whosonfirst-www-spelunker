@@ -208,7 +208,7 @@ def descendants(id):
         'query': query
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -260,7 +260,7 @@ def megacities():
         'sort': sort
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -342,7 +342,7 @@ def placetype(placetype):
         'query': query,
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -394,7 +394,7 @@ def tag(tag):
         'query': query,
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -446,7 +446,7 @@ def category(category):
         'query': query,
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -500,7 +500,7 @@ def code(code):
         'query': query,
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
@@ -565,7 +565,7 @@ def searchify():
         'sort': sort,
     }
 
-    args = {'per_page': 40}
+    args = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)

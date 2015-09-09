@@ -104,6 +104,8 @@ mapzen.whosonfirst.spelunker = (function(){
 					
 					var cls_id = cls + "_" + id;
 
+					mapzen.whosonfirst.log.info("assign name for ID " + id + " to be " + name);
+
 					var els = document.getElementsByClassName(cls_id);  
 					var count_els = els.length;
 
@@ -191,6 +193,11 @@ mapzen.whosonfirst.spelunker = (function(){
 						else if ((ctx == 'wof-megacity') && (d == 1)){
 							var link = "/megacities/";
 							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
+						}
+
+						else if (ctx == 'wof-tags'){
+							var link = "/tags/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
 						}
 
 						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){

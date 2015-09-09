@@ -80,7 +80,9 @@ window.onload = function(e){
 	var url = mapzen.whosonfirst.data.id2abspath({{ doc.properties.get("wof:id") |e }});
 
 	var cb = function(feature){
+
 		var pretty = mapzen.whosonfirst.spelunker.render_properties(feature['properties']);
+
 		var wrapper = document.getElementById("props-wrapper");
 		var raw = wrapper.children[0]
 		wrapper.replaceChild(pretty, raw);

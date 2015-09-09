@@ -3,7 +3,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.log = (function(){
 
-	var log = {};
+	var _log = [];
 
 	var self = {
 
@@ -44,14 +44,17 @@ mapzen.whosonfirst.log = (function(){
 		},
 
 		'log': function(msg, cls){
-			console.log("wof log " + cls + ": " + msg);
-			var el = self._render(msg, cls);
-			self._attach(el);
 
+			var dt = new Date();
+
+			_log.push([cls, msg, dt]);
+
+			var el = self._render(msg, cls, dt);
+			self._attach(el);
 			self.show();
 		},
 		
-		'_render': function(msg, cls){
+		'_render': function(msg, cls, dt){
 
 			var enc_msg = htmlspecialchars(msg);
 			var enc_cls = htmlspecialchars(cls);
@@ -65,7 +68,6 @@ mapzen.whosonfirst.log = (function(){
 			span.setAttribute("class", "wof-log-body");
 			span.appendChild(text);
 
-			var dt = new Date();
 			var ts = dt.toISOString();
 			ts = htmlspecialchars(ts);
 			ts = document.createTextNode(ts + " " + cls);
