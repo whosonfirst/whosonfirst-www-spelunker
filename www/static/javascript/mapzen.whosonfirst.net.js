@@ -22,11 +22,11 @@ mapzen.whosonfirst.net = (function(){
 
 		'fetch': function(url, on_success){
 
-			console.log("fetch " + url);
+			mapzen.whosonfirst.log.debug("fetch " + url);
 
 			if (whosonfirst_cache[url]){
 				
-				console.log("return " + url + " from cache");
+				mapzen.whosonfirst.log.debug("return " + url + " from cache");
 				
 				if (on_success){
 					on_success(whosonfirst_cache[url]);
@@ -44,8 +44,8 @@ mapzen.whosonfirst.net = (function(){
 				}
 				
 				catch (e){
-					console.log("failed to parse " + url + ", because " + e);
-					// console.log(this.responseText);
+					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
+					// mapzen.whosonfirst.log.debug(this.responseText);
 					return false;
 				}
 				
@@ -62,8 +62,8 @@ mapzen.whosonfirst.net = (function(){
 			}
 			
 			catch(e){
-				console.log("failed to fetch " + url + ", because ");
-				console.log(e);   
+				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
+				mapzen.whosonfirst.log.debug(e);   
 			}
 		},
 

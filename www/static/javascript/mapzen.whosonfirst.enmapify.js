@@ -46,7 +46,6 @@ mapzen.whosonfirst.enmapify = (function(){
 			
 			var on_child = function(child_feature){
 
-				console.log("CHILD IT UP");
 				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
 				
 				child_feature['properties']['lflt:label_text'] = "";

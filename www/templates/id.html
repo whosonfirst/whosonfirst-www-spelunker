@@ -62,6 +62,8 @@
 
 </ul>
 
+{% include "inc_log.html" %}
+
 </div>
 </div>
 
@@ -88,6 +90,7 @@ window.onload = function(e){
 
 	mapzen.whosonfirst.net.fetch(url, cb);
 
+	mapzen.whosonfirst.log.info("WUB WUB WUB");
         return;
 };
 
