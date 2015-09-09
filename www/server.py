@@ -392,7 +392,6 @@ def tag(tag):
 
     body = {
         'query': query,
-        # 'sort': sort,
     }
 
     args = {'per_page': 40}
@@ -424,6 +423,58 @@ def tag(tag):
     }
 
     return flask.render_template('tag.html', **template_args)
+
+@app.route("/categories/<category>", methods=["GET"])
+@app.route("/categories/<category>/", methods=["GET"])
+def category(category):
+
+    category = sanitize_str(category)
+    esc_category = flask.g.search_idx.escape(category)
+
+    query = {
+        'multi_match': {
+            'query': esc_category,
+            'type': 'best_fields',
+            'fields': [ 'sg:classifiers.category', 'sg:classifiers.type', 'sg:classifiers.subcategory' ],
+            'operator': 'OR',
+        }
+    }
+
+    query = enfilterify(query)
+
+    body = {
+        'query': query,
+    }
+
+    args = {'per_page': 40}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'category': category,
+        'es_query': query,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('category.html', **template_args)
 
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
