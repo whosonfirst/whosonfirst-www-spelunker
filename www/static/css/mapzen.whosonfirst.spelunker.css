@@ -6,6 +6,10 @@ body {
     line-height: 1.4em;
 }
 
+ol, li {
+    line-height: 1.7em;
+}
+
 .footer {
     margin-top:5em;
     padding-top:2em;
