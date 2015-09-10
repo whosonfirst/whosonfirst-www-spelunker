@@ -133,6 +133,18 @@ db_user=PSQL_USERAME
 db_pswd=PSQL_PASSWORD
 ```
 
+## Making it go
+
+### Flask
+
+```
+python ./server.py
+```
+
+### Gunicorn
+
+### nginx
+
 ## See also
 
 * http://whosonfirst.mapzen.com/
