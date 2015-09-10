@@ -42,6 +42,7 @@ mapzen.whosonfirst.enmapify = (function(){
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 
 				var on_fail = function(){
+					mapzen.whosonfirst.log.error("failed to render " + parent_url);
 					on_child();
 				};
 

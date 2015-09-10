@@ -1,6 +1,107 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+mapzen.whosonfirst.log = (function(){
+
+	var _log = [];
+
+	var self = {
+
+		'show': function(){
+			self.toggle(true);
+		},
+
+		'hide': function(){
+			self.toggle(false);
+		},
+
+		'toggle': function(show){
+
+			var c = document.getElementById('wof-log-container');
+			
+			if (! c){
+				return false;
+			}
+
+			var style = (show) ? "display:block" : "display:none";
+			c.setAttribute("style", style);
+		},
+
+		'debug': function(msg){
+			self.log(msg, 'debug');
+		},
+
+		'info': function(msg){
+			self.log(msg, 'info');
+		},
+
+		'warning': function(msg){
+			self.log(msg, 'warning');
+		},
+
+		'error': function(msg){
+			self.log(msg, 'error');
+		},
+
+		'log': function(msg, cls){
+
+			var dt = new Date();
+
+			_log.push([cls, msg, dt]);
+
+			var el = self._render(msg, cls, dt);
+			self._attach(el);
+			self.show();
+		},
+		
+		'_render': function(msg, cls, dt){
+
+			var enc_msg = htmlspecialchars(msg);
+			var enc_cls = htmlspecialchars(cls);
+
+			var item = document.createElement("li");
+			item.setAttribute("class", "wof-log-item wof-log-" + enc_cls);
+
+			var text = document.createTextNode(enc_msg);
+
+			var span = document.createElement("span");
+			span.setAttribute("class", "wof-log-body");
+			span.appendChild(text);
+
+			var ts = dt.toISOString();
+			ts = htmlspecialchars(ts);
+			ts = document.createTextNode(ts + " " + cls);
+
+			var code = document.createElement("code");
+			code.setAttribute("class", "wof-log-ts");
+			code.appendChild(ts);
+
+			item.appendChild(code);
+			item.appendChild(span);
+
+			return item;
+		},
+		
+		'_attach': function(el){
+
+			var n = document.getElementById('wof-log');
+
+			if (! n){
+				console.log("faile to locate #wof-log container");
+				return false;
+			}
+
+			n.insertBefore(el, n.childNodes[0]);
+			return true;
+		}
+	};
+	
+	return self;
+
+})();
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
+
 mapzen.whosonfirst.data = (function(){
 
 	var _endpoint = "http://whosonfirst.mapzen.com/data/";
@@ -10,6 +111,7 @@ mapzen.whosonfirst.data = (function(){
 		'endpoint': function(e){
 
 			if (e){
+				mapzen.whosonfirst.log.info("set data endpoint to " + e);
 				_endpoint = e;
 			}
 
@@ -83,7 +185,7 @@ mapzen.whosonfirst.geojson = (function(){
 				for (var i=0; i < count; i++){
 					
 					var bbox = self.derive_bbox(features[i]);
-					console.log(bbox);
+
 					var _swlat, _swlon, _nelat, _nelon = bbox;
 					
 					if ((! swlat) || (_swlat < swlat)){
@@ -132,9 +234,16 @@ mapzen.whosonfirst.leaflet = (function(){
 			// this is still trying to draw a regular (icon) marker
 			// for some reason... (20150825/thisisaaronland)
 			
+			var oneach = function(feature, layer){
+				layer.on('click', function(e){
+					console.log(feature);
+				});
+			};
+			
 			var layer = L.geoJson(geojson, {
 				'style': style,
-				'pointToLayer': handler
+				'pointToLayer': handler,
+				// 'onEachFeature': oneach,
 			});
 			
 			layer.addTo(map);
@@ -311,6 +420,17 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 				"fillOpacity": 0.8
 			};
 		},
+
+		'breach_polygon': function(){
+
+			return {
+				"color": "#002EA7",
+				"weight": 2,
+				"opacity": 1,
+				"fillColor": "#002EA7",
+				"fillOpacity": 0.1
+			};
+		},
 		
 		'consensus_polygon': function(){
 
@@ -466,13 +586,13 @@ mapzen.whosonfirst.net = (function(){
 			return enc.join("&");
 		},
 
-		'fetch': function(url, on_success){
+		'fetch': function(url, on_success, on_fail){
 
-			console.log("fetch " + url);
+			mapzen.whosonfirst.log.debug("fetch " + url);
 
 			if (whosonfirst_cache[url]){
 				
-				console.log("return " + url + " from cache");
+				mapzen.whosonfirst.log.debug("return " + url + " from cache");
 				
 				if (on_success){
 					on_success(whosonfirst_cache[url]);
@@ -490,8 +610,12 @@ mapzen.whosonfirst.net = (function(){
 				}
 				
 				catch (e){
-					console.log("failed to parse " + url + ", because " + e);
-					// console.log(this.responseText);
+					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
+
+					if (on_fail){
+						on_fail();
+					}
+
 					return false;
 				}
 				
@@ -508,8 +632,12 @@ mapzen.whosonfirst.net = (function(){
 			}
 			
 			catch(e){
-				console.log("failed to fetch " + url + ", because ");
-				console.log(e);   
+				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
+				mapzen.whosonfirst.log.debug(e);   
+
+				if (on_fail){
+					on_fail();
+				}
 			}
 		},
 
@@ -529,21 +657,21 @@ mapzen.whosonfirst.enmapify = (function(){
 			var _self = self;
 			
 			if (! wofid){
-				console.log("missing WOF ID");
+				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
 				return false;
 			}
 			
 			var on_fetch = function(geojson){
 				self.render_feature(map, geojson);
 			};
-			
+
 			var url = mapzen.whosonfirst.data.id2abspath(wofid);
+
 			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
 		'render_feature': function(map, feature){
 
-			console.log("WAH WAH WAH");
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
 			
 			var props = feature['properties'];
@@ -560,20 +688,19 @@ mapzen.whosonfirst.enmapify = (function(){
 				
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
-				
-				mapzen.whosonfirst.net.fetch(child_url, on_child);			
+
+				var on_fail = function(){
+					mapzen.whosonfirst.log.error("failed to render " + parent_url);
+					on_child();
+				};
+
+				mapzen.whosonfirst.net.fetch(child_url, on_child, on_fail);
 			};
 			
 			var on_child = function(child_feature){
 
-				console.log("CHILD IT UP");
-				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
-				
-				child_feature['properties']['lflt:label_text'] = "";
-				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
-				
-				var geom = child_feature['geometry'];
 				var props = child_feature['properties'];
+				var geom = child_feature['geometry'];
 
 				var lat = props['geom:latitude'];
 				var lon = props['geom:longitude'];
@@ -586,7 +713,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
 					'properties': { 'lflt:label_text': label_text }
 				};
-				
+
 				if (geom['type'] == 'Point'){
 
 					var label_text = 'geom centroid (the DATA) is ';
@@ -601,37 +728,108 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
+				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
+				
+				child_feature['properties']['lflt:label_text'] = "";
+				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
+
 				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-						
-				var style = mapzen.whosonfirst.leaflet.styles.math_centroid();
-				var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
-				mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
-				
-				if ((props['lbl:latitude']) && (props['lbl:longitude'])){
-					
-					var lat = props['lbl:latitude'];
-					var lon = props['lbl:longitude'];
-					
-					var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
-					
-					var label_text = "label centroid (";
-					label_text += label_src;
-					label_text += ") is ";
-					label_text += lat + ", " + lon;
-					
-					var pt = {
-						'type': 'Feature',
-						'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
-						'properties': { 'lflt:label_text': label_text },
-					};
-					
-					var style = mapzen.whosonfirst.leaflet.styles.label_centroid();
+				// we're defining this as a local function to ensure that it gets called
+				// after any breaches are drawn (20150909/thisisaaronland)
+
+				var draw_centroids = function(){
+
+					// I don't know why this is necessary...
+					// (20150909/thisisaaronland)
+
+					if (! pt){
+						var lat = props['geom:latitude'];
+						var lon = props['geom:longitude'];
+						
+						var label_text = 'math centroid (shapely) is ';
+						label_text += lat + ", " + lon;
+						
+						var pt = {
+							'type': 'Feature',
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+							'properties': { 'lflt:label_text': label_text }
+						};
+					}
+
+					var style = mapzen.whosonfirst.leaflet.styles.math_centroid();
 					var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
 					mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+				
+					if ((props['lbl:latitude']) && (props['lbl:longitude'])){
+						
+						var lat = props['lbl:latitude'];
+						var lon = props['lbl:longitude'];
+						
+						var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
+						
+						var label_text = "label centroid (";
+						label_text += label_src;
+						label_text += ") is ";
+						label_text += lat + ", " + lon;
+						
+						var pt = {
+							'type': 'Feature',
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+							'properties': { 'lflt:label_text': label_text },
+						};
+						
+						var style = mapzen.whosonfirst.leaflet.styles.label_centroid();
+						var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
+						
+						mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+					}
+
+				};
+
+				var breaches = props['wof:breaches']
+				var count = breaches.length;
+
+				if (! count){
+					draw_centroids();
 				}
+
+				else {
+
+					for (var i=0; i < count; i++){
+
+						var breach_id = breaches[i];
+						var breach_url = mapzen.whosonfirst.data.id2abspath(breach_id);
+						
+						var breach_style = mapzen.whosonfirst.leaflet.styles.breach_polygon();
+						
+						var on_fetch = function(breach_feature){
+							
+							var child_props = child_feature['properties'];
+							var child_name = child_props['wof:name'];
+							
+							var breach_props = breach_feature['properties'];
+							var breach_name = breach_props['wof:name'];
+							
+							var label_text = breach_name + " breaches " + child_name;
+							
+							props['lflt:label_text'] = label_text;
+							breach_feature['properties'] = props;
+							
+							mapzen.whosonfirst.leaflet.draw_poly(map, breach_feature, breach_style);
+							
+							if (i == count){
+								draw_centroids();
+							}
+							
+						};
+						
+						mapzen.whosonfirst.net.fetch(breach_url, on_fetch);
+					}
+				}
+									
 			}
 			
 			if ((! parent_id) || (parent_id == -1)){
@@ -639,7 +837,7 @@ mapzen.whosonfirst.enmapify = (function(){
 			}
 			
 			else {
-				mapzen.whosonfirst.net.fetch(parent_url, on_parent);
+				mapzen.whosonfirst.net.fetch(parent_url, on_parent, function(){ on_child() });
 			}
 		},
 		
@@ -660,18 +858,10 @@ mapzen.whosonfirst.spelunker = (function(){
 		
 		'toggle_data_endpoint': function(placetype){
 
-			// mapzen.whosonfirst.data.endpoint('https://s3.amazonaws.com/whosonfirst.mapzen.com/data/');
-
 			var host = location.host;
 			var root = "https://" + host + "/";
 
-			if (placetype == 'venue'){
-				mapzen.whosonfirst.data.endpoint(root + 'venues/');
-			}
-
-			else {
-				mapzen.whosonfirst.data.endpoint(root + 'data/');
-			}
+			mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},
 
 		'draw_list': function(classname){
@@ -757,6 +947,8 @@ mapzen.whosonfirst.spelunker = (function(){
 					
 					var cls_id = cls + "_" + id;
 
+					mapzen.whosonfirst.log.info("assign name for ID " + id + " to be " + name + " for " + cls_id);
+
 					var els = document.getElementsByClassName(cls_id);  
 					var count_els = els.length;
 
@@ -788,19 +980,19 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					var possible_wof = [
 						'wof-belongsto',
-						'wof-parent_id',
+						'wof-parent_id', 'wof-children',
 						'wof-breaches',
 						'wof-supersedes',
 						'wof-superseded_by',
 						// TO DO : please to write js-whosonfirst-placetypes...
 						'wof-hierarchy-continent_id', 'wof-hierarchy-country_id', 'wof-hierarchy-region_id',
 						'wof-hierarchy-county_id', 'wof-hierarchy-locality_id', 'wof-hierarchy-neighbourhood_id',
-						'wof-hierarchy-campus_id',
+						'wof-hierarchy-campus_id', 'wof-hierarchy-venue_id'
 					];
 
 					if ((ctx) && (d)){
 
-						if (in_array(ctx, possible_wof)){
+						if ((in_array(ctx, possible_wof)) && (d > 0)){
 				
 							var link = "/id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
@@ -826,13 +1018,20 @@ mapzen.whosonfirst.spelunker = (function(){
 							return render_link(link, d, ctx);							
 						}
 
+						/*
+						else if (ctx == 'wof-concordances-mzb:id'){
+							var link = "https://s3.amazonaws.com/osm-polygons.mapzen.com/" + encodeURIComponent(d) + ".tgz";
+							return render_link(link, d, ctx);							
+						}
+						*/
+
 						else if ((ctx == 'wof-concordances-gp:id') || (ctx == 'wof-concordances-woe:id')){
 							var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);							
 						}
 
 						else if (ctx == 'wof-concordances-tgn:id'){
-							var link = "http://http://vocab.getty.edu/tgn/" + encodeURIComponent(d) + "/";
+							var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
@@ -846,8 +1045,33 @@ mapzen.whosonfirst.spelunker = (function(){
 							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
 						}
 
+						else if (ctx == 'wof-tags'){
+							var link = "/tags/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+						}
+
 						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
 							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-city'){
+							var link = "/search/?q=" + encodeURIComponent(d);
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-postcode'){
+							var link = "/postalcodes/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+						}
+
+						else if (ctx == 'sg-tags'){
+							var link = "/tags/" + encodeURIComponent(d) + "/";
+							return render_link(link, d, ctx);
+						}
+						
+						else if (ctx.match(/^sg-classifiers-/)){
+							var link = "/categories/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
@@ -868,11 +1092,43 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				for (k in d){
 					var row = document.createElement("tr");
-					
-					// adjust k based on ctx here...
+				
+					// console.log("render context is " + ctx);
+
+					var label_text = k;
+
+					if (ctx == 'wof-concordances'){
+
+						if (k == 'gn:id'){
+							label_text = 'geonames';
+						}
+
+						else if ((k == 'gp:id') || (k == 'woe:id')){
+							label_text = 'geoplanet';
+						}
+
+						else if (k == 'fct:id'){
+							label_text = 'factual';
+						}
+
+						else if (k == 'tgn:id'){
+							label_text = 'tgn (getty)';
+						}
+
+						else if (k == 'oa:id'){
+							label_text = 'our airports';
+						}
+
+						else if (k == 'sg:id'){
+							label_text = 'simplegeo';
+						}
+
+						else {}
+
+					}
 
 					var header = document.createElement("th");
-					var label = document.createTextNode(htmlspecialchars(k));
+					var label = document.createTextNode(htmlspecialchars(label_text));
 					header.appendChild(label);
 
 					var _ctx = (ctx) ? ctx + "-" + k : k;
@@ -958,7 +1214,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				for (k in props){
 					parts = k.split(":", 2);
-					// console.log(parts);
+
 					ns = parts[0];
 					pred = parts[1];
 
@@ -1049,4 +1305,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2015-09-09T00:13:23 UTC
+// last bundled at 2015-09-10T01:27:05 UTC
