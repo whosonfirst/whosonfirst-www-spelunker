@@ -20,8 +20,13 @@ cases ever.
 ## Sources (the raw data)
 
 You will need to have a copy of [whosonfirst-data
-repository](https://github.com/whosonfirst/whosonfirst-data/) available locally
+repository](https://github.com/whosonfirst/whosonfirst-data/) and/or [whosonfirst-venue
+repository](https://github.com/whosonfirst/whosonfirst-venue/) available locally
 on your machine.
+
+Keep in mind that the `whosonfirst-venue` repositiry is **VERY VERY BIG**. It's
+full of interesting stuff but if you're pressed for time or disk space you
+should probably start with the `whosonfirst-data` repository which is more manageable.
 
 ## Sources (for the spelunker):
 
@@ -69,6 +74,15 @@ There are no spelunker-specific instructions for setting up Elasticsearch. You
 can use any current installation of Elasticsearch as-is. Setting up and
 configuring Elasticsearch is outside the scope of this document but the
 [Elasticsearch website has excellent documentation for doing so](https://www.elastic.co/guide/en/elasticsearch/guide/current/_installing_elasticsearch.html).
+
+### Setting up the Spelunker
+
+### Dependencies
+
+* flask
+* mapzen.whosonfirst.spatial
+* mapzen.whosonfirst.search
+* mapzen.whosonfirst.placetypes
 
 ## Indexing
 
@@ -122,6 +136,4 @@ db_pswd=PSQL_PASSWORD
 ## See also
 
 * https://github.com/whosonfirst/whosonfirst-data
-
-* https://github.com/whosonfirst/py-mapzen-whosonfirst-search
-* https://github.com/whosonfirst/py-mapzen-whosonfirst-spatial
+* https://github.com/whosonfirst/whosonfirst-venue
