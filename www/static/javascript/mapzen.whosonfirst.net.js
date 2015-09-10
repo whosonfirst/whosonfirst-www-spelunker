@@ -20,7 +20,7 @@ mapzen.whosonfirst.net = (function(){
 			return enc.join("&");
 		},
 
-		'fetch': function(url, on_success){
+		'fetch': function(url, on_success, on_fail){
 
 			mapzen.whosonfirst.log.debug("fetch " + url);
 
@@ -45,7 +45,11 @@ mapzen.whosonfirst.net = (function(){
 				
 				catch (e){
 					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
-					// mapzen.whosonfirst.log.debug(this.responseText);
+
+					if (on_fail){
+						on_fail();
+					}
+
 					return false;
 				}
 				
@@ -64,6 +68,10 @@ mapzen.whosonfirst.net = (function(){
 			catch(e){
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
 				mapzen.whosonfirst.log.debug(e);   
+
+				if (on_fail){
+					on_fail();
+				}
 			}
 		},
 

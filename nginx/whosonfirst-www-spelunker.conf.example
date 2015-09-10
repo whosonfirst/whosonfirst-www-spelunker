@@ -29,30 +29,58 @@ server {
     	    proxy_set_header X-Scheme $scheme;
     	}
 
+	# http://linuxplayer.org/2013/06/nginx-try-files-on-multiple-named-location-or-server
+	#
+	# because who knows where the data is at any given moment... this is not a feature
+	# but rather just the reality of working through All The Stuff right now...
+	# (20150909/thisisaaronland)
+
 	location /data/ {
-	
-	    auth_basic "Restricted";                    
-	    xauth_basic_user_file /usr/local/mapzen/gazetteer-www/.htpasswd;
-
-	    proxy_set_header       Authorization '';
-
-	    proxy_hide_header      Set-Cookie;
-	    proxy_ignore_headers   "Set-Cookie";
-
-	    add_header 'Access-Control-Allow-Origin' '*';
-            add_header 'Access-Control-Allow-Methods' 'GET';
-
-	    proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/data/;
-	    proxy_pass https://s3.amazonaws.com/com.mapzen.gazetteer/;
+		try_files $uri @data_github;
         }
 
-	location /venues {
-	
-	    root  /usr/local/mapzen/whosonfirst-venue/data;
-	    rewrite ^/venues/(.*)$	/$1 break;
+	location @data_github{
 
-	    add_header 'Access-Control-Allow-Origin' '*';
-            add_header 'Access-Control-Allow-Methods' 'GET';
-        }
+		proxy_set_header       Authorization '';
+		proxy_hide_header      Set-Cookie;
+		proxy_ignore_headers   "Set-Cookie";
 
+	    	add_header 'Access-Control-Allow-Origin' '*';
+            	add_header 'Access-Control-Allow-Methods' 'GET';
+
+	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
+
+		proxy_intercept_errors on;
+		recursive_error_pages on;
+		error_page 404 = @data_github_venue;
+	}
+
+	location @data_github_venue{
+
+		proxy_set_header       Authorization '';
+		proxy_hide_header      Set-Cookie;
+		proxy_ignore_headers   "Set-Cookie";
+
+	    	add_header 'Access-Control-Allow-Origin' '*';
+            	add_header 'Access-Control-Allow-Methods' 'GET';
+
+	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-venue/master/$uri;
+
+		proxy_intercept_errors on;
+		recursive_error_pages on;
+		error_page 404 = @data_s3;
+	}
+
+	location @data_s3{
+
+		proxy_set_header       Authorization '';
+		proxy_hide_header      Set-Cookie;
+		proxy_ignore_headers   "Set-Cookie";
+
+	    	add_header 'Access-Control-Allow-Origin' '*';
+            	add_header 'Access-Control-Allow-Methods' 'GET';
+
+		resolver 8.8.8.8;
+		proxy_pass https://s3.amazonaws.com/whosonfirst.mapzen.com/$uri;
+	}
 }

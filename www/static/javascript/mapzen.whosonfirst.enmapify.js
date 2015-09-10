@@ -16,8 +16,9 @@ mapzen.whosonfirst.enmapify = (function(){
 			var on_fetch = function(geojson){
 				self.render_feature(map, geojson);
 			};
-			
+
 			var url = mapzen.whosonfirst.data.id2abspath(wofid);
+
 			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
@@ -39,8 +40,12 @@ mapzen.whosonfirst.enmapify = (function(){
 				
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
-				
-				mapzen.whosonfirst.net.fetch(child_url, on_child);			
+
+				var on_fail = function(){
+					on_child();
+				};
+
+				mapzen.whosonfirst.net.fetch(child_url, on_child, on_fail);			
 			};
 			
 			var on_child = function(child_feature){
@@ -117,7 +122,7 @@ mapzen.whosonfirst.enmapify = (function(){
 			}
 			
 			else {
-				mapzen.whosonfirst.net.fetch(parent_url, on_parent);
+				mapzen.whosonfirst.net.fetch(parent_url, on_parent, function(){ on_child() });
 			}
 		},
 		
