@@ -26,7 +26,12 @@
 
 <h3>Properties <small class="italic"> &#8212; some notes about <a href="https://github.com/whosonfirst/whosonfirst-sources" target="wof">sources</a> and <a href="https://github.com/whosonfirst/whosonfirst-names" target="wof">names</a></small></h3>
 <div id="props-wrapper">
-<pre id="props-raw">{{ doc['properties'] |pprint|e }}</pre>
+<pre id="props-raw"># This is the raw properties hash from the source
+# data. It _should_ magically transform itself in to a pretty formatted
+# table and if it doesn't that probably means there's something wrong
+# with the data itself (or maybe it just hasn't been synced yet)
+
+{{ doc['properties'] |pprint|e }}</pre>
 </div>
 
 <h3>Bounding box</h3>
