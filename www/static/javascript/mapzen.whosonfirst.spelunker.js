@@ -238,6 +238,7 @@ mapzen.whosonfirst.spelunker = (function(){
 			var render_dict = function(d, ctx){
 
 				var table = document.createElement("table");
+				table.setAttribute("class", "table");
 
 				for (k in d){
 					var row = document.createElement("tr");

@@ -1,0 +1,52 @@
+@media (max-width: 400px) {
+
+    h3 {
+	line-height:1.5em;
+    }
+
+    #map {
+	height: 200px;
+    }
+
+    .col { 
+	padding-left:0px;
+	padding-right:0px;
+    }
+    
+    #search form {
+	float: none !important;
+	text-align:left !important;
+    }
+
+    #search form .form-group {
+	display: inline !important;
+    }
+    
+    #search form button {
+    }
+    
+    #search form input[type=text] {
+	max-width:60% !important;
+	display: inline !important;
+    }
+
+    .not-a-geocoder {
+	display:none !important;
+    }
+
+    ul, ol {
+	margin:0px;
+	padding:0px;
+	line-height: 2em;
+    }
+
+    li {
+	list-style-type: none;
+    }
+
+    /* http://getbootstrap.com/css/#tables */
+
+    @-moz-document url-prefix() {
+	fieldset { display: table-cell; }
+    }
+}

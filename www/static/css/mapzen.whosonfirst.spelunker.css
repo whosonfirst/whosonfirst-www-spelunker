@@ -143,3 +143,13 @@ body {
 .italic {
     font-style:italic;
 }
+
+.not-a-geocoder {
+    margin-top:.4em;
+    margin-bottom:.3em;
+}
+
+.missing-or-invalid {
+    color: #666;
+}
+

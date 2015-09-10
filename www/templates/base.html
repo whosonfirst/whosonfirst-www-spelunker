@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.label.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.log.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.spelunker.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.spelunker.mobile.css') }}" />
 
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/phpjs.htmlspecialchars.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/phpjs.in_array.js') }}"></script>
@@ -41,18 +42,18 @@
 </head>
 <body>
   <div id="nav" class="container">
-    <div id="nav-search-x" class="pull-right">
+    <div id="search" class="pull-right">
       <form method="GET" action="/search/" class="form-inline pull-right" role="form">
 
 	<div class="form-group">
 	  <label class="sr-only" for="q">Search for a place</label>
-	<input type="text" name="q" id="q" placeholder="Search for a place" class="form-control"/>
+	  <input type="text" name="q" id="q" placeholder="Search for a place" class="form-control"/>
 	</div>
 	<button type="submit" class="btn">Search</button>
       </form>
       <br clear="all" />
 
-      <small class="italic pull-right" style="margin-top:.2em; margin-bottom:.2em;">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> a <a href="https://mapzen.com/pelias">proper geocoder</a></small>
+      <small class="italic pull-right not-a-geocoder">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> a <a href="https://mapzen.com/pelias">proper geocoder</a></small>
     </div>
 
     </div>
