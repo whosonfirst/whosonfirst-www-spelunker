@@ -45,18 +45,13 @@ mapzen.whosonfirst.enmapify = (function(){
 					on_child();
 				};
 
-				mapzen.whosonfirst.net.fetch(child_url, on_child, on_fail);			
+				mapzen.whosonfirst.net.fetch(child_url, on_child, on_fail);
 			};
 			
 			var on_child = function(child_feature){
 
-				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
-				
-				child_feature['properties']['lflt:label_text'] = "";
-				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
-				
-				var geom = child_feature['geometry'];
 				var props = child_feature['properties'];
+				var geom = child_feature['geometry'];
 
 				var lat = props['geom:latitude'];
 				var lon = props['geom:longitude'];
@@ -69,7 +64,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
 					'properties': { 'lflt:label_text': label_text }
 				};
-				
+
 				if (geom['type'] == 'Point'){
 
 					var label_text = 'geom centroid (the DATA) is ';
@@ -84,37 +79,108 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
+				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
+				
+				child_feature['properties']['lflt:label_text'] = "";
+				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
+
 				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-						
-				var style = mapzen.whosonfirst.leaflet.styles.math_centroid();
-				var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
-				mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
-				
-				if ((props['lbl:latitude']) && (props['lbl:longitude'])){
-					
-					var lat = props['lbl:latitude'];
-					var lon = props['lbl:longitude'];
-					
-					var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
-					
-					var label_text = "label centroid (";
-					label_text += label_src;
-					label_text += ") is ";
-					label_text += lat + ", " + lon;
-					
-					var pt = {
-						'type': 'Feature',
-						'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
-						'properties': { 'lflt:label_text': label_text },
-					};
-					
-					var style = mapzen.whosonfirst.leaflet.styles.label_centroid();
+				// we're defining this as a local function to ensure that it gets called
+				// after any breaches are drawn (20150909/thisisaaronland)
+
+				var draw_centroids = function(){
+
+					// I don't know why this is necessary...
+					// (20150909/thisisaaronland)
+
+					if (! pt){
+						var lat = props['geom:latitude'];
+						var lon = props['geom:longitude'];
+						
+						var label_text = 'math centroid (shapely) is ';
+						label_text += lat + ", " + lon;
+						
+						var pt = {
+							'type': 'Feature',
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+							'properties': { 'lflt:label_text': label_text }
+						};
+					}
+
+					var style = mapzen.whosonfirst.leaflet.styles.math_centroid();
 					var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
 					mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+				
+					if ((props['lbl:latitude']) && (props['lbl:longitude'])){
+						
+						var lat = props['lbl:latitude'];
+						var lon = props['lbl:longitude'];
+						
+						var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
+						
+						var label_text = "label centroid (";
+						label_text += label_src;
+						label_text += ") is ";
+						label_text += lat + ", " + lon;
+						
+						var pt = {
+							'type': 'Feature',
+							'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+							'properties': { 'lflt:label_text': label_text },
+						};
+						
+						var style = mapzen.whosonfirst.leaflet.styles.label_centroid();
+						var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
+						
+						mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+					}
+
+				};
+
+				var breaches = props['wof:breaches']
+				var count = breaches.length;
+
+				if (! count){
+					draw_centroids();
 				}
+
+				else {
+
+					for (var i=0; i < count; i++){
+
+						var breach_id = breaches[i];
+						var breach_url = mapzen.whosonfirst.data.id2abspath(breach_id);
+						
+						var breach_style = mapzen.whosonfirst.leaflet.styles.breach_polygon();
+						
+						var on_fetch = function(breach_feature){
+							
+							var child_props = child_feature['properties'];
+							var child_name = child_props['wof:name'];
+							
+							var breach_props = breach_feature['properties'];
+							var breach_name = breach_props['wof:name'];
+							
+							var label_text = breach_name + " breaches " + child_name;
+							
+							props['lflt:label_text'] = label_text;
+							breach_feature['properties'] = props;
+							
+							mapzen.whosonfirst.leaflet.draw_poly(map, breach_feature, breach_style);
+							
+							if (i == count){
+								draw_centroids();
+							}
+							
+						};
+						
+						mapzen.whosonfirst.net.fetch(breach_url, on_fetch);
+					}
+				}
+									
 			}
 			
 			if ((! parent_id) || (parent_id == -1)){

@@ -96,7 +96,7 @@ mapzen.whosonfirst.spelunker = (function(){
 					
 					var cls_id = cls + "_" + id;
 
-					mapzen.whosonfirst.log.info("assign name for ID " + id + " to be " + name);
+					mapzen.whosonfirst.log.info("assign name for ID " + id + " to be " + name + " for " + cls_id);
 
 					var els = document.getElementsByClassName(cls_id);  
 					var count_els = els.length;

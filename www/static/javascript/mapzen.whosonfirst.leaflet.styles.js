@@ -63,6 +63,17 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 				"fillOpacity": 0.8
 			};
 		},
+
+		'breach_polygon': function(){
+
+			return {
+				"color": "#002EA7",
+				"weight": 2,
+				"opacity": 1,
+				"fillColor": "#002EA7",
+				"fillOpacity": 0.1
+			};
+		},
 		
 		'consensus_polygon': function(){
 
