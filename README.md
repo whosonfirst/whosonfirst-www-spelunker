@@ -24,7 +24,7 @@ repository](https://github.com/whosonfirst/whosonfirst-data/) and/or [whosonfirs
 repository](https://github.com/whosonfirst/whosonfirst-venue/) available locally
 on your machine.
 
-Keep in mind that the `whosonfirst-venue` repositiry is **VERY VERY BIG**. It's
+Keep in mind that the `whosonfirst-venue` repository is **VERY VERY BIG**. It's
 full of interesting stuff but if you're pressed for time or disk space you
 should probably start with the `whosonfirst-data` repository which is more manageable.
 
@@ -135,5 +135,7 @@ db_pswd=PSQL_PASSWORD
 
 ## See also
 
+* http://whosonfirst.mapzen.com/
+* https://mapzen.com/blog/who-s-on-first
 * https://github.com/whosonfirst/whosonfirst-data
 * https://github.com/whosonfirst/whosonfirst-venue
