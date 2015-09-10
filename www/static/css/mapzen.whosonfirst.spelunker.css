@@ -106,7 +106,7 @@ body {
 
 #props-pretty table {
     width:100%;
-    line-height:1.8em;
+    line-height:2em;
 }
 
 #props-pretty tr {
@@ -117,8 +117,9 @@ body {
 
 #props-pretty th {
     background-color:#ededed;
-    border-right: .5em solid #fff;
+    border-right: .75em solid #fff;
     padding-left: .5em;
+    padding-right: .5em;
 }
 
 #props-pretty td {
@@ -137,4 +138,8 @@ body {
 }
 
 #wof-id {
+}
+
+.italic {
+    font-style:italic;
 }

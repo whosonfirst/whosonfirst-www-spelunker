@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}{{ doc.properties.get("wof:name") |e }} | Descendants{% endblock %}
 {% block content %}
 
 <div class="row">

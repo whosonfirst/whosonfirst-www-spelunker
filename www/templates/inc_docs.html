@@ -18,7 +18,7 @@
 {% for doc in docs %}
 <li class="loc" data-latitude="{{ doc['properties']['geom:latitude'] | e}}" data-longitude="{{ doc['properties']['geom:longitude'] | e}}">
   <code>{{ doc['properties']['wof:id'] |e }}</code>
-  <a href="https://{{ request.host }}/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
+  <a href="/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
   <small>
     &#8212;
     {% if doc['properties']['iso:country'] |e %}
@@ -66,9 +66,11 @@
 </div>
 
 <script type="text/javascript">
+
+  mapzen.whosonfirst.spelunker.toggle_data_endpoint();
+
   mapzen.whosonfirst.spelunker.draw_list('loc');
 
-  mapzen.whosonfirst.data.endpoint('https://52.27.138.134/data/');
   mapzen.whosonfirst.spelunker.draw_names('facet_locality_id');
   mapzen.whosonfirst.spelunker.draw_names('facet_region_id');  
 </script>

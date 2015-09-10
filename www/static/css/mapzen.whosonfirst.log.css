@@ -5,7 +5,7 @@
     overflow:scroll;
     font-size:.9em;
     display:none;
-    border:solid thin;
+    border:.5px solid #ccc;
 }
 
 #wof-log-container:before {

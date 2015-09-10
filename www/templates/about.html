@@ -1,3 +1,34 @@
 {% extends "base.html" %}
+{% block title %}About{% endblock %}
 {% block content %}
+<h2>The Who's On First Spelunker</h2>
+
+<h3>What is this thing?</h3>
+
+<blockquote>
+<p><span class="hey-look">spelunking</span> |spiˈləNGkiNG| nounN. Amer. <span class="hey-look">the exploration of caves, especially as a hobby.</span></p>
+</blockquote>
+
+<h3>Wait... What is Who's On First?</h3>
+
+<p>There is <a href="https://mapzen.com/blog/who-s-on-first">a very detailed (and not short) blog post</a> discussing what Who's On First is and why Mapzen created it.</p>
+
+<h3>How do I use the spelunker?</h3>
+
+<h3>Can I update data using the spelunker?</h3>
+
+<p>Nope.</p>
+
+<h3>Can I run my own copy of the spelunker?</h3>
+
+<p>Yes! The spelunker is an open-source tool and you can grab a copy of the source code from <a href="https://github.com/whosonfirst/whosonfirst-www-spelunker">our Github repository</a>.</p>
+
+<h3>Can I get a copy of all the data in the spelunker?</h3>
+
+<p>Yes!</p>
+
+<h3>Can I put other kinds of data in the spelunker?</h3>
+
+<p>Probably? The spelunker is designed to consume simple <a href="">GeoJSON</a> files so there's nothing to prevent you from trying to import data from a different source. That said, the templates and much of the Javascript used to transform data expects specific properties to be present in the data. More specifically, nothing has been taught to behave nicely when that data isn't present. That's something we should do but it just hasn't happened yet. If you're feeling adventurous we'd love to hear what happens when you try to import a different dataset.</p>
+
 {% endblock %}

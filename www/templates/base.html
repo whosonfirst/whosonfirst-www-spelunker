@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% block title %}{% endblock %}</title>
+    <title>Who's On First Spelunker | {% block title %}{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="referrer" content="origin">
     <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -42,7 +42,7 @@
 <body>
   <div id="nav" class="container">
     <div id="nav-search-x" class="pull-right">
-      <form method="GET" action="https://{{ request.host }}/search/" class="form-inline" role="form">
+      <form method="GET" action="/search/" class="form-inline pull-right" role="form">
 
 	<div class="form-group">
 	  <label class="sr-only" for="q">Search for a place</label>
@@ -51,7 +51,10 @@
 	<button type="submit" class="btn">Search</button>
       </form>
       <br clear="all" />
+
+      <small class="italic pull-right" style="margin-top:.2em; margin-bottom:.2em;">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> a <a href="https://mapzen.com/pelias">proper geocoder</a></small>
     </div>
+
     </div>
 
     <div class="container" id="content">
@@ -60,7 +63,7 @@
 
     <div class="container">
       <div class="footer">
-	<p class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <a href="/about/">read about the details</a> over on the handy <a href="/about/">about page</p>
+	<p class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <span class="hey-look">read about the details</span> over on the handy <a href="/about/">about page</p>
       </div>
     </div>
 </body>

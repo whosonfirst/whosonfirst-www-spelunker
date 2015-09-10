@@ -83,6 +83,10 @@ def index():
 
 @app.route("/about", methods=["GET"])
 @app.route("/about/", methods=["GET"])
+@app.route("/faq", methods=["GET"])
+@app.route("/faq/", methods=["GET"])
+@app.route("/help", methods=["GET"])
+@app.route("/help/", methods=["GET"])
 def about():
 
     return flask.render_template('about.html')
