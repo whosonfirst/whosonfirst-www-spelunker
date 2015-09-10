@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ Tags |e }}{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3>Tags in Who's On First</h3>
+
+<ul class="list-inline">
+{% for b in tags %}
+<li><a href="/tags/{{ b.key | e}}/">{{ b.key|e }}</a> <small>{{ b.doc_count |number_format|e }} records</small></li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+{% endblock %}

@@ -384,6 +384,7 @@ def tags():
         'placetypes': {
             'terms': {
                 'field': 'sg:tags',
+                'size': 0,
             }
         }
     }
@@ -398,6 +399,8 @@ def tags():
 
     args = { 'body': body, 'query': query }
     rsp = flask.g.search_idx.search_raw(**args)
+
+    # please paginate me (20150910/thisisaaronland)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('placetypes', {})
