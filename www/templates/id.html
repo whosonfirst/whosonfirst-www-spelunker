@@ -36,8 +36,15 @@
 {{ doc['properties'] |pprint|e }}</pre>
 </div>
 
+{% if doc.properties.get("wof:placetype") != 'venue' %}
 <h3>Bounding box</h3>
-<pre>{{ doc['bbox'] |pprint|e }}</pre>
+
+<h4>swlat, swlon, nelat, nelon</h4>
+<pre>{{ doc['bbox'][1] |e }}, {{ doc['bbox'][0] |e }}, {{ doc['bbox'][3] |e }}, {{ doc['bbox'][2] |e }}</pre>
+
+<h4>swlon, swlat, nelon, nelat</h4>
+<pre>{{ doc['bbox'][0] |e }}, {{ doc['bbox'][1] |e }}, {{ doc['bbox'][2] |e }}, {{ doc['bbox'][3] |e }}</pre>
+{% endif %}
 
 </div>
 

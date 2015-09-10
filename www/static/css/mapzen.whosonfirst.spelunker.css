@@ -6,8 +6,12 @@ body {
     line-height: 1.4em;
 }
 
-ol, li {
+ol, ul {
     line-height: 1.7em;
+}
+
+li {
+    list-style-type: none;
 }
 
 .footer {
