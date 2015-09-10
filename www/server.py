@@ -376,6 +376,35 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', **template_args)
 
+@app.route("/tags", methods=["GET"])
+@app.route("/tags/", methods=["GET"])
+def tags():
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'sg:tags',
+            }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    buckets = results.get('buckets', [])
+
+    return flask.render_template('tags.html', tags=buckets)
+
 @app.route("/tags/<tag>", methods=["GET"])
 @app.route("/tags/<tag>/", methods=["GET"])
 def tag(tag):
