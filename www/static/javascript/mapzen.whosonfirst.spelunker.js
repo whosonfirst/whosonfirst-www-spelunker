@@ -30,6 +30,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				var loc = locs[i];
 				var lat = loc.getAttribute("data-latitude");
 				var lon = loc.getAttribute("data-longitude");
+				var id = loc.getAttribute("data-id");
 				
 				var anchor = loc.getElementsByTagName("a");
 				anchor = anchor[0];			  
@@ -52,9 +53,9 @@ mapzen.whosonfirst.spelunker = (function(){
 				}					
 
 				var geom = { 'type': 'Point', 'coordinates': [ lon, lat ] };
-				var props = { 'lflt:label_text': name };
+				var props = { 'lflt:label_text': name, 'wof:id': id };
 				
-				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props };					
+				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props, 'id': id };					
 				features.push(feature);		
 			}
 
@@ -65,9 +66,20 @@ mapzen.whosonfirst.spelunker = (function(){
 			var style = mapzen.whosonfirst.leaflet.styles.search_centroid();
 			var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
+			var oneach = function(feature, layer){
+				layer.on('click', function(e){
+					var props = feature['properties'];
+					var id = props['wof:id'];
+					id = encodeURIComponent(id);
+					var url = "/id/" + id + "/";
+					location.href = url;
+				});
+			};
+
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
+				'onEachFeature': oneach,
 			});
 			
 			layer.addTo(map);
