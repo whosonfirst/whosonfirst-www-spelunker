@@ -37,7 +37,7 @@ mapzen.whosonfirst.enmapify = (function(){
 			var on_parent = function(parent_feature){
 				
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
-				
+
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 
@@ -80,8 +80,9 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
-				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
-				
+				var force = true;
+				mapzen.whosonfirst.leaflet.fit_map(map, child_feature, force);
+
 				child_feature['properties']['lflt:label_text'] = "";
 				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
 
