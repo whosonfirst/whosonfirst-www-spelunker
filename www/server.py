@@ -301,6 +301,7 @@ def placetypes():
         'placetypes': {
             'terms': {
                 'field': 'wof:placetype',
+                'size': 0,
             }
         }
     }
