@@ -14,6 +14,10 @@ li {
     list-style-type: none;
 }
 
+q {
+    font-weight: 700;
+}
+
 .footer {
     margin-top:5em;
     padding-top:2em;
