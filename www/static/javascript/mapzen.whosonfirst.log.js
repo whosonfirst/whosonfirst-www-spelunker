@@ -56,8 +56,8 @@ mapzen.whosonfirst.log = (function(){
 		
 		'_render': function(msg, cls, dt){
 
-			var enc_msg = htmlspecialchars(msg);
-			var enc_cls = htmlspecialchars(cls);
+			var enc_msg = mapzen.whosonfirst.php.htmlspecialchars(msg);
+			var enc_cls = mapzen.whosonfirst.php.htmlspecialchars(cls);
 
 			var item = document.createElement("li");
 			item.setAttribute("class", "wof-log-item wof-log-" + enc_cls);
@@ -69,7 +69,7 @@ mapzen.whosonfirst.log = (function(){
 			span.appendChild(text);
 
 			var ts = dt.toISOString();
-			ts = htmlspecialchars(ts);
+			ts = mapzen.whosonfirst.php.htmlspecialchars(ts);
 			ts = document.createTextNode(ts + " " + cls);
 
 			var code = document.createElement("code");

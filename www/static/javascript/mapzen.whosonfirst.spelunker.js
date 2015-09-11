@@ -115,7 +115,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					for (var j=0; j < count_els; j++){
 						var el = els[j];
-						el.innerHTML = htmlspecialchars(name) + " <code><small>" + htmlspecialchars(id) + "</small></code>";
+						el.innerHTML = mapzen.whosonfirst.php.htmlspecialchars(name) + " <code><small>" + mapzen.whosonfirst.php.htmlspecialchars(id) + "</small></code>";
 					}
 				};		       
 				
@@ -153,14 +153,14 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					if ((ctx) && (d)){
 
-						if ((in_array(ctx, possible_wof)) && (d > 0)){
+						if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
 				
 							var link = "/id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
 
 							var text = el.children[0];
-							text.setAttribute("data-value", htmlspecialchars(d));
-							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + htmlspecialchars(d));
+							text.setAttribute("data-value", mapzen.whosonfirst.php.htmlspecialchars(d));
+							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + mapzen.whosonfirst.php.htmlspecialchars(d));
 
 							return el;
 						}
@@ -290,7 +290,7 @@ mapzen.whosonfirst.spelunker = (function(){
 					}
 
 					var header = document.createElement("th");
-					var label = document.createTextNode(htmlspecialchars(label_text));
+					var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
 					header.appendChild(label);
 
 					var _ctx = (ctx) ? ctx + "-" + k : k;
@@ -341,7 +341,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			var render_text = function(d, ctx){
 
-				var text = htmlspecialchars(d);
+				var text = mapzen.whosonfirst.php.htmlspecialchars(d);
 
 				var span = document.createElement("span");
 				span.setAttribute("id", ctx);
