@@ -952,16 +952,10 @@ def get_str(k):
     param = get_param(k, sanitize_str)
     return param
 
-    # str = flask.request.args.get(k, None)
-    # return sanitize_str(str)
-
 def get_int(k):
 
     param = get_param(k, sanitize_int)
     return param
-
-    # i = flask.request.args.get(k, None)
-    # return sanitize_int(i)
 
 def sanitize_str(str):
 
