@@ -1,6 +1,11 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+// this is an early port of py-mapzen-whosonfirst-placetypes and porting
+// all this code to another language may necessitate changes which is not
+// the goal of this exercise but useful and all that...
+// (21050911/thisisaaronland)
+
 mapzen.whosonfirst.placetypes = (function(){
 
 	// Generated from: https://github.com/whosonfirst/whosonfirst-placetypes/blob/master/bin/compile.py
@@ -60,9 +65,28 @@ mapzen.whosonfirst.placetypes = (function(){
 
 	var self = {
 		
-		'placetypename': function(labe, name){
-			
-			// please write me
+		'placetypename': function(label, name){
+
+			var instance = function(label, name){
+				
+				var parts = label.split("_");
+				var lang = parts[0];
+				var kind = parts[1];
+
+				var _self = {
+					'lang': lang,
+					'kind': kind,
+					'name': name,
+
+					'toString': function(){
+						return _self.name;
+					}
+				};
+
+				return _self;
+			};
+
+			return instance(label, name);
 		},
 		
 		'placetype': function(pt){
@@ -71,7 +95,91 @@ mapzen.whosonfirst.placetypes = (function(){
 				return undefined;
 			}
 
-			// please write me
+			var instance = function(pt){
+
+				var _self = {
+					'placetype': pt,
+					'details': __placetypes__[pt],
+
+					'toString': function(){
+						return _self.placetype;
+					},
+
+					'id': function(){
+						return _self.details['id'];
+					},
+
+					'role': function(){
+						return _self.details['role'];
+					},
+
+					'name': function(){
+						return _self.placetype;
+					},
+
+					'names': function(){
+
+						var names = [];
+						var _names = _self.details['names'];
+
+						for (var label in _names){
+							var _alts = _names[label];
+							var count = _alts.length;
+
+							for (var i=0; i < count; i++){
+								var ptn = mapzen.whosonfirst.placetypes.placetypename(label, _alts[i]);
+								names.push(ptn);
+							}
+						}
+
+						return names;
+					},
+
+					'parents': function(){
+						return _self.details['parent'];
+					},
+
+					'ancestors': function(roles, ancestors){
+
+						if (! roles){
+							roles = [ 'common' ];
+						}
+
+						if (! ancestors){
+							ancestors = [];
+						}
+
+						var parents = _self.parents();
+						var count_parents = parents.length;
+
+						for (var i=0; i < count_parents; i++){
+
+							var p = parents[i];
+							p = mapzen.whosonfirst.placetypes.placetype(p);
+
+							var name = p.name();
+							var role = p.role();
+
+							if (ancestors.indexOf(name) != -1){
+								continue;
+							}
+
+							if (roles.indexOf(role) == -1){
+								continue;
+							}
+
+							ancestors.push(name)
+							p.ancestors(roles, ancestors)
+						}
+
+						return ancestors;
+					}
+				};
+
+				return _self;
+			};
+
+			return instance(pt);
 		},
 
 		'is_valid_placetype': function(pt, role){
