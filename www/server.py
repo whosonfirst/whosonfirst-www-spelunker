@@ -380,6 +380,13 @@ def placetype(placetype):
 @app.route("/tags/", methods=["GET"])
 def tags():
 
+    # please to make me work with wof:tags - which isn't
+    # a problem yet since SG venues are the only things
+    # with (not null) wof:tags and those are just being
+    # copied from sg:tags but you know eventually other
+    # things will have tags too...
+    # (21050910/thisisaaronland)
+
     aggrs = {
         'placetypes': {
             'terms': {
