@@ -55,12 +55,12 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'search_centroid': function(){
 
 			return {
-				"color": "#fff",
+				"color": "#000",
 				"weight": 2,
 				"opacity": 1,
 				"radius": 6,
-				"fillColor": "#000ccc",
-				"fillOpacity": 0.8
+				"fillColor": "#0BBDFF",
+				"fillOpacity": 1
 			};
 		},
 
