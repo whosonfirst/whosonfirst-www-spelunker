@@ -4,7 +4,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
-		'render_id': function(map, wofid){
+		'render_id': function(map, wofid, on_fetch){
 			
 			var _self = self;
 			
@@ -13,15 +13,24 @@ mapzen.whosonfirst.enmapify = (function(){
 				return false;
 			}
 			
-			var on_fetch = function(geojson){
-				self.render_feature(map, geojson);
-			};
+			if (! on_fetch){
+
+				on_fetch = function(geojson){
+					self.render_feature(map, geojson);
+				};
+			}
 
 			var url = mapzen.whosonfirst.data.id2abspath(wofid);
 
 			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
+		'render_feature_outline': function(map, feature){
+
+			mapzen.whosonfirst.leaflet.fit_map(map, feature);
+			mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+		},
+
 		'render_feature': function(map, feature){
 
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
