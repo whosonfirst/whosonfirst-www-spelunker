@@ -74,6 +74,11 @@ q {
     line-height:1.4em;
 }
 
+#es-query pre {
+    max-height:400px;
+    overflow:scroll;
+}
+
 #map {
     height: 400px;
     width:100%;

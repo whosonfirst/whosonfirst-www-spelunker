@@ -4,6 +4,11 @@
 	line-height:1.5em;
     }
 
+    #es-query pre {
+	max-height:100px !important;
+	font-size:.7em !important;
+    }
+
     #map {
 	height: 200px;
     }
