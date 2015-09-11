@@ -91,8 +91,8 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'parent_polygon': function(){
 
 			return {
-				"color": "#666",
-				"weight": 3,
+				"color": "#000",
+				"weight": 1,
 				"opacity": 1,
 				"fillColor": "#00308F",
 				"fillOpacity": 0.5
