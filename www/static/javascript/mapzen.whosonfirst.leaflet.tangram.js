@@ -48,11 +48,15 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 			var scene = self.scenefile();
 
+			var attributions = self.attributions();
+			var attribution = self.render_attributions(attributions);
+
 			var tangram = Tangram.leafletLayer({
 				scene: scene,
 				numWorkers: 2,
         			unloadInvisibleTiles: false,
-				updateWhenIdle: false
+				updateWhenIdle: false,
+				attribution: attribution,
 			});
 			
 			return tangram;
@@ -65,6 +69,40 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			}
 
 			return _scenefile;
+		},
+
+		'attributions': function(){
+
+			var attributions = {
+				'Tangram': 'https://mapzen.com/tangram',
+				'© OSM contributors': 'http://www.openstreetmap.org/',
+				'Who\'s On First': 'http://whosonfirst.mapzen.com/',
+				'Mapzen': 'https://mapzen.com/',
+			};
+
+			return attributions;
+		},
+
+		'render_attributions': function(attrs){
+
+			var parts = [];
+
+			for (var label in attrs){
+
+				var link = attrs[label];
+
+				var enc_label = mapzen.whosonfirst.php.htmlspecialchars(label);
+
+				if (! link){
+					parts.push(enc_label);
+					continue;
+				}
+
+				var anchor = '<a href="' + link + '" target="_blank">' + enc_label + '</a>';
+				parts.push(anchor);
+			}
+
+			return parts.join(" | ");
 		}
 	};
 
