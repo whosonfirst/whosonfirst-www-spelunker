@@ -15,6 +15,18 @@ p {
     color:#333;
 }
 
+#nav-links {
+    margin:0px !important;
+    padding:0px !important;
+}
+
+#nav-links li:after {
+}
+
+#nav-links li:last-child:after {
+}
+
+
 ol, ul {
     line-height: 1.7em;
 }

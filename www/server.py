@@ -12,6 +12,8 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 
+import time
+import random
 import types
 import math
 import json
@@ -109,6 +111,44 @@ def info(id):
     }
 
     return flask.render_template('id.html', **template_args)
+
+@app.route("/random", methods=["GET"])
+@app.route("/random/", methods=["GET"])
+def random_place():
+
+    now = time.time()
+    now = int(now)
+
+    seed = random.randint(0, now)
+
+    query = {
+        'function_score': {
+            'query': {
+                'match_all' : { }
+            },
+            'functions': [
+                { 'random_score': { 'seed': seed } }
+            ]
+        }
+    }
+
+    body = { 'query': query }
+    args = { 'per_page': 1 }
+
+    rsp = flask.g.search_idx.search(body, **args)
+    docs = rsp['rows']
+
+    try:
+        doc = docs[0]
+    except Exception, e:
+        logging.error("failed to get random document")
+        flask.abort(404)        
+
+    id = doc['id']
+    url = "https://%s/id/%s/" % (flask.request.host, id)
+
+    logging.debug("redirect random to %s" % url)
+    return flask.redirect(url)
 
 @app.route("/geoplanet/id/<int:id>", methods=["GET"])
 @app.route("/geoplanet/id/<int:id>/", methods=["GET"])
