@@ -102,6 +102,147 @@ mapzen.whosonfirst.log = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+mapzen.whosonfirst.placetypes = (function(){
+
+	// Generated from: https://github.com/whosonfirst/whosonfirst-placetypes/blob/master/bin/compile.py
+
+	var __spec__ = {"102312321": {"role": "optional", "name": "microhood", "parent": [102312319], "names": {}}, "102312323": {"role": "optional", "name": "macrohood", "parent": [102312317], "names": {}}, "102312325": {"role": "common_optional", "name": "venue", "parent": [102312327, 102312329, 102312331, 102312321, 102312319], "names": {}}, "102312327": {"role": "common_optional", "name": "building", "parent": [102312329, 102312331, 102312321, 102312319], "names": {}}, "102312329": {"role": "common_optional", "name": "address", "parent": [102312331, 102312321, 102312319], "names": {}}, "102312319": {"role": "common", "name": "neighbourhood", "parent": [102312323, 102312317], "names": {"eng_p": ["neighbourhood", "neighborhood"]}}, "102312331": {"role": "common_optional", "name": "campus", "parent": [102312321, 102312319], "names": {}}, "102312309": {"role": "common", "name": "continent", "parent": [102312341], "names": {}}, "102371933": {"role": "optional", "name": "metroarea", "parent": [], "names": {}}, "102312307": {"role": "common", "name": "country", "parent": [102312335, 102312309], "names": {}}, "102312335": {"role": "common_optional", "name": "empire", "parent": [102312309], "names": {}}, "102312341": {"role": "common_optional", "name": "planet", "parent": [], "names": {}}, "102312311": {"role": "common", "name": "region", "parent": [102320821, 102322043, 102312307], "names": {}}, "102312313": {"role": "common_optional", "name": "county", "parent": [102312311], "names": {}}, "102322043": {"role": "common_optional", "name": "disputed", "parent": [102312307], "names": {}}, "102312317": {"role": "common", "name": "locality", "parent": [102312313, 102312311], "names": {}}, "136057795": {"role": "common_optional", "name": "timezone", "parent": [102312307, 102312309, 102312341], "names": {}}, "102320821": {"role": "common_optional", "name": "dependency", "parent": [102312307], "names": {}}};
+
+	var __placetypes__ = {};
+	var __roles__ = {};
+
+	for (var id in __spec__){
+
+		var details = __spec__[id];
+		var name = details['name'];
+		var role = details['role'];
+		var parents = [];
+
+		var count_pids = details['parent'].length;
+
+		for (var p=0; p < count_pids; p++){
+			var pid = details['parent'][p];
+			var parent = __spec__[pid];
+			parents.push(parent['name']);
+		}
+
+		__placetypes__[name] = {
+			'id': id,
+			'role': role,
+			'parent': parents
+		}
+
+		var names = details['names'] || {};
+		__placetypes__[name]['names'] = names;
+
+		for (var label in names){
+
+			if (! label.endsWith("_p")){
+				continue;
+			}
+
+			var alts = names[label];
+			var count_alts = alts.length;
+
+			for (var c=0; c < count_alts; c++){
+
+				var alt = alts[c];
+
+				if (! __placetypes__[alt]){
+					__placetypes__[alt] = __placetypes__[name];
+				}
+			}
+		}
+
+		if (! __roles__[role]){
+			__roles__[role] = {};
+		}
+	}
+
+	var self = {
+		
+		'placetypename': function(labe, name){
+			
+			// please write me
+		},
+		
+		'placetype': function(pt){
+
+			if (! self.is_valid_placetype(pt)){
+				return undefined;
+			}
+
+			// please write me
+		},
+
+		'is_valid_placetype': function(pt, role){
+
+			if (! __placetypes__[pt]){
+				return false;
+			}
+
+			if ((role) && (__placetypes__[pt]['role'] != role)){
+				return false;
+			}
+
+			return true;
+		},
+
+		'common': function(){
+			return self.with_role('common');
+		},
+
+		'common_optional': function(){
+			return self.with_role('common_optional');
+		},
+
+		'optional': function(){
+			return self.with_role('optional');
+		},
+
+		'is_valid_role': function(role){
+
+			if (! __roles__[role]){
+				return false;
+			}
+
+			return true;
+		},
+
+		'with_role': function(role){
+			var roles = [role];
+			return self.with_roles(roles);
+		},
+
+		'with_roles': function(roles){
+			
+			var placetypes = [];
+
+			for (var pt in __placetypes__){
+
+				var details = __placetypes__[pt];
+				var role = details['role'];
+
+				if (! role){
+					continue;
+				}
+
+				if (roles.indexOf(role) == -1){
+					continue;
+				}
+
+				placetypes.push(pt);
+			}
+
+			return placetypes;
+		},
+	};
+
+	return self;
+})();
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
+
 mapzen.whosonfirst.data = (function(){
 
 	var _endpoint = "http://whosonfirst.mapzen.com/data/";
@@ -230,20 +371,10 @@ mapzen.whosonfirst.leaflet = (function(){
 
 	var self = {
 		'draw_point': function(map, geojson, style, handler){
-			
-			// this is still trying to draw a regular (icon) marker
-			// for some reason... (20150825/thisisaaronland)
-			
-			var oneach = function(feature, layer){
-				layer.on('click', function(e){
-					console.log(feature);
-				});
-			};
-			
+						
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
-				// 'onEachFeature': oneach,
 			});
 			
 			layer.addTo(map);
@@ -307,10 +438,10 @@ mapzen.whosonfirst.leaflet = (function(){
 			return self.draw_poly(map, bbox_geojson, style);
 		},
 
-		'fit_map': function(map, geojson){
+		'fit_map': function(map, geojson, force){
 			
 			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
-			
+
 			if (! bbox){
 				console.log("no bounding box");
 				return false;
@@ -326,26 +457,38 @@ mapzen.whosonfirst.leaflet = (function(){
 			
 			var bounds = new L.LatLngBounds([sw, ne]);
 			var current = map.getBounds();
-			
-			var redraw = false;
-			
-			if (bounds.getSouth() > current.getSouth()){
-				redraw = true;
+
+			var redraw = true;
+
+			if (! force){
+
+				var redraw = false;
+
+				/*
+				  console.log("south bbox: " + bounds.getSouth() + " current: " + current.getSouth().toFixed(6));
+				  console.log("west bbox: " + bounds.getWest() + " current: " + current.getWest().toFixed(6));
+				  console.log("north bbox: " + bounds.getNorth() + " current: " + current.getNorth().toFixed(6));
+				  console.log("east bbox: " + bounds.getEast() + " current: " + current.getEast().toFixed(6));
+				*/
+				
+				if (bounds.getSouth() <= current.getSouth().toFixed(6)){
+					redraw = true;
+				}
+				
+				else if (bounds.getWest() <= current.getWest().toFixed(6)){
+					redraw = true;
+				}
+				
+				else if (bounds.getNorth() >= current.getNorth().toFixed(6)){
+					redraw = true;
+				}
+				
+				else if (bounds.getEast() >= current.getEast().toFixed(6)){
+					redraw = true;
+				}
+				
+				else {}
 			}
-			
-			else if (bounds.getWest() > current.getWest()){
-				redraw = true;
-			}
-			
-			else if (bounds.getNorth() < current.getNorth()){
-				redraw = true;
-			}
-			
-			else if (bounds.getEast() < current.getEast()){
-				redraw = true;
-			}
-			
-			else {}
 			
 			if (redraw){
 				map.fitBounds(bounds);
@@ -528,6 +671,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 			if (! _cache[id]){
 				var map = L.map(id);
+				map.scrollWheelZoom.disable();
 
 				var tangram = self.tangram();
 				tangram.addTo(map);
@@ -685,7 +829,7 @@ mapzen.whosonfirst.enmapify = (function(){
 			var on_parent = function(parent_feature){
 				
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
-				
+
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 
@@ -728,8 +872,9 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
-				mapzen.whosonfirst.leaflet.fit_map(map, child_feature);
-				
+				var force = true;
+				mapzen.whosonfirst.leaflet.fit_map(map, child_feature, force);
+
 				child_feature['properties']['lflt:label_text'] = "";
 				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
 
@@ -859,7 +1004,7 @@ mapzen.whosonfirst.spelunker = (function(){
 		'toggle_data_endpoint': function(placetype){
 
 			var host = location.host;
-			var root = "https://" + host + "/";
+			var root = "//" + host + "/";
 
 			mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},
@@ -881,6 +1026,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				var loc = locs[i];
 				var lat = loc.getAttribute("data-latitude");
 				var lon = loc.getAttribute("data-longitude");
+				var id = loc.getAttribute("data-id");
 				
 				var anchor = loc.getElementsByTagName("a");
 				anchor = anchor[0];			  
@@ -903,9 +1049,9 @@ mapzen.whosonfirst.spelunker = (function(){
 				}					
 
 				var geom = { 'type': 'Point', 'coordinates': [ lon, lat ] };
-				var props = { 'lflt:label_text': name };
+				var props = { 'lflt:label_text': name, 'wof:id': id };
 				
-				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props };					
+				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props, 'id': id };					
 				features.push(feature);		
 			}
 
@@ -916,9 +1062,20 @@ mapzen.whosonfirst.spelunker = (function(){
 			var style = mapzen.whosonfirst.leaflet.styles.search_centroid();
 			var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
+			var oneach = function(feature, layer){
+				layer.on('click', function(e){
+					var props = feature['properties'];
+					var id = props['wof:id'];
+					id = encodeURIComponent(id);
+					var url = "/id/" + id + "/";
+					location.href = url;
+				});
+			};
+
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
+				'onEachFeature': oneach,
 			});
 			
 			layer.addTo(map);
@@ -1089,6 +1246,7 @@ mapzen.whosonfirst.spelunker = (function(){
 			var render_dict = function(d, ctx){
 
 				var table = document.createElement("table");
+				table.setAttribute("class", "table");
 
 				for (k in d){
 					var row = document.createElement("tr");
@@ -1305,4 +1463,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2015-09-10T01:27:05 UTC
+// last bundled at 2015-09-11T01:24:29 UTC
