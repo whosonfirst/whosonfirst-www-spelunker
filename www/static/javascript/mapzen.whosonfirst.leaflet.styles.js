@@ -67,8 +67,10 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'breach_polygon': function(){
 
 			return {
-				"color": "#002EA7",
-				"weight": 2,
+				"color": "#ffff00",
+				//"color": "#002EA7",
+				"weight": 1.5,
+				"dashArray": "5, 5",
 				"opacity": 1,
 				"fillColor": "#002EA7",
 				"fillOpacity": 0.1
@@ -89,10 +91,11 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'parent_polygon': function(){
 
 			return {
-				"color": "#ffff00",
+				"color": "#666",
 				"weight": 3,
 				"opacity": 1,
-				"fillOpacity": 0.8
+				"fillColor": "#00308F",
+				"fillOpacity": 0.5
 			};
 		}
 	};

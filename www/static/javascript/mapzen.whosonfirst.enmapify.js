@@ -68,7 +68,10 @@ mapzen.whosonfirst.enmapify = (function(){
 
 				if (geom['type'] == 'Point'){
 
-					var label_text = 'geom centroid (the DATA) is ';
+					var name = props['wof:name'];
+
+					var label_text = name;
+					label_text += ', whose geom centroid is ';
 					label_text += lat + ", " + lon;
 
 					pt['properties']['lflt:label_text'] = label_text;
