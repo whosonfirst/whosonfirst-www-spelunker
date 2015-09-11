@@ -80,7 +80,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					var name = props['wof:name'];
 
 					var label_text = name;
-					label_text += ', whose geom centroid is ';
+					label_text += ', whose centroid is ';
 					label_text += lat + ", " + lon;
 
 					pt['properties']['lflt:label_text'] = label_text;

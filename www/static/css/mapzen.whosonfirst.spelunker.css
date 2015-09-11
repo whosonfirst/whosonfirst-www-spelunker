@@ -6,6 +6,15 @@ body {
     line-height: 1.4em;
 }
 
+p {
+    font-family: serif;
+    font-size:1.4em;
+    line-height:1.6em;
+    margin-top:.75em;
+    margin-bottom:.75em;
+    color:#333;
+}
+
 ol, ul {
     line-height: 1.7em;
 }
