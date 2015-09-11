@@ -170,3 +170,15 @@ q {
     color: #666;
 }
 
+#props-toggle {
+    display: none;
+    font-family:monospace;
+}
+
+#props-toggle-raw {
+    display: none;
+}
+
+#props-toggle-pretty {
+    display: none;
+}

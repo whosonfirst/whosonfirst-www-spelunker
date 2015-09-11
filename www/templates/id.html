@@ -24,14 +24,23 @@
 
 <div class="col-md-6 col">
 
-<h3>Properties <small class="italic"> &#8212; some notes about <a href="https://github.com/whosonfirst/whosonfirst-sources" target="wof">sources</a> and <a href="https://github.com/whosonfirst/whosonfirst-names" target="wof">names</a></small></h3>
+<h3>Properties <small class="italic"> &#8212; some notes about <a href="https://github.com/whosonfirst/whosonfirst-sources" target="wof">sources</a> and <a href="https://github.com/whosonfirst/whosonfirst-names" target="wof">names</a></small>
+
+<div id="props-toggle" class="pull-right">
+<button class="btn btn-sm" id="props-toggle-raw">view raw</button>
+<button class="btn btn-sm" id="props-toggle-pretty">make pretty</button>
+</div>
+
+</h3>
+
 <div id="props-wrapper" class="table-responsive">
 <pre id="props-raw">
 <small># This is the raw properties hash from the source data itself.
 # It _should_ magically transform itself in to a pretty formatted
 # table and if it doesn't that probably means there's something wrong
 # with the data itself (or maybe it just hasn't been synced yet).
-# Raw data is raw.</small>
+# Or maybe you pressed the "view raw" button to see the raw data.
+# Because raw data is raw.</small>
 
 {{ doc['properties'] |pprint|e }}</pre>
 </div>
@@ -117,8 +126,38 @@ window.onload = function(e){
 
 		try {
 			var wrapper = document.getElementById("props-wrapper");
-			var raw = wrapper.children[0]
-			wrapper.replaceChild(pretty, raw);
+			wrapper.appendChild(pretty);
+
+			var raw = wrapper.children[0];
+			raw.setAttribute("style", "display:none");
+
+			//wrapper.replaceChild(pretty, raw);
+
+			var toggle = document.getElementById("props-toggle");
+			toggle.setAttribute("style", "display:block");
+
+			var toggle_raw = document.getElementById("props-toggle-raw");
+			toggle_raw.setAttribute("style", "display:block");
+
+			toggle_raw.onclick = function(){
+
+				raw.setAttribute("style", "display:block");
+				pretty.setAttribute("style", "display:none");
+
+				toggle_raw.setAttribute("style", "display:none");
+				toggle_pretty.setAttribute("style", "display:block");
+			};
+
+			var toggle_pretty = document.getElementById("props-toggle-pretty");
+
+			toggle_pretty.onclick = function(){
+
+				raw.setAttribute("style", "display:none");
+				pretty.setAttribute("style", "display:block");
+
+				toggle_raw.setAttribute("style", "display:block");
+				toggle_pretty.setAttribute("style", "display:none");
+			};
 		}
 
 		catch (e){
