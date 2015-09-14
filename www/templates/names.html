@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ Names |e }}{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3><span class="hey-look">Names</span> in Who's On First</h3>
+
+<ul class="list-inline">
+{% for b in names %}
+<li style="color:#666;">
+  <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is named {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places</span> are named {% endif %} </small>
+  <a href="/names/{{ b.key | e}}/" class="hey-look">{{ b.key|e }}</a>
+</li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+{% endblock %}

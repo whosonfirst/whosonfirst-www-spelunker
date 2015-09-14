@@ -456,6 +456,38 @@ def tags():
 
     return flask.render_template('tags.html', tags=buckets)
 
+@app.route("/names", methods=["GET"])
+@app.route("/names/", methods=["GET"])
+def names():
+
+    aggrs = {
+        'placetypes': {
+            'terms': {
+                'field': 'wof:name',
+                'size': 100,
+            }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    # please paginate me (20150910/thisisaaronland)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('placetypes', {})
+    buckets = results.get('buckets', [])
+
+    return flask.render_template('names.html', names=buckets)
+
 @app.route("/tags/<tag>", methods=["GET"])
 @app.route("/tags/<tag>/", methods=["GET"])
 def tag(tag):
