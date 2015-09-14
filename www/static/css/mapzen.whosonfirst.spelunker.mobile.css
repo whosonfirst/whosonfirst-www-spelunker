@@ -4,6 +4,10 @@
 	line-height:1.5em;
     }
 
+    #nav-links {
+	margin-bottom:1em !important;
+    }
+
     #es-query pre {
 	max-height:100px !important;
 	font-size:.7em !important;

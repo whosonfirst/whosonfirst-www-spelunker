@@ -5,23 +5,23 @@
 
 <h3>What is this thing?</h3>
 
-<p>The act of spelunking is defined as:</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Caving" class="hey-look">act of spelunking</a> is defined as:</p>
 
 <blockquote>
 <p><span class="hey-look">spelunking</span> |spiˈləNGkiNG| nounN. Amer. <span class="hey-look">the exploration of caves, especially as a hobby.</span></p>
 </blockquote>
 
-<p>The Who's On First spelunker is a tool for looking around the Who's On First database. It is also a tool for confirming the details about a specific record. Sometimes it's just used to do a simple fulltext query when looking for one or more places. The Spelunker is <em>not</em> a full-fledge geocoder. Geocoders are a whole other beast and the spelunker serves a diffferent purpose.</p>
+<p>The Who's On First spelunker is a tool for looking around the <a href="https://github.com/whosonfirst/whosonfirst-data/" class="hey-look">Who's On First database</a>. It is also a tool for confirming the details about a specific record. Sometimes it's just used to do a simple fulltext query when looking for one or more places. The Spelunker is <em>not</em> a full-fledge geocoder. Geocoders are a whole other beast and the spelunker serves a diffferent purpose.</p>
 
 <p>We are also using the spelunker to think about how and what a more complex and sophisticated tool might work and generally how tools might be built using the Who's On First data and where the any stress-points in that task remain.</p>
 
 <h3>Wait... What is Who's On First?</h3>
 
-<p>There is <a href="https://mapzen.com/blog/who-s-on-first">a very detailed (and not short) blog post</a> discussing what Who's On First is and why Mapzen created it. Briefly, Who's On First is what's sometimes called a <q>gazetteer</q>. A gazetteer is a big list of places, each with a stable identifier and some number of descriptive properties about that location. An interesting way to think about a gazetteer is to consider it as the space where debate about a place is managed but not decided.</p>
+<p>There is <a href="https://mapzen.com/blog/who-s-on-first" class="hey-look">a very detailed (and not short) blog post</a> discussing what Who's On First is and why Mapzen created it. Briefly, Who's On First is what's sometimes called a <q>gazetteer</q>. A gazetteer is a big list of places, each with a stable identifier and some number of descriptive properties about that location. An interesting way to think about a gazetteer is to consider it as the space where debate about a place is managed but not decided.</p>
 
 <h3>How do I use the spelunker?</h3>
 
-<p>By poking around! You can start being entering a query string to search for in the form at the top of each page, or start by <a href="/placetypes/">browsing the different placetypes</a> or all the different ways that <a href="/tags/">places have been tagged</a> or simply by <a href="/random/">jumping to a random place</a> in the Who's On First database. Every place record has links to its relations (ancestors and descendants) as well other metadata, where appropriate.</p>
+<p>By poking around! You can start being entering a query string to search for in the form at the top of each page, or start by <a href="/placetypes/" class="hey-look">browsing the different placetypes</a> or all the different ways that <a href="/tags/" class="hey-look">places have been tagged</a> or simply by <a href="/random/" class="hey-look">jumping to a random place</a> in the Who's On First database. Every place record has links to its relations (ancestors and descendants) as well other metadata, where appropriate.</p>
 
 <h3>Can I update data using the spelunker?</h3>
 
@@ -29,21 +29,22 @@
 
 <h3>Can I run my own copy of the spelunker?</h3>
 
-<p>Yes! The spelunker is an open-source tool and you can grab a copy of the source code from <a href="https://github.com/whosonfirst/whosonfirst-www-spelunker">our GitHub repository</a>. As of this writing the documentation is a little sparse but that will improve over time.</p>
+<p>Yes! The spelunker is an open-source tool and you can grab a copy of the source code from <a href="https://github.com/whosonfirst/whosonfirst-www-spelunker" class="hey-look">our GitHub repository</a>. As of this writing the documentation is a little sparse but that will improve over time.</p>
 
 <h3>Can I get a copy of all the data in the spelunker?</h3>
 
 <p>Yes! All of the data is currently available on GitHub:</p>
 
-<ul>
-<li><a href="https://github.com/whosonfirst/whosonfirst-data">https://github.com/whosonfirst/whosonfirst-data</a></li>
-<li><a href="https://github.com/whosonfirst/whosonfirst-venue">https://github.com/whosonfirst/whosonfirst-venue</a></li>
-</ul>
+<p><code><a href="https://github.com/whosonfirst/whosonfirst-data">https://github.com/whosonfirst/whosonfirst-data</a></code></p>
+
+<p>And:</p>
+
+<p><code><a href="https://github.com/whosonfirst/whosonfirst-venue">https://github.com/whosonfirst/whosonfirst-venue</a></code></p>
 
 <p>The data is currently sorted in to two separate repositories: <code>whosonfirst-data</code> is administrative places like countries and localities and neighbourhoods while <code>whosonfirst-venue</code> is business listings. Keep in mind that the <code>whosonfirst-venue</code> repository is <strong>VERY VERY BIG</strong>. It's full of interesting stuff but if you're pressed for time or disk space you should probably start with the whosonfirst-data repository which is more manageable.</p>
 
 <h3>Can I put other kinds of data in the spelunker?</h3>
 
-<p>Probably? The spelunker is designed to consume simple <a href="">GeoJSON</a> files so there's nothing to prevent you from trying to import data from a different source. That said, the templates and much of the Javascript used to transform data expects specific properties to be present in the data. More specifically, nothing has been taught to behave nicely when that data isn't present. That's something we should do but it just hasn't happened yet. If you're feeling adventurous we'd love to hear what happens when you try to import a different dataset.</p>
+<p>Probably? The spelunker is designed to consume simple <a href="http://www.geojson.org/" class="hey-look">GeoJSON</a> files so there's nothing to prevent you from trying to import data from a different source. That said, the templates and much of the Javascript used to transform data expects specific properties to be present in the data. More specifically, nothing has been taught to behave nicely when that data isn't present. That's something we should do but it just hasn't happened yet. If you're feeling adventurous we'd love to hear what happens when you try to import a different dataset.</p>
 
 {% endblock %}
