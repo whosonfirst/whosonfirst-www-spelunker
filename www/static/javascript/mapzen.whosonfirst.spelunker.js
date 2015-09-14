@@ -7,8 +7,7 @@ mapzen.whosonfirst.spelunker = (function(){
 		
 		'toggle_data_endpoint': function(placetype){
 
-			var host = location.host;
-			var root = "//" + host + "/";
+			var root = location.origin + "/";
 
 			mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},

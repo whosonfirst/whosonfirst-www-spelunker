@@ -48,6 +48,7 @@ server {
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
 
+		resolver 8.8.8.8;
 	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
 
 		proxy_intercept_errors on;
@@ -64,6 +65,7 @@ server {
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
 
+		resolver 8.8.8.8;
 	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-venue/master/$uri;
 
 		proxy_intercept_errors on;
