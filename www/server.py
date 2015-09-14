@@ -741,13 +741,13 @@ def facetify(query):
         'locality_id': {
             'terms': {
                 'field': 'locality_id',
-                'size': 10
+                'size': 100
             }
         },
         'region_id': {
             'terms': {
                 'field': 'region_id',
-                'size': 0
+                'size': 100
             }
         }
     }
