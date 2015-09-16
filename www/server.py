@@ -968,7 +968,12 @@ def build_pagination_url():
 
     qs = urllib.urlencode(qs)
 
-    return "%s?%s" % (flask.request.path, qs)
+    # hack because middleware stuff...
+    url = flask.request.url
+    url = url.split("?")
+    url = url[0]
+
+    return "%s?%s" % (url, qs)
 
 def get_by_id(id):
 
