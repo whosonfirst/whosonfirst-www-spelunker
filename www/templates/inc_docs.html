@@ -18,13 +18,13 @@
 {% for doc in docs %}
 <li class="loc" data-latitude="{{ doc['properties']['geom:latitude'] | e}}" data-longitude="{{ doc['properties']['geom:longitude'] | e}}" data-id="{{ doc['properties']['wof:id'] | e}}">
   <code>{{ doc['properties']['wof:id'] |e }}</code>
-  <a href="/id/{{ doc['properties']['wof:id'] |e }}/">{{ doc['properties']['wof:name'] |e }}</a>
+  <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}/">{{ doc['properties']['wof:name'] |e }}</a>
   <small>
     &#8212;
     {% if doc['properties']['iso:country'] |e %}
-    this is a <a href="/placetypes/{{ doc['properties']['wof:placetype'] |e }}/">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span>
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span>
     {% else %}
-    this is a <a href="/placetypes/{{ doc['properties']['wof:placetype'] |e }}/">{{ doc['properties']['wof:placetype'] |e }}</a>
+    this is a <a href={{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}/">{{ doc['properties']['wof:placetype'] |e }}</a>
     {% endif %}
   </small>
   {% if doc.properties.get('gn:population', None) %}

@@ -3,8 +3,8 @@
 {% block content %}
 
 <ul class="list">
-<li><a href="/placetypes/">placetypes</a></li>
-<li><a href="/tags/">tags</a></li>
-<li><a href="/megacities/">megacities</a></li>
+<li><a href="{{ url_for('placetypes') }}">placetypes</a></li>
+<li><a href="{{ url_for('tags') }}">tags</a></li>
+<li><a href="{{ url_for('megacities') }}">megacities</a></li>
 </ul>
 {% endblock %}

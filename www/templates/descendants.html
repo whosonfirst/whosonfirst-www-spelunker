@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="row">
-<h3>Descendants of <a href="/id/{{ doc['properties']['wof:id'] | e }}/">{{ doc['properties']['wof:name'] | e }}</a></h3>
+<h3>Descendants of <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] | e }}</a></h3>
 </div>
 
 {% include "inc_docs.html" %}

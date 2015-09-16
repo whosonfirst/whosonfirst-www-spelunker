@@ -44,12 +44,12 @@
   <div id="nav" class="container">
 
     <ul class="list-inline pull-left" id="nav-links">
-      <li><a href="/">who's on <span class="hey-look">first</span></a></li>
-      <li><a href="/random/">jump to a <span class="hey-look">random place</span></a></li>
+      <li><a href="{{ url_for('index') }}">who's on <span class="hey-look">first</span></a></li>
+      <li><a href="{{ url_for('random_place') }}">jump to a <span class="hey-look">random place</span></a></li>
     </ul>
 
     <div id="search" class="pull-right">
-      <form method="GET" action="/search/" class="form-inline pull-right" role="form">
+      <form method="GET" action="{{ url_for('searchify') }}" class="form-inline pull-right" role="form">
 
 	<div class="form-group">
 	  <label class="sr-only" for="q">Search for a place</label>
@@ -70,7 +70,7 @@
 
     <div class="container">
       <div class="footer">
-	<div class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <span class="hey-look">read about the details</span> over on the handy <a href="/about/">about page</div>
+	<div class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <span class="hey-look">read about the details</span> over on the handy <a href="{{ url_for('about') }}">about page</div>
       </div>
     </div>
 </body>
