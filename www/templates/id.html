@@ -67,7 +67,7 @@
 <ul>
 {% for w in hierarchy %}
 {% if w[1] %}
-<li>the <span class="hey-look">{{ w[0]|e }}</span> of <a href="{{ url_for('info', id=w[1]['properties']['wof:id']) }}/">{{ w[1]['properties']['wof:name'] | e }}</a></li>
+<li>the <span class="hey-look">{{ w[0]|e }}</span> of <a href="{{ url_for('info', id=w[1]['properties']['wof:id']) }}">{{ w[1]['properties']['wof:name'] | e }}</a></li>
 {% else %}
 <li class="missing-or-invalid italic">a <span class="hey-look">{{ w[0] | escape }}</span> that we aren't able to index correctly because... ?</li>
 {% endif %}

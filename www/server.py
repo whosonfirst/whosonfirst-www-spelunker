@@ -932,7 +932,7 @@ def build_pagination_url():
 
     qs = urllib.urlencode(qs)
 
-    return "https://%s%s?%s" % (flask.request.host, flask.request.path, qs)
+    return "%s?%s" % (flask.request.path, qs)
 
 def get_by_id(id):
 
@@ -1081,4 +1081,7 @@ if __name__ == '__main__':
     os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
 
     port = int(options.port)
+
+    app.config["APPLICATION_ROOT"] = "/spelunker"
+
     app.run(port=port)
