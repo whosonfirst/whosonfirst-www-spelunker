@@ -19,6 +19,7 @@ server {
 	ssl_prefer_server_ciphers on;
 
 	location / {
+	# location /something-else {
 
 	    auth_basic "Restricted";                    
 	    auth_basic_user_file /usr/local/mapzen/gazetteer-www/.htpasswd;
@@ -27,6 +28,9 @@ server {
 	    proxy_set_header Host $host;
 	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     	    proxy_set_header X-Scheme $scheme;
+
+	    # http://flask.pocoo.org/snippets/35/
+	    # proxy_set_header X-Script-Name /something-else;
     	}
 
 	# http://linuxplayer.org/2013/06/nginx-try-files-on-multiple-named-location-or-server
