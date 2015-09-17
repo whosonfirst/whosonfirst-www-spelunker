@@ -11,11 +11,9 @@ mapzen.whosonfirst.spelunker = (function(){
 		},
 		
 		'toggle_data_endpoint': function(placetype){
-
-			var root = location.origin + "/";
-			var dat = 'data/';
-
-			mapzen.whosonfirst.data.endpoint(root + 'data/');
+			// var root = location.origin + "/";
+			// var data = 'data/';
+			// mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},
 
 		'draw_list': function(classname){
@@ -229,7 +227,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						else if (ctx == 'sg-city'){
 							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "search/?q=" + encodeURIComponent(d);
+							var link = root + "search/?q=" + encodeURIComponent(d) + "&placetype=locality";
 							return render_link(link, d, ctx);
 						}
 

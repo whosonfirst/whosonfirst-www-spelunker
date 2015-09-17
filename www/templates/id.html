@@ -95,8 +95,6 @@
 
 window.onload = function(e){
 
-	mapzen.whosonfirst.spelunker.toggle_data_endpoint();
-
 	// first we draw the map
 
 	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', {{ doc.bbox.1|e }},{{ doc.bbox.0|e }}, {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }});
