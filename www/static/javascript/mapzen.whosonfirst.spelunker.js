@@ -4,6 +4,11 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
+
+		'abs_root_url': function(){
+			var body = document.body;
+			return body.getAttribute("data-abs-root-url");
+		},
 		
 		'toggle_data_endpoint': function(placetype){
 
@@ -71,7 +76,8 @@ mapzen.whosonfirst.spelunker = (function(){
 					var props = feature['properties'];
 					var id = props['wof:id'];
 					id = encodeURIComponent(id);
-					var url = "/id/" + id + "/";
+					var root = mapzen.whosonfirst.spelunker.abs_root_url();
+					var url = root + "id/" + id + "/";
 					location.href = url;
 				});
 			};
@@ -155,7 +161,8 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
 				
-							var link = "/id/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
 
 							var text = el.children[0];
@@ -170,7 +177,8 @@ mapzen.whosonfirst.spelunker = (function(){
 						}
 
 						else if (ctx == 'wof-placetype'){
-							var link = "/placetypes/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "placetypes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
@@ -202,37 +210,44 @@ mapzen.whosonfirst.spelunker = (function(){
 						}
 						
 						else if ((ctx == 'wof-megacity') && (d == 1)){
-							var link = "/megacities/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "megacities/";
 							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
 						}
 
 						else if (ctx == 'wof-tags'){
-							var link = "/tags/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "tags/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
 						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
-							var link = "/search/?q=" + encodeURIComponent(d);
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "search/?q=" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-city'){
-							var link = "/search/?q=" + encodeURIComponent(d);
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "search/?q=" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-postcode'){
-							var link = "/postalcodes/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "postalcodes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-tags'){
-							var link = "/tags/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "tags/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 						
 						else if (ctx.match(/^sg-classifiers-/)){
-							var link = "/categories/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "categories/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 

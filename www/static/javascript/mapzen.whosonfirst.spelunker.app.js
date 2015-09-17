@@ -56,8 +56,8 @@ mapzen.whosonfirst.log = (function(){
 		
 		'_render': function(msg, cls, dt){
 
-			var enc_msg = htmlspecialchars(msg);
-			var enc_cls = htmlspecialchars(cls);
+			var enc_msg = mapzen.whosonfirst.php.htmlspecialchars(msg);
+			var enc_cls = mapzen.whosonfirst.php.htmlspecialchars(cls);
 
 			var item = document.createElement("li");
 			item.setAttribute("class", "wof-log-item wof-log-" + enc_cls);
@@ -69,7 +69,7 @@ mapzen.whosonfirst.log = (function(){
 			span.appendChild(text);
 
 			var ts = dt.toISOString();
-			ts = htmlspecialchars(ts);
+			ts = mapzen.whosonfirst.php.htmlspecialchars(ts);
 			ts = document.createTextNode(ts + " " + cls);
 
 			var code = document.createElement("code");
@@ -181,9 +181,17 @@ mapzen.whosonfirst.php = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+// this is an early port of py-mapzen-whosonfirst-placetypes and porting
+// all this code to another language may necessitate changes which is not
+// the goal of this exercise but useful and all that...
+// (21050911/thisisaaronland)
+
+// also this (21050911/thisisaaronland)
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield#Browser_compatibility
+
 mapzen.whosonfirst.placetypes = (function(){
 
-	// Generated from: https://github.com/whosonfirst/whosonfirst-placetypes/blob/master/bin/compile.py
+	// __spec__ was generated from: https://github.com/whosonfirst/whosonfirst-placetypes/blob/master/bin/compile.py
 
 	var __spec__ = {"102312321": {"role": "optional", "name": "microhood", "parent": [102312319], "names": {}}, "102312323": {"role": "optional", "name": "macrohood", "parent": [102312317], "names": {}}, "102312325": {"role": "common_optional", "name": "venue", "parent": [102312327, 102312329, 102312331, 102312321, 102312319], "names": {}}, "102312327": {"role": "common_optional", "name": "building", "parent": [102312329, 102312331, 102312321, 102312319], "names": {}}, "102312329": {"role": "common_optional", "name": "address", "parent": [102312331, 102312321, 102312319], "names": {}}, "102312319": {"role": "common", "name": "neighbourhood", "parent": [102312323, 102312317], "names": {"eng_p": ["neighbourhood", "neighborhood"]}}, "102312331": {"role": "common_optional", "name": "campus", "parent": [102312321, 102312319], "names": {}}, "102312309": {"role": "common", "name": "continent", "parent": [102312341], "names": {}}, "102371933": {"role": "optional", "name": "metroarea", "parent": [], "names": {}}, "102312307": {"role": "common", "name": "country", "parent": [102312335, 102312309], "names": {}}, "102312335": {"role": "common_optional", "name": "empire", "parent": [102312309], "names": {}}, "102312341": {"role": "common_optional", "name": "planet", "parent": [], "names": {}}, "102312311": {"role": "common", "name": "region", "parent": [102320821, 102322043, 102312307], "names": {}}, "102312313": {"role": "common_optional", "name": "county", "parent": [102312311], "names": {}}, "102322043": {"role": "common_optional", "name": "disputed", "parent": [102312307], "names": {}}, "102312317": {"role": "common", "name": "locality", "parent": [102312313, 102312311], "names": {}}, "136057795": {"role": "common_optional", "name": "timezone", "parent": [102312307, 102312309, 102312341], "names": {}}, "102320821": {"role": "common_optional", "name": "dependency", "parent": [102312307], "names": {}}};
 
@@ -240,9 +248,28 @@ mapzen.whosonfirst.placetypes = (function(){
 
 	var self = {
 		
-		'placetypename': function(labe, name){
-			
-			// please write me
+		'placetypename': function(label, name){
+
+			var instance = function(label, name){
+				
+				var parts = label.split("_");
+				var lang = parts[0];
+				var kind = parts[1];
+
+				var _self = {
+					'lang': lang,
+					'kind': kind,
+					'name': name,
+
+					'toString': function(){
+						return _self.name;
+					}
+				};
+
+				return _self;
+			};
+
+			return instance(label, name);
 		},
 		
 		'placetype': function(pt){
@@ -251,7 +278,91 @@ mapzen.whosonfirst.placetypes = (function(){
 				return undefined;
 			}
 
-			// please write me
+			var instance = function(pt){
+
+				var _self = {
+					'placetype': pt,
+					'details': __placetypes__[pt],
+
+					'toString': function(){
+						return _self.placetype;
+					},
+
+					'id': function(){
+						return _self.details['id'];
+					},
+
+					'role': function(){
+						return _self.details['role'];
+					},
+
+					'name': function(){
+						return _self.placetype;
+					},
+
+					'names': function(){
+
+						var names = [];
+						var _names = _self.details['names'];
+
+						for (var label in _names){
+							var _alts = _names[label];
+							var count = _alts.length;
+
+							for (var i=0; i < count; i++){
+								var ptn = mapzen.whosonfirst.placetypes.placetypename(label, _alts[i]);
+								names.push(ptn);
+							}
+						}
+
+						return names;
+					},
+
+					'parents': function(){
+						return _self.details['parent'];
+					},
+
+					'ancestors': function(roles, ancestors){
+
+						if (! roles){
+							roles = [ 'common' ];
+						}
+
+						if (! ancestors){
+							ancestors = [];
+						}
+
+						var parents = _self.parents();
+						var count_parents = parents.length;
+
+						for (var i=0; i < count_parents; i++){
+
+							var p = parents[i];
+							p = mapzen.whosonfirst.placetypes.placetype(p);
+
+							var name = p.name();
+							var role = p.role();
+
+							if (ancestors.indexOf(name) != -1){
+								continue;
+							}
+
+							if (roles.indexOf(role) == -1){
+								continue;
+							}
+
+							ancestors.push(name)
+							p.ancestors(roles, ancestors)
+						}
+
+						return ancestors;
+					}
+				};
+
+				return _self;
+			};
+
+			return instance(pt);
 		},
 
 		'is_valid_placetype': function(pt, role){
@@ -646,8 +757,10 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'breach_polygon': function(){
 
 			return {
-				"color": "#002EA7",
-				"weight": 2,
+				"color": "#ffff00",
+				//"color": "#002EA7",
+				"weight": 1.5,
+				"dashArray": "5, 5",
 				"opacity": 1,
 				"fillColor": "#002EA7",
 				"fillOpacity": 0.1
@@ -668,10 +781,11 @@ mapzen.whosonfirst.leaflet.styles = (function(){
 		'parent_polygon': function(){
 
 			return {
-				"color": "#ffff00",
-				"weight": 3,
+				"color": "#000",
+				"weight": 1,
 				"opacity": 1,
-				"fillOpacity": 0.8
+				"fillColor": "#00308F",
+				"fillOpacity": 0.5
 			};
 		}
 	};
@@ -721,7 +835,7 @@ mapzen.whosonfirst.leaflet = mapzen.whosonfirst.leaflet || {};
 
 mapzen.whosonfirst.leaflet.tangram = (function(){
 
-	var _scenefile = '/static/tangram/scene.yaml'
+	var _scenefile = '/spelunker/static/tangram/scene.yaml'
 	var _cache = {};
 
 	var self = {
@@ -765,11 +879,15 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 			var scene = self.scenefile();
 
+			var attributions = self.attributions();
+			var attribution = self.render_attributions(attributions);
+
 			var tangram = Tangram.leafletLayer({
 				scene: scene,
 				numWorkers: 2,
         			unloadInvisibleTiles: false,
-				updateWhenIdle: false
+				updateWhenIdle: false,
+				attribution: attribution,
 			});
 			
 			return tangram;
@@ -782,6 +900,40 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			}
 
 			return _scenefile;
+		},
+
+		'attributions': function(){
+
+			var attributions = {
+				'Tangram': 'https://mapzen.com/tangram',
+				'© OSM contributors': 'http://www.openstreetmap.org/',
+				'Who\'s On First': 'http://whosonfirst.mapzen.com/',
+				'Mapzen': 'https://mapzen.com/',
+			};
+
+			return attributions;
+		},
+
+		'render_attributions': function(attrs){
+
+			var parts = [];
+
+			for (var label in attrs){
+
+				var link = attrs[label];
+
+				var enc_label = mapzen.whosonfirst.php.htmlspecialchars(label);
+
+				if (! link){
+					parts.push(enc_label);
+					continue;
+				}
+
+				var anchor = '<a href="' + link + '" target="_blank">' + enc_label + '</a>';
+				parts.push(anchor);
+			}
+
+			return parts.join(" | ");
 		}
 	};
 
@@ -875,7 +1027,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
-		'render_id': function(map, wofid){
+		'render_id': function(map, wofid, on_fetch){
 			
 			var _self = self;
 			
@@ -884,15 +1036,24 @@ mapzen.whosonfirst.enmapify = (function(){
 				return false;
 			}
 			
-			var on_fetch = function(geojson){
-				self.render_feature(map, geojson);
-			};
+			if (! on_fetch){
+
+				on_fetch = function(geojson){
+					self.render_feature(map, geojson);
+				};
+			}
 
 			var url = mapzen.whosonfirst.data.id2abspath(wofid);
 
 			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
+		'render_feature_outline': function(map, feature){
+
+			mapzen.whosonfirst.leaflet.fit_map(map, feature);
+			mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+		},
+
 		'render_feature': function(map, feature){
 
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
@@ -939,7 +1100,10 @@ mapzen.whosonfirst.enmapify = (function(){
 
 				if (geom['type'] == 'Point'){
 
-					var label_text = 'geom centroid (the DATA) is ';
+					var name = props['wof:name'];
+
+					var label_text = name;
+					label_text += ', whose centroid is ';
 					label_text += lat + ", " + lon;
 
 					pt['properties']['lflt:label_text'] = label_text;
@@ -1079,11 +1243,16 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
+
+		'abs_root_url': function(){
+			var body = document.body;
+			return body.getAttribute("data-abs-root-url");
+		},
 		
 		'toggle_data_endpoint': function(placetype){
 
-			var host = location.host;
-			var root = "//" + host + "/";
+			var root = location.origin + "/";
+			var dat = 'data/';
 
 			mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},
@@ -1146,7 +1315,8 @@ mapzen.whosonfirst.spelunker = (function(){
 					var props = feature['properties'];
 					var id = props['wof:id'];
 					id = encodeURIComponent(id);
-					var url = "/id/" + id + "/";
+					var root = mapzen.whosonfirst.spelunker.abs_root_url();
+					var url = root + "id/" + id + "/";
 					location.href = url;
 				});
 			};
@@ -1190,7 +1360,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					for (var j=0; j < count_els; j++){
 						var el = els[j];
-						el.innerHTML = htmlspecialchars(name) + " <code><small>" + htmlspecialchars(id) + "</small></code>";
+						el.innerHTML = mapzen.whosonfirst.php.htmlspecialchars(name) + " <code><small>" + mapzen.whosonfirst.php.htmlspecialchars(id) + "</small></code>";
 					}
 				};		       
 				
@@ -1230,12 +1400,13 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
 				
-							var link = "/id/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "id/" + encodeURIComponent(d) + "/";
 							var el = render_link(link, d, ctx);
 
 							var text = el.children[0];
-							text.setAttribute("data-value", htmlspecialchars(d));
-							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + htmlspecialchars(d));
+							text.setAttribute("data-value", mapzen.whosonfirst.php.htmlspecialchars(d));
+							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + mapzen.whosonfirst.php.htmlspecialchars(d));
 
 							return el;
 						}
@@ -1245,7 +1416,8 @@ mapzen.whosonfirst.spelunker = (function(){
 						}
 
 						else if (ctx == 'wof-placetype'){
-							var link = "/placetypes/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "placetypes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
@@ -1277,37 +1449,44 @@ mapzen.whosonfirst.spelunker = (function(){
 						}
 						
 						else if ((ctx == 'wof-megacity') && (d == 1)){
-							var link = "/megacities/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "megacities/";
 							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
 						}
 
 						else if (ctx == 'wof-tags'){
-							var link = "/tags/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "tags/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
 						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
-							var link = "/search/?q=" + encodeURIComponent(d);
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "search/?q=" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-city'){
-							var link = "/search/?q=" + encodeURIComponent(d);
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "search/?q=" + encodeURIComponent(d);
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-postcode'){
-							var link = "/postalcodes/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "postalcodes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
 						else if (ctx == 'sg-tags'){
-							var link = "/tags/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "tags/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 						
 						else if (ctx.match(/^sg-classifiers-/)){
-							var link = "/categories/" + encodeURIComponent(d) + "/";
+							var root = mapzen.whosonfirst.spelunker.abs_root_url();
+							var link = root + "categories/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
 
@@ -1365,7 +1544,7 @@ mapzen.whosonfirst.spelunker = (function(){
 					}
 
 					var header = document.createElement("th");
-					var label = document.createTextNode(htmlspecialchars(label_text));
+					var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
 					header.appendChild(label);
 
 					var _ctx = (ctx) ? ctx + "-" + k : k;
@@ -1416,7 +1595,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 			var render_text = function(d, ctx){
 
-				var text = htmlspecialchars(d);
+				var text = mapzen.whosonfirst.php.htmlspecialchars(d);
 
 				var span = document.createElement("span");
 				span.setAttribute("id", ctx);
@@ -1542,4 +1721,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2015-09-11T16:45:28 UTC
+// last bundled at 2015-09-17T11:00:27 UTC
