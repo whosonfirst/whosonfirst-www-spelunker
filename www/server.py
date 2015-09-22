@@ -18,6 +18,7 @@ import types
 import math
 import json
 
+import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.spatial as spatial
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
@@ -682,6 +683,61 @@ def code(code):
 
     return flask.render_template('postcode.html', **template_args)
 
+"""
+@app.route("/reverse", methods=["GET"])
+@app.route("/reverse/", methods=["GET"])
+def reverse_geocode():
+
+    lat = get_float('latitude')
+    lat = get_single(lat)
+
+    lon = get_float('longitude')
+    lon = get_single(lon)
+
+    ll = get_str('ll')
+    ll = get_single(ll)
+
+    if not lat and not lon and ll:
+
+        ll = ll.split(',')
+
+        if len(ll) == 2:
+
+            lat = ll[0].strip()
+            lon = ll[1].strip()
+
+            lat = sanitize_float(lat)
+            lon = sanitize_float(lon)
+        
+    if not lat and not lon:
+        logging.warning("missing latitude and longitude")
+        flask.abort(400)
+
+    if not utils.is_valid_latitude(lat) or not utils.is_valid_longitude(lon):
+        logging.warning("invalid latitude or longitude")
+        flask.abort(400)
+
+    placetypes = get_str("placetypes")
+    placetypes = get_single(placetypes)
+
+    if not placetypes:
+        logging.warning("missing placetypes")
+        flask.abort(400)
+
+    placetypes = placetypes.split(',')
+
+    for p in placetypes:
+        if not pt.is_valid_placetype(p):
+            logging.warning("invalid placetype")
+            flask.abort(400)
+
+    features = flask.g.spatial_db.get_by_latlon_recursive(lat, lon, placetypes=placetypes) 
+    features = list(features)
+
+    collection = { 'type': 'FeatureCollection', 'features': [ features ] }
+    return flask.jsonify(collection)
+"""
+
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
 def searchify():
@@ -1078,6 +1134,11 @@ def get_int(k):
     param = get_param(k, sanitize_int)
     return param
 
+def get_float(k):
+
+    param = get_param(k, sanitize_float)
+    return param
+
 def sanitize_str(str):
 
     if str:
@@ -1092,6 +1153,13 @@ def sanitize_int(i):
         i = int(i)
 
     return i
+
+def sanitize_float(f):
+
+    if f:
+        f = float(f)
+
+    return f
 
 if __name__ == '__main__':
 
