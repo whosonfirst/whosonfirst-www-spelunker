@@ -783,6 +783,8 @@ def searchify():
 
     rsp = flask.g.search_idx.search(body, **args)
 
+    # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/6
+
     pagination = rsp['pagination']
     docs = rsp['rows']
 
