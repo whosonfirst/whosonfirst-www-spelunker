@@ -314,7 +314,7 @@ def descendants(id):
         'facets': facets,
         'facet_url': facet_url,
         'doc': doc,
-        'es_query': query,
+        'es_query': body,
     }
 
     return flask.render_template('descendants.html', **template_args)
@@ -364,7 +364,7 @@ def megacities():
         'facets': facets,
         'facet_url': facet_url,
         'pagination_url': pagination_url,
-        'es_query': query,
+        'es_query': body,
     }
 
     return flask.render_template('megacities.html', **template_args)
@@ -443,7 +443,7 @@ def placetype(placetype):
     facet_url = pagination_url
 
     template_args = {
-        'es_query': query,
+        'es_query': body,
         'placetype': placetype,
         'docs': docs,
         'pagination': pagination,
@@ -570,7 +570,7 @@ def tag(tag):
         'pagination': pagination,
         'pagination_url': pagination_url,
         'tag': tag,
-        'es_query': query,
+        'es_query': body,
         'facets': facets,
         'facet_url': facet_url,
     }
@@ -622,7 +622,7 @@ def category(category):
         'pagination': pagination,
         'pagination_url': pagination_url,
         'category': category,
-        'es_query': query,
+        'es_query': body,
         'facets': facets,
         'facet_url': facet_url,
     }
@@ -676,7 +676,7 @@ def code(code):
         'pagination': pagination,
         'pagination_url': pagination_url,
         'postcode': code,
-        'es_query': query,
+        'es_query': body,
         'facets': facets,
         'facet_url': facet_url,
     }
@@ -796,7 +796,7 @@ def searchify():
         'pagination': pagination,
         'pagination_url': pagination_url,
         'query': q,
-        'es_query': query,
+        'es_query': body,
         'facets': facets,
         'facet_url': facet_url,
     }
@@ -1192,5 +1192,8 @@ if __name__ == '__main__':
     port = int(options.port)
 
     app.config["APPLICATION_ROOT"] = "/spelunker"
+
+    # Seriously do not ever run this with 'debug=True' no matter
+    # how tempting. It is a bad idea. It will make you sad.
 
     app.run(port=port)
