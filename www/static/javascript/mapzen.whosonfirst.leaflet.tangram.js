@@ -4,7 +4,7 @@ mapzen.whosonfirst.leaflet = mapzen.whosonfirst.leaflet || {};
 
 mapzen.whosonfirst.leaflet.tangram = (function(){
 
-	var _scenefile = '/spelunker/static/tangram/scene.yaml'
+	var _scenefile = '/spelunker/static/tangram/refill.yaml'
 	var _cache = {};
 
 	var self = {
