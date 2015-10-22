@@ -759,6 +759,7 @@ def searchify():
     query = enfilterify(query)
 
     sort = [
+        { '_score': { 'order': 'desc' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:name' : {'order': 'desc' } },
