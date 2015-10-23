@@ -759,7 +759,6 @@ def searchify():
     query = enfilterify(query)
 
     sort = [
-        # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
         # { '_score': { 'order': 'desc' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
