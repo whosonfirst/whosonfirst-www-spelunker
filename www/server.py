@@ -751,28 +751,64 @@ def searchify():
     esc_q = flask.g.search_idx.escape(q)
 
     query = {
-        'query_string': {
-            'query': esc_q
+        'bool': {
+            'must': [
+                {
+                    'match': {
+                        '_all': {
+                            'query': esc_q
+                        }
+                    }
+                }
+            ],
+            'should': [
+                {
+                    'match': {
+                        'wof:name': {
+                            'type': 'phrase',
+                            'query': esc_q,
+                            'boost': 10
+                        }
+                    }
+                },
+                {
+                    'function_score': {
+                        'functions': [
+                            {
+                                'field_value_factor': {
+                                    'field': 'wof:scale',
+                                    'modifier': 'reciprocal',
+                                    'missing': 10
+                                },
+                                'weight': 1
+                            },
+                            {
+                                'field_value_factor': {
+                                    'field': 'gn:population',
+                                    'modifier': 'log1p',
+                                    'missing': 0
+                                },
+                                'weight': 1
+                            },
+                            {
+                                'field_value_factor': {
+                                    'field': 'wof:megacity',
+                                    'missing': 0
+                                },
+                                'weight': 1
+                            }
+                        ],
+                        'boost': 2
+                    }
+                }
+            ]
         }
     }
 
     query = enfilterify(query)
 
-    sort = [
-        # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
-        # { '_score': { 'order': 'desc' } },
-        { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
-        { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
-        { 'wof:name' : {'order': 'desc' } },
-        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
-        { 'geom:area': {'order': 'desc', 'mode': 'max'} },
-    ]
-
-    # TO DO: boost wof:name and name fields
-
     body = {
-        'query': query,
-        'sort': sort,
+        'query': query
     }
 
     args = {'per_page': 50}
