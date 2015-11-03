@@ -1,4 +1,11 @@
 #!/bin/sh
 
-echo "please write me"
-exit 1
+PYTHON=`which python`
+
+ROOT=''
+
+${ROOT}/setup-dependencies.sh
+
+${ROOT}/setup-certificate-authority.sh
+
+${ROOT}/setup-certificates.sh

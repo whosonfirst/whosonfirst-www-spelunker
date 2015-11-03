@@ -1,7 +1,5 @@
 # ubuntu
 
-A simple shell script for installing the spelunker on a Ubuntu machine.
+Simple shell scripts for installing the spelunker on a Ubuntu machine.
 
-## See also
-
-* http://www.ubuntu.com
+If you want to tell me that Chef is "easier" or at least "better" I will believe you, at least on the second count. I just seem to be able to penetrate the documentation...
