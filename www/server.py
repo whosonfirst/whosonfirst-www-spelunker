@@ -409,6 +409,19 @@ def placetype(placetype):
     if not pt.is_valid_placetype(placetype):
         flask.abort(404)
 
+    # Because this: https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/4
+    # (20151028/thisisaaronland)
+
+    query = {
+        'term': {
+            'wof:placetype': placetype
+        }
+    }
+
+    # For good time, see above...
+    # (20151028/thisisaaronland)
+
+    """
     placetype = pt.placetype(placetype)
     placetype_id = placetype.id()
 
@@ -417,6 +430,7 @@ def placetype(placetype):
             'wof:placetype_id': placetype_id
         }
     }
+    """
 
     query = enfilterify(query)
     
@@ -759,6 +773,8 @@ def searchify():
     query = enfilterify(query)
 
     sort = [
+        # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
+        # { '_score': { 'order': 'desc' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:name' : {'order': 'desc' } },
