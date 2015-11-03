@@ -10,7 +10,7 @@ server {
 
 	ssl on;
 	ssl_certificate YOUR-SSL-CERTIFICATE-GOES-HERE;
-	ssl_certificate_key YOU-SSL-CERTFICATE-GOES-HERE;
+	ssl_certificate_key YOUR-SSL-CERTFICATE-GOES-HERE;
 
 	ssl_session_timeout 5m;
 
@@ -21,7 +21,7 @@ server {
 	location / {
 	# location /something-else {
 
-	    proxy_pass http://127.0.0.1:YOUR-SPELUNKER-PORT-GOES-HERE;
+	    proxy_pass http://127.0.0.1:7777;
 	    proxy_set_header Host $http_host;
 	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     	    proxy_set_header X-Scheme $scheme;
