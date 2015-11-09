@@ -901,6 +901,7 @@ def enfilterify(query):
     if placetype:
 
         ids = []
+        pts = []
 
         for p in placetype:
 
@@ -908,19 +909,23 @@ def enfilterify(query):
                 logging.warning("invalid placetype %s" % p)
                 flask.abort(404)
 
-            placetype = pt.placetype(p)
-            ids.append(placetype.id())
+            pts.append(p)
 
+            # placetype = pt.placetype(p)
+            # ids.append(placetype.id())
+            
         if len(ids) == 1:
 
             filters.append({ 'term': {
-                'wof:placetype_id' : ids[0]
+                # 'wof:placetype_id' : ids[0]
+                'wof:placetype': pts[0]
             }})
 
         else:
 
             filters.append({ 'terms': {
-                'wof:placetype_id' : ids
+                # 'wof:placetype_id' : ids
+                'wof:placetype': pts
             }})
 
 
