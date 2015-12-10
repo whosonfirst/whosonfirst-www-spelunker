@@ -854,12 +854,12 @@ def facetify(query):
                 'size': 100
             }
         },
-        'region_id': {
-            'terms': {
-                'field': 'region_id',
-                'size': 100
-            }
-        }
+        # 'region_id': {
+        #     'terms': {
+        #         'field': 'region_id',
+        #         'size': 100
+        #     }
+        # }
     }
     
     body = {
