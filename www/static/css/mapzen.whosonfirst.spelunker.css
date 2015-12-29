@@ -204,3 +204,12 @@ q {
 #props-toggle-pretty {
     display: none;
 }
+
+.flagged {
+    color: #800000;
+}
+
+.flagged:before {
+    content:" – ";
+    color:#666;
+}
