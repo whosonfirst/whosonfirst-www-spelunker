@@ -32,6 +32,15 @@
     and its <span class="hey-look">population</span> is {{ doc.properties.get('gn:population') |number_format|e }}
   </small>
   {% endif %}
+
+{% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
+<small class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></small>
+{% elif doc.properties.get("edtf:deprecated") %}
+<small class="flagged">this record has been <strong>deprecated</strong></small>
+{% elif doc.properties.get("wof:superseded_by") %}
+<small class="flagged">this record has been <strong>superseded</strong></small>
+{% else %}{% endif %}
+
 </li>
 {% endfor %}
 </ol>

@@ -210,6 +210,6 @@ q {
 }
 
 .flagged:before {
-    content:" – ";
+    content:" / ";
     color:#666;
 }
