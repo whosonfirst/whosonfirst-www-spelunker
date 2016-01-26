@@ -112,7 +112,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 			m.eachLayer(function(l){
 
-					if (s}{
+					if (s){
 						return;
 					}
 					
@@ -147,7 +147,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
 
-		'screenshot': function(on_screenshot){
+		'screenshot': function(id, on_screenshot){
 
 			if (! on_screenshot){
 
@@ -156,7 +156,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				};
 			}
 
-			var scene = self.scene();
+			var scene = self.scene(id);
 
 			if (! scene){
 				console.log("failed to retrieve scene");

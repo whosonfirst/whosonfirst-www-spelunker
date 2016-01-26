@@ -435,7 +435,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.data = (function(){
 
-	var _endpoint = "http://whosonfirst.mapzen.com/data/";
+	var _endpoint = "https://whosonfirst.mapzen.com/data/";
 
 	var self = {
 
@@ -835,7 +835,7 @@ mapzen.whosonfirst.leaflet = mapzen.whosonfirst.leaflet || {};
 
 mapzen.whosonfirst.leaflet.tangram = (function(){
 
-	var _scenefile = '/spelunker/static/tangram/scene.yaml'
+	var _scenefile = '/spelunker/static/tangram/refill.yaml'
 	var _cache = {};
 
 	var self = {
@@ -877,13 +877,13 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		'tangram': function(scene){
 
-			var scene = self.scenefile();
+			var scenefile = self.scenefile();
 
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
 			var tangram = Tangram.leafletLayer({
-				scene: scene,
+				scene: scenefile,
 				numWorkers: 2,
         			unloadInvisibleTiles: false,
 				updateWhenIdle: false,
@@ -934,6 +934,68 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			}
 
 			return parts.join(" | ");
+		},
+
+		'scene': function(id){
+
+			var m = self.map(id);
+			var s = undefined;
+
+			m.eachLayer(function(l){
+
+					if (s){
+						return;
+					}
+					
+					if (! l.scene){
+						return;
+					}
+					
+					if (l.scene.gl) {
+						s = l.scene;
+					}
+			});
+
+			return s;
+		},
+
+		// requires https://github.com/eligrey/FileSaver.js
+		// so commented out for now until I can add suitable
+		// checks and error handling (20160126/thisisaaronland)
+
+		/*
+		'screenshot_as_file': function(){
+
+			var fname = 'tangram-' + (+new Date()) + '.png';
+
+			var callback = function(sh){					
+				saveAs(sh.blob, fname);
+			};
+			
+			self.screenshot(callback);
+		},
+		*/
+
+		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
+
+		'screenshot': function(id, on_screenshot){
+
+			if (! on_screenshot){
+
+				on_screenshot = function(sh) {
+					window.open(sh.url);
+				};
+			}
+
+			var scene = self.scene(id);
+
+			if (! scene){
+				console.log("failed to retrieve scene");
+				return false;
+			}
+
+			scene.screenshot().then(on_screenshot);
+			return true;
 		}
 	};
 
@@ -1250,11 +1312,9 @@ mapzen.whosonfirst.spelunker = (function(){
 		},
 		
 		'toggle_data_endpoint': function(placetype){
-
-			var root = location.origin + "/";
-			var dat = 'data/';
-
-			mapzen.whosonfirst.data.endpoint(root + 'data/');
+			// var root = location.origin + "/";
+			// var data = 'data/';
+			// mapzen.whosonfirst.data.endpoint(root + 'data/');
 		},
 
 		'draw_list': function(classname){
@@ -1468,7 +1528,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 						else if (ctx == 'sg-city'){
 							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "search/?q=" + encodeURIComponent(d);
+							var link = root + "search/?q=" + encodeURIComponent(d) + "&placetype=locality";
 							return render_link(link, d, ctx);
 						}
 
@@ -1721,4 +1781,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2015-09-17T11:00:27 UTC
+// last bundled at 2016-01-26T20:03:42 UTC
