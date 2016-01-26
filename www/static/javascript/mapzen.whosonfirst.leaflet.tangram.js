@@ -129,21 +129,22 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		},
 
 		// requires https://github.com/eligrey/FileSaver.js
-		// so commented out for now until I can add suitable
-		// checks and error handling (20160126/thisisaaronland)
 
-		/*
-		'screenshot_as_file': function(){
+		'screenshot_as_file': function(id){
 
-			var fname = 'tangram-' + (+new Date()) + '.png';
+			if (typeof(saveAs) == "undefined"){
+				console.log("missing 'saveAs' controls");
+				return false
+			}
+
+			var fname = 'whosonfirst-spelunker-' + (+new Date()) + '.png';
 
 			var callback = function(sh){					
 				saveAs(sh.blob, fname);
 			};
 			
-			self.screenshot(callback);
+			return self.screenshot(id, callback);
 		},
-		*/
 
 		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
 
