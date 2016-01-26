@@ -46,13 +46,13 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		'tangram': function(scene){
 
-			var scene = self.scenefile();
+			var scenefile = self.scenefile();
 
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
 			var tangram = Tangram.leafletLayer({
-				scene: scene,
+				scene: scenefile,
 				numWorkers: 2,
         			unloadInvisibleTiles: false,
 				updateWhenIdle: false,
@@ -103,6 +103,68 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			}
 
 			return parts.join(" | ");
+		},
+
+		'scene': function(id){
+
+			var m = self.map(id);
+			var s = undefined;
+
+			m.eachLayer(function(l){
+
+					if (s}{
+						return;
+					}
+					
+					if (! l.scene){
+						return;
+					}
+					
+					if (l.scene.gl) {
+						s = l.scene;
+					}
+			});
+
+			return s;
+		},
+
+		// requires https://github.com/eligrey/FileSaver.js
+		// so commented out for now until I can add suitable
+		// checks and error handling (20160126/thisisaaronland)
+
+		/*
+		'screenshot_as_file': function(){
+
+			var fname = 'tangram-' + (+new Date()) + '.png';
+
+			var callback = function(sh){					
+				saveAs(sh.blob, fname);
+			};
+			
+			self.screenshot(callback);
+		},
+		*/
+
+		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
+
+		'screenshot': function(on_screenshot){
+
+			if (! on_screenshot){
+
+				on_screenshot = function(sh) {
+					window.open(sh.url);
+				};
+			}
+
+			var scene = self.scene();
+
+			if (! scene){
+				console.log("failed to retrieve scene");
+				return false;
+			}
+
+			scene.screenshot().then(on_screenshot);
+			return true;
 		}
 	};
 

@@ -1,3 +1,9 @@
+tangram:
+	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi
+	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
+	if test -e www/static/javascript/tangram.min.js; then cp www/static/javascript/tangram.min.js www/static/javascript/tangram.min.js.bak; fi
+	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
+
 js: js-dependencies js-app
 
 js-dependencies:

@@ -1,6 +1,7 @@
 *~
 *.pyc
 *.cfg
+*.bak
 *.DS_Store
 www/static/tangram/*.old
 www/static/tangram/images/*.old
