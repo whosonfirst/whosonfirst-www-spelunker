@@ -7,8 +7,13 @@ sudo apt-get install -y git tcsh emacs24-nox htop sysstat ufw fail2ban unattende
 sudo apt-get install -y gdal-bin
 sudo apt-get install -y golang
 sudo apt-get install -y make nginx gunicorn python-gevent python-flask
-# sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
-sudo apt-get install -y ruby-ronn
+
+# unfortunately this excess baggage is still necessary until I finish ripping
+# out all the PGIS stuff from the spelunker... which maybe we don't want to do
+# because it's good to remember that all of this stuff should work with PGIS...
+# (20160102/thisisaaronland)
+
+sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
 
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-service.html
 
