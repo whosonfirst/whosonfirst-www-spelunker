@@ -30,6 +30,7 @@ then
 
     cp ${PROJECT}/init.d/${PROJECT_NAME}.sh.example ${PROJECT}/init.d/${PROJECT_NAME}.sh
 
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-NAME!${PROJECT_NAME}!g" ${PROJECT}/init.d/${PROJECT_NAME}.sh
     ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-ROOT-GOES-HERE!${PROJECT}/www!" ${PROJECT}/init.d/${PROJECT_NAME}.sh
     ${PERL} -p -i -e "s!YOUR-SPELUNKER-GUNICORN-CONFIG-GOES-HERE!${PROJECT}/gunicorn/${PROJECT_NAME}.cfg!" ${PROJECT}/init.d/${PROJECT_NAME}.sh
 

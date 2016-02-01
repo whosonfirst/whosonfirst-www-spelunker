@@ -14,12 +14,12 @@
 # http://werxltd.com/wp/2012/01/05/simple-init-d-script-template/
 
 # To make sure this runs at startup, do:
-# update-rc.d whosonfirst-spelunker-server.sh defaults
+# update-rc.d YOUR-SPELUNKER-NAME.sh defaults
 
 GUNICORN_APP_NAME='server'
 GUNICORN_APP_ROOT='YOUR-SPELUNKER-WWW-ROOT-GOES-HERE'
 GUNICORN_CONFIG='YOUR-SPELUNKER-GUNICORN-CONFIG-GOES-HERE'
-GUNICORN_PID_NAME='whosonfirst-spelunker-server'
+GUNICORN_PID_NAME='YOUR-SPELUNKER-NAME'
 
 GUNICORN=`which gunicorn`
 GUNICORN_OPTS="-c ${GUNICORN_CONFIG}"
