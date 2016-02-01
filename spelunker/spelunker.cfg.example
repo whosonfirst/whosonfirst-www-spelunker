@@ -1,0 +1,9 @@
+[search]
+host=localhost
+port=9200
+
+[spatial]
+db_host=localhost
+db_name=spelunker
+db_user=spelunker
+db_pswd=

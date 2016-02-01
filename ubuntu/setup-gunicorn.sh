@@ -11,13 +11,18 @@ PROJECT_NAME=`basename ${PROJECT}`
 
 PERL=`which perl`
 
+if [ ! -f ${PROJECT}/spelunker/spelunker.cfg ]
+then
+    cp ${PROJECT}/spelunker/spelunker.cfg.example ${PROJECT}/spelunker/spelunker.cfg
+fi
+
 if [ ! -f ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg ]
 then
     cp ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg.example ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
 
     ${PERL} -p -i -e "s!YOUR-SPELUNKER-PORT-GOES-HERE!7777!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
     ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-GOES-HERE!${PROJECT}/www!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE!${PROJECT}/spelunker.cfg!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE!${PROJECT}/spelunker/spelunker.cfg!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
 fi
 
 if [ ! -f ${PROJECT}/init.d/${PROJECT_NAME}.sh ]
