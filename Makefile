@@ -6,8 +6,9 @@ setup:
 	sudo ubuntu/setup-certified-certs.sh
 	ubuntu/setup-gunicorn.sh
 	ubuntu/setup-nginx.sh
-	
+
 index:
+	ubuntu/setup-postgis-index.sh
 	ubuntu/setup-elasticsearch-index.sh
 
 tangram:

@@ -67,15 +67,21 @@ logging.basicConfig(level=logging.INFO)
 @app.before_request
 def init():
 
+    # See this - yeah, like that. Maybe one day again but
+    # for now it just makes everything fussy and complicated
+    # specifically because we don't actually use it anywhere
+    # (20160201/thisisaaronland)
+
+    """
     spatial_dsn = os.environ.get('WOF_SPATIAL_DSN', None)
     spatial_db = spatial.query(spatial_dsn)
+    flask.g.spatial_db = spatial_db
+    """
 
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
 
     search_idx = search.query(host=search_host, port=search_port)
-
-    flask.g.spatial_db = spatial_db
     flask.g.search_idx = search_idx
 
 # http://flask.pocoo.org/snippets/29/
