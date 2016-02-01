@@ -1,3 +1,15 @@
+setup:
+	ubuntu/setup-ubuntu.sh
+	ubuntu/setup-py-mapzen.sh
+	ubuntu/setup-certified.sh
+	sudo ubuntu/setup-certified-ca.sh
+	sudo ubuntu/setup-certified-certs.sh
+	ubuntu/setup-gunicorn.sh
+	ubuntu/setup-nginx.sh
+	
+index:
+	ubuntu/setup-elasticsearch-index.sh
+
 tangram:
 	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi
 	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
