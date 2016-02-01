@@ -13,6 +13,9 @@ spelunker_cfg = 'YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE'
 
 spelunker_cfg = os.path.join(spelunker_root, spelunker_cfg)
 
+if not os.path.exists(spelunker_cfg):
+   raise Exception, "missing spelunker config file (%s)" % spelunker_cfg
+
 workers = multiprocessing.cpu_count() * 2 + 1
 worker_class = "egg:gunicorn#gevent"
 
