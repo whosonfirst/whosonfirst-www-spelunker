@@ -15,6 +15,20 @@ sudo apt-get install -y make nginx gunicorn python-gevent python-flask
 
 sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
 
+# See above...
+#
+# ```
+# CREATE TABLE whosonfirst (id BIGINT PRIMARY KEY, parent_id BIGINT, placetype VARCHAR, properties TEXT, geom GEOGRAPHY(MULTIPOLYGON, 4326), centroid GEOGRAPHY(POINT, 4326));
+# CREATE INDEX by_geom ON whosonfirst USING GIST(geom);
+# CREATE INDEX by_placetype ON whosonfirst (placetype);
+# VACUUM ANALYZE;
+# ```
+# 
+# ```
+# $> psql -d YOUR_DATBASE -c "CREATE EXTENSION postgis;"
+# $> psql -d YOUR_DATABASE -c "CREATE EXTENSION postgis_topology;"
+# ```
+
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-service.html
 
 sudo add-apt-repository ppa:webupd8team/java -y
