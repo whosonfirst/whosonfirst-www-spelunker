@@ -1,8 +1,14 @@
 #!/bin/sh
 
+WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
+PARENT=`dirname $WHOAMI`
+
+PROJECT=`dirname $PARENT`
+PROJECT_NAME=`basename ${PROJECT}`
+
 GIT=`which git`
 
-if [ -f /usr/local/mapzen/py-mapzen-whosonfirst ]
+if [ -d /usr/local/mapzen/py-mapzen-whosonfirst ]
 then
     cd /usr/local/mapzen/py-mapzen-whosonfirst
     git pull origin master
