@@ -5,6 +5,9 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
 
+	    // this is invoked by by mapzen.whosonfirst.spelunker.init.js
+	    // which is running code (20160202/thisisaaronland)
+
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
 	    },

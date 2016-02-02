@@ -5,6 +5,10 @@ mapzen.whosonfirst.config = (function(){
 
     var self = {
 
+	// this is invoked by mapzen.whosonfirst.spelunker.init()
+	// which in turn is invoked by mapzen.whosonfirst.spelunker.init.js
+	// which is running code (20160202/thisisaaronland)
+
         'init': function(){
 	    
 	    var root = document.body.getAttribute("data-abs-root-url");
