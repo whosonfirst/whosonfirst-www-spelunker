@@ -127,6 +127,9 @@ mapzen.whosonfirst.spelunker = (function(){
 			}
 		},
 
+	    	// TODO: THIS IS WHAT WE NEED TO TEACH TO USE yes-no-fix
+	    	// (20160201/thisisaaronland)
+
 		'render_properties': function(props){
 
 			var render = function(d, ctx){
