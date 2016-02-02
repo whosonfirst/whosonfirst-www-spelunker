@@ -7,6 +7,10 @@ setup:
 	ubuntu/setup-gunicorn.sh
 	ubuntu/setup-nginx.sh
 
+upgrade:
+	sudo apt-get update
+	sudo apt-get upgrade
+
 index:
 	ubuntu/setup-postgis-index.sh
 	ubuntu/setup-elasticsearch-index.sh
