@@ -1218,6 +1218,8 @@ if __name__ == '__main__':
     os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
     os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
 
+    # os.environ['WOF_DATA_ENDPOINT'] = cfg.get('data', 'endpoint')
+
     port = int(options.port)
 
     app.config["APPLICATION_ROOT"] = "/spelunker"
