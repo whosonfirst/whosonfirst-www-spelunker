@@ -4,7 +4,10 @@ mapzen.whosonfirst.leaflet = mapzen.whosonfirst.leaflet || {};
 
 mapzen.whosonfirst.leaflet.tangram = (function(){
 
-	var _scenefile = '/spelunker/static/tangram/refill.yaml'
+    	// See the way this is a relative path? Yeah, we assign abs_root_url
+    	// below in the 'scenefile' method (20160201/thisisaaronland)
+
+	var _scenefile = 'static/tangram/refill.yaml'
 	var _cache = {};
 
 	var self = {
@@ -68,7 +71,8 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				_scenefile = url;
 			}
 
-			return _scenefile;
+  	  		var root = document.body.getAttribute("data-abs-root-url");
+			return root + _scenefile;
 		},
 
 		'attributions': function(){
