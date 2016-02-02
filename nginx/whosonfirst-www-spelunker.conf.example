@@ -30,6 +30,13 @@ server {
 	    # proxy_set_header X-Script-Name /something-else;
     	}
 
+	# /data - strictly speaking the stuff around serving static wof-data files
+	# should probably be in its own repository.. but today it is not and it is
+	# bundled here all wrapped up with the other stuff (20160202/thisisaaronland)
+	# 
+	# see also:
+	# https://www.nginx.com/resources/admin-guide/serving-static-content/
+
 	# http://linuxplayer.org/2013/06/nginx-try-files-on-multiple-named-location-or-server
 	#
 	# because who knows where the data is at any given moment... this is not a feature
@@ -37,6 +44,10 @@ server {
 	# (20150909/thisisaaronland)
 
 	location /data/ {
+		sendfile           on;
+		sendfile_max_chunk 1m;
+		tcp_nopush on;
+
 		try_files $uri @data_admin;
         }
 
