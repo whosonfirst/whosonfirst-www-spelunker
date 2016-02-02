@@ -37,42 +37,37 @@ server {
 	# (20150909/thisisaaronland)
 
 	location /data/ {
-		try_files $uri @data_github;
+		try_files $uri @data_admin;
         }
 
-	location @data_github{
+	location @data_admin {
 
-		proxy_set_header       Authorization '';
-		proxy_hide_header      Set-Cookie;
-		proxy_ignore_headers   "Set-Cookie";
+		root /usr/local/mapzen/whosonfirst-data;
 
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
-
-		resolver 8.8.8.8;
-	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
-
-		proxy_intercept_errors on;
-		recursive_error_pages on;
-		error_page 404 = @data_github_venue;
-	}
-
-	location @data_github_venue{
-
-		proxy_set_header       Authorization '';
-		proxy_hide_header      Set-Cookie;
-		proxy_ignore_headers   "Set-Cookie";
-
-	    	add_header 'Access-Control-Allow-Origin' '*';
-            	add_header 'Access-Control-Allow-Methods' 'GET';
-
-		resolver 8.8.8.8;
-	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-venue/master/$uri;
 
 		proxy_intercept_errors on;
 		recursive_error_pages on;
 		error_page 404 = @data_s3;
-	}
+        }
+
+#	location @data_github{
+#
+#		proxy_set_header       Authorization '';
+#		proxy_hide_header      Set-Cookie;
+#		proxy_ignore_headers   "Set-Cookie";
+#
+#	    	add_header 'Access-Control-Allow-Origin' '*';
+#           	add_header 'Access-Control-Allow-Methods' 'GET';
+#
+#		resolver 8.8.8.8;
+#	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
+#
+#		proxy_intercept_errors on;
+#		recursive_error_pages on;
+#		error_page 404 = @data_s3;
+#	}
 
 	location @data_s3{
 
