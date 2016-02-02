@@ -16,13 +16,7 @@ mapzen.whosonfirst.spelunker = (function(){
 		var body = document.body;
 		return body.getAttribute("data-abs-root-url");
 	    },
-	    
-	    'toggle_data_endpoint': function(placetype){
-		// var root = location.origin + "/";
-		// var data = 'data/';
-		// mapzen.whosonfirst.data.endpoint(root + 'data/');
-	    },
-	    
+	    	    
 	    'draw_list': function(classname){
 		
 		var locs = document.getElementsByClassName(classname);
