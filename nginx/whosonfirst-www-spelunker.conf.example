@@ -9,8 +9,8 @@ server {
 	server_name localhost;
 
 	ssl on;
-	ssl_certificate YOUR-SSL-CERTIFICATE-GOES-HERE;
-	ssl_certificate_key YOUR-SSL-CERTFICATE-GOES-HERE;
+	ssl_certificate __PROJECT_SSLCERT__;
+	ssl_certificate_key __PROJECT_SSLKEY__;
 
 	ssl_session_timeout 5m;
 
@@ -48,12 +48,12 @@ server {
 		sendfile_max_chunk 1m;
 		tcp_nopush on;
 
-		try_files $uri @data_admin;
+		try_files $uri @data_local;
         }
 
-	location @data_admin {
+	location @data_local {
 
-		root /usr/local/mapzen/whosonfirst-data;
+		root __PROJECT__/data;
 
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
