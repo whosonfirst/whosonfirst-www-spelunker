@@ -14,9 +14,6 @@ mapzen.whosonfirst.data = (function(){
 				_endpoint = e;
 			}
 
-		    	var root = document.body.getAttribute("data-abs-root-url") + "data/";
-		    	return root;
-
 			return _endpoint;
 		},
 

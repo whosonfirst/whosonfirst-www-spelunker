@@ -1,0 +1,18 @@
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
+
+mapzen.whosonfirst.config = (function(){
+
+    var self = {
+
+        'init': function(){
+	    
+	    var root = document.body.getAttribute("data-abs-root-url");
+	    var data = root + "data/";
+	    
+	    mapzen.whosonfirst.data.endpoint(data);
+	}
+    };
+
+    return self;
+})();
