@@ -1,3 +1,6 @@
+[data]
+endpoint=
+
 [search]
 host=localhost
 port=9200

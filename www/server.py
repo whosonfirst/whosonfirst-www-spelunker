@@ -78,6 +78,8 @@ def init():
     flask.g.spatial_db = spatial_db
     """
 
+    flask.g.data_endpoint = os.environ.get('WOF_DATA_ENDPOINT', None)
+
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
 
@@ -1218,7 +1220,7 @@ if __name__ == '__main__':
     os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
     os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
 
-    # os.environ['WOF_DATA_ENDPOINT'] = cfg.get('data', 'endpoint')
+    os.environ['WOF_DATA_ENDPOINT'] = cfg.get('data', 'endpoint')
 
     port = int(options.port)
 
