@@ -11,6 +11,10 @@ index:
 	ubuntu/setup-postgis-index.sh
 	ubuntu/setup-elasticsearch-index.sh
 
+mapzen:
+	if test -e www/static/css/mapzen.styleguide.css; then cp www/static/css/mapzen.styleguide.css www/static/css/mapzen.styleguide.css.bak; fi
+	curl -s -o www/static/css/mapzen.styleguide.css https://mapzen.com/common/styleguide/styles/styleguide.css
+
 tangram:
 	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi
 	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
