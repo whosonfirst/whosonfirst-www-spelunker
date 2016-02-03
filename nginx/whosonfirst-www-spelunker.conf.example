@@ -89,7 +89,14 @@ server {
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
 
+		# See the part where there is not `/` between `.com` and `$uri`
+		# Yeah, that, because we are assuming that everything is being
+		# served off of `/data` which gets passed down the tree and
+		# https://s3.amazonaws.com/whosonfirst.mapzen.com//data/856/337/93/85633793.geojson
+		# (for example) will return 404 on account of those two `//` in
+		# the path (20160203/thisisaaronland)
+
 		resolver 8.8.8.8;
-		proxy_pass https://s3.amazonaws.com/whosonfirst.mapzen.com/$uri;
+		proxy_pass https://s3.amazonaws.com/whosonfirst.mapzen.com$uri;
 	}
 }
