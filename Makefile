@@ -1,3 +1,7 @@
+upgrade:
+	sudo apt-get update
+	sudo apt-get upgrade
+
 setup:
 	ubuntu/setup-ubuntu.sh
 	ubuntu/setup-py-mapzen.sh
@@ -5,15 +9,15 @@ setup:
 	sudo ubuntu/setup-certified-ca.sh
 	sudo ubuntu/setup-certified-certs.sh
 	ubuntu/setup-gunicorn.sh
-	ubuntu/setup-nginx.sh
+	ubuntu/setup-nginx.sh $(data)
+	ubuntu/setup-spelunker.sh $(data)
 
-upgrade:
-	sudo apt-get update
-	sudo apt-get upgrade
+data:
+	ubuntu/setup-data.sh $(data)
 
 index:
-	ubuntu/setup-postgis-index.sh
-	ubuntu/setup-elasticsearch-index.sh
+	ubuntu/setup-postgis-index.sh $(data)
+	ubuntu/setup-elasticsearch-index.sh $(data)
 
 tangram:
 	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi

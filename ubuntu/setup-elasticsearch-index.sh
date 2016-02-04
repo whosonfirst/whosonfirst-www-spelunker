@@ -7,8 +7,6 @@ PROJECT=`dirname $PARENT`
 
 DATA=$1
 
-# see also: ubuntu/setup-data.sh
-
 if [ "${DATA}" = "" ]
 then
     DATA="${PROJECT}/data"
