@@ -30,13 +30,45 @@ make setup
 make index
 ```
 
-These are separate targets because depending on the machine you're using indexing the data can take quite a long time.
+These are separate targets because depending on the machine you're using indexing the data can take quite a long time. _Please be sure to read the section on data (below) for charging ahead and invoking the Makefile or installing software._
 
 ### Data sources
 
+The convention is to store all Who's On First (WOF) data in a root `/usr/local/mapzen/whosonfirst-data` directory. That is however just a convention. For the purposes of the we care about the location of WOF data in three places:
+
+* The indexing scripts for storing WOF data in one or more database (like Elasticsearch)
+* The config file for the webserver (nginx) so that it knows how to resolve requests for a WOF document
+* The `make-data.sh` script which will fetch WOF data "bundles" from the Internet and store them locally
+
+#### make-data.sh
+
+The `ubuntu/make-data.sh` script is a small tool that will download bundled versions of [common placetypes in WOF]() and store them in a sub-directory of _this repository_ called `data`. You can override the destination folder by passing in a path (to a folder) as the first argument to the script. For example:
+
 ```
-config.vm.synced_folder "/usr/local/mapzen/whosonfirst-data", "/usr/local/mapzen/whosonfirst-data"
+$> ubuntu/make-data.sh /path/to/some-other/whosonfirst-data/folder
 ```
+
+If you are invoking the `data` target from the Makefile you would prepend the target with a `data=path` argument. For example:
+
+```
+make data=/path/to/some-other/whosonfirst-data/folder data
+```
+
+#### Telling the rest of the spelunker about your data source
+
+The short version is that, as in the examples above, relevant scripts in the `ubunut` directory will accept an alternative data path as their first argument and relevant make targets will accept a `data=path` prefix.
+
+The relevant `ubuntu` scripts are:
+
+* setup-data.sh
+* setup-elasticsearch-index.sh
+* setup-nginx.sh - _actually as of this writing that is a lie but it will shortly_
+
+The relevant `make` targets are:
+
+* data
+* index
+* setup _because it invokes the `setup-nginx.sh` script_
 
 ## See also
 

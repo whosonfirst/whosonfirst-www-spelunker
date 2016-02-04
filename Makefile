@@ -10,7 +10,7 @@ setup:
 	sudo ubuntu/setup-certified-certs.sh
 	ubuntu/setup-gunicorn.sh
 	ubuntu/setup-nginx.sh $(data)
-	ubuntu/setup-spelunker.sh $(data)
+	ubuntu/setup-spelunker.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
