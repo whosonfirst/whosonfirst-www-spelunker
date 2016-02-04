@@ -34,16 +34,9 @@ These are separate targets because depending on the machine you're using indexin
 
 ### Data sources
 
-_Everything here is basically correct but if you're reading this it means that we are still in the process of working through some boring (but important) details about how and where the data lives. The current easiest-thing is to skip the `whosonfirst-venue` data altogether and simply make sure that a copy of the `whosonfirst-data` repository lives in the `/usr/local/mapzen` folder (which you may need to create manually)._
-
-You will need to have a copy of [whosonfirst-data
-repository](https://github.com/whosonfirst/whosonfirst-data/) and/or [whosonfirst-venue
-repository](https://github.com/whosonfirst/whosonfirst-venue/) available locally
-on your machine.
-
-Keep in mind that the `whosonfirst-venue` repository is **VERY VERY BIG**. It's
-full of interesting stuff but if you're pressed for time or disk space you
-should probably start with the `whosonfirst-data` repository which is more manageable.
+```
+config.vm.synced_folder "/usr/local/mapzen/whosonfirst-data", "/usr/local/mapzen/whosonfirst-data"
+```
 
 ## See also
 
