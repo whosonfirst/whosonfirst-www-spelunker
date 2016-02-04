@@ -1,25 +1,23 @@
 # whosonfirst-www-spelunker
 
-A simple Flask-based spelunker for poking around Who's On First data (stored in [PostGIS](https://github.com/mapzen/py-mapzen-whosonfirst-spatial) and [Elasticsearch](https://github.com/mapzen/py-mapzen-whosonfirst-search)).
+A simple Flask-based spelunker for poking around Who's On First data stored in an [Elasticsearch](https://github.com/mapzen/py-mapzen-whosonfirst-search)) document index.
 
-## IMPORTANT
-
-This is still a **work in progress**. As such it lacks proper documentation or
-build instructions. Those will be added in relatively short order.
-
-It is also important to understand that the spelunker is still as much a
-public-facing resource to help work through what the public-facing resource
-(spelunker) _should_ as it is to help us (Mapzen) visualize and sanity check the
-data.
-
-The spelunker does many things but it does not do everything, yet or in some
-cases ever.
+The spelunker is very much a tool to help work through what the public-facing resource (spelunker) _should_ as it is to help us (Mapzen) visualize and sanity check the
+data. The spelunker does many things but it does not do everything yet, or in some cases ever.
 
 ## Installation
 
-First of all there is a handy [vagrant-whosonfirst-www-spelunker](https://github.com/whosonfirst/vagrant-whosonfirst-www-spelunker) Vagrant package for building all the software dependencies and running a copy of the spelunker on your local machine. That's probably a good (better) place to start if you just want to poke around a local copy of the Who's On First data.
+The Who's On First spelunker is primarily designed for running on a Ubuntu Linux distribution. It's not designed _for_ a Ubuntu distribution so adapting it to another platform shouldn't be difficult but that is not work we've done yet.
 
-The gorey details follow.
+There is also a handy [vagrant-whosonfirst-www-spelunker](https://github.com/whosonfirst/vagrant-whosonfirst-www-spelunker) Vagrant package for building all the software dependencies and running a copy of the spelunker on your local machine. That's probably a good (better) place to start if you just want to poke around a local copy of the Who's On First data.
+
+If you're feeling confident or dangerous or both there is a handy `Makefile` included that will attempt to install and configure everything you need to fire up a copy of the spelunker over an encrypted connection at `https://localhost/`. Like this:
+
+```
+make build
+```
+
+Note that default build scripts will create a self-signed TLS certificate so you should expect your browser to display a security warning. The `build` target is actually just a wrapper around three other targets: `setup`, `data` and `index` which are all (hopefully) self-explanatory but the gorey details follow below.
 
 ### Software
 
@@ -62,17 +60,13 @@ The relevant `ubuntu` scripts are:
 
 * setup-data.sh
 * setup-elasticsearch-index.sh
-* setup-nginx.sh - _actually as of this writing that is a lie but it will shortly_
+* setup-nginx.sh
 
 The relevant `make` targets are:
 
 * data
 * index
-* setup _because it invokes the `setup-nginx.sh` script_
-
-#### Telling the rest of the spelunker about your data source... online
-
-As mentioned the web server running the spelunker is also serving your data as discrete resources (aka web pages).
+* setup _- because it invokes the `setup-nginx.sh` script_
 
 ## See also
 

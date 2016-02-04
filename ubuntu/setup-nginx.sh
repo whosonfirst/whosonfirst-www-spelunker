@@ -6,6 +6,13 @@ PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
 PROJECT_NAME=`basename ${PROJECT}`
 
+DATA=$1
+
+if [ "${DATA}" = "" ]
+then
+    DATA="${PROJECT}/data"
+fi
+
 # echo "project ${PROJECT}"
 # echo "project name ${PROJECT_NAME}"
 
@@ -18,6 +25,7 @@ then
     cp ${PROJECT}/nginx/${PROJECT_NAME}.conf.example ${PROJECT}/nginx/${PROJECT_NAME}.conf
 
     ${PERL} -p -i -e "s!__PROJECT__!${PROJECT}!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
+    ${PERL} -p -i -e "s!__PROJECT_DATA__!${DATA}!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
 
     # see also: ubuntu/setup-certified*.sh
 

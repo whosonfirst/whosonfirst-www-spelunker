@@ -2,6 +2,8 @@ upgrade:
 	sudo apt-get update
 	sudo apt-get upgrade
 
+build:	setup data install
+
 setup:
 	ubuntu/setup-ubuntu.sh
 	ubuntu/setup-py-mapzen.sh

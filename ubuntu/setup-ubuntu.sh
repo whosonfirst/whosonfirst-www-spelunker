@@ -13,7 +13,7 @@ sudo apt-get install -y make nginx gunicorn python-gevent python-flask
 # because it's good to remember that all of this stuff should work with PGIS...
 # (20160102/thisisaaronland)
 
-sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
+# sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
 
 # See above...
 #
