@@ -34,7 +34,7 @@ These are separate targets because depending on the machine you're using indexin
 
 ### Data sources
 
-The convention is to store all Who's On First (WOF) data in a root `/usr/local/mapzen/whosonfirst-data` directory. That is however just a convention. For the purposes of the we care about the location of WOF data in three places:
+The convention is to store all Who's On First (WOF) data in a root `/usr/local/mapzen/whosonfirst-data` directory. That is however just a convention. For the purposes of the spelunker we care about the location of WOF data in three places:
 
 * The indexing scripts for storing WOF data in one or more database (like Elasticsearch)
 * The config file for the webserver (nginx) so that it knows how to resolve requests for a WOF document
@@ -69,6 +69,10 @@ The relevant `make` targets are:
 * data
 * index
 * setup _because it invokes the `setup-nginx.sh` script_
+
+#### Telling the rest of the spelunker about your data source... online
+
+As mentioned the web server running the spelunker is also serving your data as discrete resources (aka web pages).
 
 ## See also
 
