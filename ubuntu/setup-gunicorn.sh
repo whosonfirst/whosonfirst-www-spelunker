@@ -42,5 +42,4 @@ then
     sudo update-rc.d ${PROJECT_NAME}.sh defaults
 fi
 
-# echo "please finish writing me"
-exit 1
+exit 0
