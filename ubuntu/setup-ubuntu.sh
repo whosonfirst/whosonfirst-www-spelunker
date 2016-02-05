@@ -1,5 +1,10 @@
 #!/bin/sh
 
+WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
+
+PARENT=`dirname $WHOAMI`
+PROJECT=`dirname $PARENT`
+
 sudo apt-get update
 sudo apt-get upgrade -y
 
@@ -35,27 +40,4 @@ sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-
 #     sudo -u postgres psql -d whosonfirst -c "VACUUM ANALYZE;"
 # fi
 
-# see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/18
-
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-service.html
-
-sudo add-apt-repository ppa:webupd8team/java -y
-sudo apt-get install oracle-java8-installer -y
-
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-repositories.html
-
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.7.list
-sudo apt-get update && sudo apt-get install elasticsearch
-sudo update-rc.d elasticsearch defaults 95 10
-
-if [ -f /var/run/elasticsearch/elasticsearch.pid ]
-then
-     sudo /etc/init.d/elasticsearch start
-     sleep 10
-else
-
-	# make sure elasticsearch is actually running...
-	PID=`cat /var/run/elasticsearch/elasticsearch.pid`
-	# ps -p ${PID}
-fi
+${PARENT}/setup-elasticsearch.sh
