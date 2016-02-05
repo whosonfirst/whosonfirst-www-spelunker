@@ -13,7 +13,8 @@ then
 
     sudo apt-get install -y ruby-ronn
 
-    git clone git@github.com:rcrowley/certified.git ${ROOT}/certified
+    git clone https://github.com/rcrowley/certified.git ${ROOT}/certified
+    # git clone git@github.com:rcrowley/certified.git ${ROOT}/certified
     cd ${ROOT}/certified
 
     sudo make install
