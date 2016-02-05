@@ -11,7 +11,7 @@ sudo apt-get -y upgrade
 if [ ! -d ${ROOT}/certified ]
 then
 
-    sudo apt-get install ruby-ronn
+    sudo apt-get install -y ruby-ronn
 
     git clone git@github.com:rcrowley/certified.git ${ROOT}/certified
     cd ${ROOT}/certified
