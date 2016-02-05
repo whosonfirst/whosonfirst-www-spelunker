@@ -2,7 +2,7 @@
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
 {% block content %}
 
-<div class="row">
+<div class="row" id="wof-record" data-wof-id="{{ doc.properties.get('wof:id') |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
 <h2>
 {{ doc.properties.get("wof:name") |e }} <small>{{doc.properties.get("wof:path") |e }}</small>
 
@@ -105,84 +105,5 @@
 </div>
 </div>
 
-<script type="text/javascript">
-
-window.onload = function(e){
-
-	// first we draw the map
-
-	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', {{ doc.bbox.1|e }},{{ doc.bbox.0|e }}, {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }});
-	mapzen.whosonfirst.enmapify.render_id(map, {{ doc.properties.get("wof:id") |e }});
-
-	// now we format the properties hash
-
-	var url = mapzen.whosonfirst.data.id2abspath({{ doc.properties.get("wof:id") |e }});
-
-	var cb = function(feature){
-
-		var props = feature['properties'];
-		var id = props['wof:id'];
-
-		try {
-			var pretty = mapzen.whosonfirst.spelunker.render_properties(props);
-		}
-
-		catch(e) {
-			mapzen.whosonfirst.log.error("failed to format properties for ID " + id + ", because " + e);
-			return;
-		}
-
-		try {
-			var wrapper = document.getElementById("props-wrapper");
-			wrapper.appendChild(pretty);
-
-			var raw = wrapper.children[0];
-			raw.setAttribute("style", "display:none");
-
-			//wrapper.replaceChild(pretty, raw);
-
-			var toggle = document.getElementById("props-toggle");
-			toggle.setAttribute("style", "display:block");
-
-			var toggle_raw = document.getElementById("props-toggle-raw");
-			toggle_raw.setAttribute("style", "display:block");
-
-			toggle_raw.onclick = function(){
-
-				raw.setAttribute("style", "display:block");
-				pretty.setAttribute("style", "display:none");
-
-				toggle_raw.setAttribute("style", "display:none");
-				toggle_pretty.setAttribute("style", "display:block");
-			};
-
-			var toggle_pretty = document.getElementById("props-toggle-pretty");
-
-			toggle_pretty.onclick = function(){
-
-				raw.setAttribute("style", "display:none");
-				pretty.setAttribute("style", "display:block");
-
-				toggle_raw.setAttribute("style", "display:block");
-				toggle_pretty.setAttribute("style", "display:none");
-			};
-		}
-
-		catch (e){
-			mapzen.whosonfirst.log.error("failed to render properties for ID " + id + ", because " + e);
-			return;
-		}
-
-		mapzen.whosonfirst.spelunker.draw_names("props-uoc-name");
-	}
-
-	var on_fail = function(){
-		mapzen.whosonfirst.log.error("failed to format and render properties, because there was a problem retrieving " + url);
-	};
-
-	mapzen.whosonfirst.net.fetch(url, cb);
-        return;
-};
-
-</script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.id.js') }}"></script>
 {% endblock %}

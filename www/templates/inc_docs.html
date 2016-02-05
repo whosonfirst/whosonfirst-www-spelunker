@@ -74,25 +74,8 @@
 {% include "inc_pagination.html" %}
 </div>
 
-<script type="text/javascript">
-
   {% if doc %}
-
-	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', {{ doc.bbox.1|e }},{{ doc.bbox.0|e }}, {{ doc.bbox.3|e }}, {{ doc.bbox.2|e }});
-
-	var on_fetch = function(feature){
-	  	mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
-  		mapzen.whosonfirst.spelunker.draw_list('loc');
-  	};
-
-	mapzen.whosonfirst.enmapify.render_id(map, {{ doc.properties.get("wof:id") |e }}, on_fetch);
-
+  <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.doc.js') }}"></script>
   {% else %}
-
-	mapzen.whosonfirst.spelunker.draw_list('loc');
+  <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.docs.js') }}"></script>
   {% endif %}
-
-
-  mapzen.whosonfirst.spelunker.draw_names('facet_locality_id');
-  mapzen.whosonfirst.spelunker.draw_names('facet_region_id');  
-</script>
