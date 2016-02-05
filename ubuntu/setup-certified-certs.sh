@@ -30,7 +30,7 @@ PROJECT_KEY_CRT="${DB}/${PROJECT_NAME}-key-crt.txt"
 if [ -f ${PROJECT_KEY} ]
 then
     echo "${PROJECT_NAME} key already exists"
-    exit 1
+    exit 0
 fi
 
 if [ -f ${PROJECT_CRT} ]
