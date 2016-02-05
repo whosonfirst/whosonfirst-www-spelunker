@@ -40,6 +40,8 @@ if [ ! -f /etc/init.d/${PROJECT_NAME}.sh ]
 then
     sudo ln -s ${PROJECT}/init.d/${PROJECT_NAME}.sh /etc/init.d/${PROJECT_NAME}.sh
     sudo update-rc.d ${PROJECT_NAME}.sh defaults
+
+    sudo /etc/init.d/${PROJECT_NAME}.sh start
 fi
 
 exit 0

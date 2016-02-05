@@ -19,9 +19,7 @@ import math
 import json
 
 import mapzen.whosonfirst.utils as utils
-# do not remove this - it will live again one day...
-# (20160202/thisisaaronland)
-# import mapzen.whosonfirst.spatial as spatial
+import mapzen.whosonfirst.spatial as spatial
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
 
