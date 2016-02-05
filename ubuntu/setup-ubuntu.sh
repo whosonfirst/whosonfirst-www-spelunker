@@ -29,6 +29,8 @@ sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-
 # $> psql -d YOUR_DATABASE -c "CREATE EXTENSION postgis_topology;"
 # ```
 
+# see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/18
+
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-service.html
 
 sudo add-apt-repository ppa:webupd8team/java -y
