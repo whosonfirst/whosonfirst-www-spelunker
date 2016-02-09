@@ -23,12 +23,19 @@ mapzen.whosonfirst.leaflet = (function(){
 			// https://github.com/Leaflet/Leaflet.label
 			
 			try {
-				var props = geojson['properties'];
+			    var props = geojson['properties'];
+			    
+			    if (props){
 				var label = props['lflt:label_text'];
-
+				
 				if (label){
-					layer.bindLabel(label, {noHide: true });
+				    layer.bindLabel(label, {noHide: true });
 				}
+			    }
+			    
+			    else {
+				console.log("polygon is missing a properties dictionary");
+			    }
 			}
 			
 			catch (e){
