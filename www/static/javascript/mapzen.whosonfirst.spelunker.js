@@ -5,20 +5,21 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
 
-		'abs_root_url': function(){
-			var body = document.body;
-			return body.getAttribute("data-abs-root-url");
-		},
+	    // this is invoked by by mapzen.whosonfirst.spelunker.init.js
+	    // which is running code (20160202/thisisaaronland)
+
+	    'init': function(){
+		mapzen.whosonfirst.config.init();
+	    },
+
+	    'abs_root_url': function(){
+		var body = document.body;
+		return body.getAttribute("data-abs-root-url");
+	    },
+	    	    
+	    'draw_list': function(classname){
 		
-		'toggle_data_endpoint': function(placetype){
-			// var root = location.origin + "/";
-			// var data = 'data/';
-			// mapzen.whosonfirst.data.endpoint(root + 'data/');
-		},
-
-		'draw_list': function(classname){
-
-			var locs = document.getElementsByClassName(classname);
+		var locs = document.getElementsByClassName(classname);
 			var count = locs.length;
 			
 			var swlat = undefined;

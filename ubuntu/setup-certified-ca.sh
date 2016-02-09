@@ -23,7 +23,7 @@ fi
 if [ -d ${DB} ]
 then
     echo "${DB} already exists"
-    exit 1
+    exit 0
 fi
 
 mkdir ${DB}

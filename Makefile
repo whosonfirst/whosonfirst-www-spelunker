@@ -1,3 +1,9 @@
+upgrade:
+	sudo apt-get update
+	sudo apt-get upgrade
+
+build:	setup data install
+
 setup:
 	ubuntu/setup-ubuntu.sh
 	ubuntu/setup-py-mapzen.sh
@@ -5,15 +11,19 @@ setup:
 	sudo ubuntu/setup-certified-ca.sh
 	sudo ubuntu/setup-certified-certs.sh
 	ubuntu/setup-gunicorn.sh
-	ubuntu/setup-nginx.sh
+	ubuntu/setup-nginx.sh $(data)
+	ubuntu/setup-spelunker.sh
+
+data:
+	ubuntu/setup-data.sh $(data)
 
 upgrade:
 	sudo apt-get update
 	sudo apt-get upgrade
 
 index:
-	ubuntu/setup-postgis-index.sh
-	ubuntu/setup-elasticsearch-index.sh
+	ubuntu/setup-postgis-index.sh $(data)
+	ubuntu/setup-elasticsearch-index.sh $(data)
 
 mapzen:
 	if test -e www/static/css/mapzen.styleguide.css; then cp www/static/css/mapzen.styleguide.css www/static/css/mapzen.styleguide.css.bak; fi

@@ -37,8 +37,11 @@
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.styles.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.handlers.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.enmapify.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.yesnofix.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.config.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.js') }}"></script>
 
     <!--
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.dependencies.js') }}"></script>
@@ -47,7 +50,7 @@
 
     {% block head %}{% endblock %}
 </head>
-<body data-abs-root-url="{{ url_for('index') }}">
+<body data-abs-root-url="{{ url_for('index') }}" data-wof-data-endpoint="">
   <div id="nav" class="container">
 
     <ul class="list-inline pull-left" id="nav-links">
@@ -80,5 +83,6 @@
 	<div class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <span class="hey-look">read about the details</span> over on the handy <a href="{{ url_for('about') }}">about page</div>
       </div>
     </div>
+
 </body>
 </html>

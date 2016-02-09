@@ -1212,8 +1212,10 @@ if __name__ == '__main__':
     cfg = ConfigParser.ConfigParser()
     cfg.read(options.config)
 
+    """
     dsn = spatial.cfg2dsn(cfg, 'spatial')
     os.environ['WOF_SPATIAL_DSN'] = dsn
+    """
 
     os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
     os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')

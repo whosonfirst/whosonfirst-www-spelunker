@@ -6,6 +6,13 @@ PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
 PROJECT_NAME=`basename ${PROJECT}`
 
+DATA=$1
+
+if [ "${DATA}" = "" ]
+then
+    DATA="${PROJECT}/data"
+fi
+
 # echo "project ${PROJECT}"
 # echo "project name ${PROJECT_NAME}"
 
@@ -17,12 +24,15 @@ if [ ! -f ${PROJECT}/nginx/${PROJECT_NAME}.conf ]
 then
     cp ${PROJECT}/nginx/${PROJECT_NAME}.conf.example ${PROJECT}/nginx/${PROJECT_NAME}.conf
 
+    ${PERL} -p -i -e "s!__PROJECT__!${PROJECT}!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
+    ${PERL} -p -i -e "s!__PROJECT_DATA__!${DATA}!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
+
     # see also: ubuntu/setup-certified*.sh
 
     if [ -d ${CERTIFIED} ]
     then
-	${PERL} -p -i -e "s!YOUR-SSL-CERTIFICATE-GOES-HERE!${CERTIFIED}/db/${PROJECT_NAME}.crt!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
-	${PERL} -p -i -e "s!YOUR-SSL-CERTFICATE-GOES-HERE!${CERTIFIED}/db/${PROJECT_NAME}.key!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
+	${PERL} -p -i -e "s!__PROJECT_SSLCERT__!${CERTIFIED}/db/${PROJECT_NAME}.crt!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
+	${PERL} -p -i -e "s!__PROJECT_SSLKEY__!${CERTIFIED}/db/${PROJECT_NAME}.key!g" ${PROJECT}/nginx/${PROJECT_NAME}.conf
     else
 	echo "Can not find ${CERTIFIED} directory so you will need to take care of TLS certs yourself..."
     fi

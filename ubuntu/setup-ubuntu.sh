@@ -1,11 +1,18 @@
 #!/bin/sh
 
+WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
+
+PARENT=`dirname $WHOAMI`
+PROJECT=`dirname $PARENT`
+
 sudo apt-get update
 sudo apt-get upgrade -y
 
 sudo apt-get install -y git tcsh emacs24-nox htop sysstat ufw fail2ban unattended-upgrades python-setuptools unzip
 sudo apt-get install -y gdal-bin
-sudo apt-get install -y golang
+# there is no need and anyway apt- installs a freakishly old version
+# of Go because... (20160205/thisisaaronland)
+# sudo apt-get install -y golang
 sudo apt-get install -y make nginx gunicorn python-gevent python-flask
 
 # unfortunately this excess baggage is still necessary until I finish ripping
@@ -16,27 +23,21 @@ sudo apt-get install -y make nginx gunicorn python-gevent python-flask
 sudo apt-get install -y postgresql-9.3 postgresql-client postgis postgresql-9.3-postgis-scripts python-psycopg2
 
 # See above...
-#
-# ```
-# CREATE TABLE whosonfirst (id BIGINT PRIMARY KEY, parent_id BIGINT, placetype VARCHAR, properties TEXT, geom GEOGRAPHY(MULTIPOLYGON, 4326), centroid GEOGRAPHY(POINT, 4326));
-# CREATE INDEX by_geom ON whosonfirst USING GIST(geom);
-# CREATE INDEX by_placetype ON whosonfirst (placetype);
-# VACUUM ANALYZE;
-# ```
-# 
-# ```
-# $> psql -d YOUR_DATBASE -c "CREATE EXTENSION postgis;"
-# $> psql -d YOUR_DATABASE -c "CREATE EXTENSION postgis_topology;"
-# ```
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-service.html
+# echo "MAKING POSTGRES DESPERATELY INSECURE ON LOCALHOST"
+# sudo cp /etc/postgresql/9.3/main/pg_hba.conf /etc/postgresql/9.3/main/pg_hba.conf.bak
+# sudo perl -p -i -e 's/local\s+all\s+postgres\s+peer/local\tall\tpostgres\ttrust/' /etc/postgresql/9.3/main/pg_hba.conf
 
-sudo add-apt-repository ppa:webupd8team/java -y
-sudo apt-get install oracle-java8-installer -y
+# if sudo -u postgres psql -lqt | cut -d '|' -f 1 | grep -w whosonfirst; then
+#     echo "whosonfirst database already exists"
+# else
+#     sudo -u postgres createdb whosonfirst
+#     sudo -u postgres psql -d whosonfirst -c "CREATE EXTENSION postgis;"
+#     sudo -u postgres psql -d whosonfirst -c "CREATE EXTENSION postgis_topology;"
+#     sudo -u postgres psql -d whosonfirst -c "CREATE TABLE whosonfirst (id BIGINT PRIMARY KEY, parent_id BIGINT, placetype VARCHAR, properties TEXT, geom GEOGRAPHY(MULTIPOLYGON, 4326), centroid GEOGRAPHY(POINT, 4326));"
+#     sudo -u postgres psql -d whosonfirst -c "CREATE INDEX by_geom ON whosonfirst USING GIST(geom);"
+#     sudo -u postgres psql -d whosonfirst -c "CREATE INDEX by_placetype ON whosonfirst (placetype);"
+#     sudo -u postgres psql -d whosonfirst -c "VACUUM ANALYZE;"
+# fi
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-repositories.html
-
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.7.list
-sudo apt-get update && sudo apt-get install elasticsearch
-sudo update-rc.d elasticsearch defaults 95 10
+${PARENT}/setup-elasticsearch.sh

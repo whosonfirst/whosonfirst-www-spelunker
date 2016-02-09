@@ -9,8 +9,8 @@ server {
 	server_name localhost;
 
 	ssl on;
-	ssl_certificate YOUR-SSL-CERTIFICATE-GOES-HERE;
-	ssl_certificate_key YOUR-SSL-CERTFICATE-GOES-HERE;
+	ssl_certificate __PROJECT_SSLCERT__;
+	ssl_certificate_key __PROJECT_SSLKEY__;
 
 	ssl_session_timeout 5m;
 
@@ -30,6 +30,13 @@ server {
 	    # proxy_set_header X-Script-Name /something-else;
     	}
 
+	# /data - strictly speaking the stuff around serving static wof-data files
+	# should probably be in its own repository.. but today it is not and it is
+	# bundled here all wrapped up with the other stuff (20160202/thisisaaronland)
+	# 
+	# see also:
+	# https://www.nginx.com/resources/admin-guide/serving-static-content/
+
 	# http://linuxplayer.org/2013/06/nginx-try-files-on-multiple-named-location-or-server
 	#
 	# because who knows where the data is at any given moment... this is not a feature
@@ -37,42 +44,41 @@ server {
 	# (20150909/thisisaaronland)
 
 	location /data/ {
-		try_files $uri @data_github;
+		sendfile           on;
+		sendfile_max_chunk 1m;
+		tcp_nopush on;
+
+		try_files $uri @data_local;
         }
 
-	location @data_github{
+	location @data_local {
 
-		proxy_set_header       Authorization '';
-		proxy_hide_header      Set-Cookie;
-		proxy_ignore_headers   "Set-Cookie";
+		root __PROJECT_DATA__;
 
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
-
-		resolver 8.8.8.8;
-	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
-
-		proxy_intercept_errors on;
-		recursive_error_pages on;
-		error_page 404 = @data_github_venue;
-	}
-
-	location @data_github_venue{
-
-		proxy_set_header       Authorization '';
-		proxy_hide_header      Set-Cookie;
-		proxy_ignore_headers   "Set-Cookie";
-
-	    	add_header 'Access-Control-Allow-Origin' '*';
-            	add_header 'Access-Control-Allow-Methods' 'GET';
-
-		resolver 8.8.8.8;
-	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-venue/master/$uri;
 
 		proxy_intercept_errors on;
 		recursive_error_pages on;
 		error_page 404 = @data_s3;
-	}
+        }
+
+#	location @data_github{
+#
+#		proxy_set_header       Authorization '';
+#		proxy_hide_header      Set-Cookie;
+#		proxy_ignore_headers   "Set-Cookie";
+#
+#	    	add_header 'Access-Control-Allow-Origin' '*';
+#           	add_header 'Access-Control-Allow-Methods' 'GET';
+#
+#		resolver 8.8.8.8;
+#	    	proxy_pass https://raw.githubusercontent.com/whosonfirst/whosonfirst-data/master/$uri;
+#
+#		proxy_intercept_errors on;
+#		recursive_error_pages on;
+#		error_page 404 = @data_s3;
+#	}
 
 	location @data_s3{
 
@@ -83,7 +89,14 @@ server {
 	    	add_header 'Access-Control-Allow-Origin' '*';
             	add_header 'Access-Control-Allow-Methods' 'GET';
 
+		# See the part where there is not `/` between `.com` and `$uri`
+		# Yeah, that, because we are assuming that everything is being
+		# served off of `/data` which gets passed down the tree and
+		# https://s3.amazonaws.com/whosonfirst.mapzen.com//data/856/337/93/85633793.geojson
+		# (for example) will return 404 on account of those two `//` in
+		# the path (20160203/thisisaaronland)
+
 		resolver 8.8.8.8;
-		proxy_pass https://s3.amazonaws.com/whosonfirst.mapzen.com/$uri;
+		proxy_pass https://s3.amazonaws.com/whosonfirst.mapzen.com$uri;
 	}
 }
