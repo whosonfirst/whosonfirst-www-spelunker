@@ -71,7 +71,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 				var header = document.createElement("h3");
 				var content = document.createTextNode(ns);
 				header.appendChild(content);
-			
+
 				var sorted = self.sort_bucket(bucket);
 				var body = self.render(sorted, ns);
 
@@ -141,13 +141,13 @@ mapzen.whosonfirst.yesnofix = (function(){
 				}
 
 				if (count <= 1){
-					return render(d[0], ctx);
+					return self.render(d[0], ctx);
 				}
 
 				var list = document.createElement("ul");
-				
+
 				for (var i=0; i < count; i++){
-					
+
 					var item = document.createElement("li");
 					var body = self.render(d[i], ctx + "#" + i);
 

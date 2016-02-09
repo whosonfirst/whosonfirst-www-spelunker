@@ -20,7 +20,8 @@ window.addEventListener("load", function load(event){
 		var id = props['wof:id'];
 
 		try {
-			var pretty = mapzen.whosonfirst.spelunker.render_properties(props);
+		    // var pretty = mapzen.whosonfirst.spelunker.render_properties(props);
+		    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 		}
 
 		catch(e) {
