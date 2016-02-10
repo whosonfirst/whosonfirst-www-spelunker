@@ -7,23 +7,19 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render': function(props){
 
-	    // DEFINE ALL TEH CALLBACKS HERE (to pass to yesnofix) YEAH
-	    // (20160208/thisisaaronland)
-	    
 	    var possible_wof = [
-		'wof-belongsto',
-		'wof-parent_id', 'wof-children',
-		'wof-breaches',
-		'wof-supersedes',
-		'wof-superseded_by',
-		// TO DO : please to write js-whosonfirst-placetypes...
-		'wof-hierarchy-continent_id', 'wof-hierarchy-country_id', 'wof-hierarchy-region_id',
-		'wof-hierarchy-county_id', 'wof-hierarchy-locality_id', 'wof-hierarchy-neighbourhood_id',
-		'wof-hierarchy-campus_id', 'wof-hierarchy-venue_id'
+		'wof.belongsto',
+		'wof.parent_id', 'wof.children',
+		'wof.breaches',
+		'wof.supersedes',
+		'wof.superseded_by',
+		// TO DO : please to write js.whosonfirst.placetypes...
+		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.region_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.locality_id', 'wof.hierarchy.neighbourhood_id',
+		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
 
 	    var callbacks = {
-		// 'HALP': self.render_wof_id,	// ((possible_wof.indexOf(ctx) != -1) && (d > 0))
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.gn:id': self.render_geonames_id,
@@ -33,14 +29,37 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
 		'wof.tags': self.render_wof_tags,
-		'wof.name': self.render_wof_name,			// (ctx.match(/^name-/)
+		'wof.name': self.render_wof_name,
 		'sg.city': self.render_simplegeo_city,
 		'sg.postcode': self.render_simplegeo_postcode,
 		'sg.tags': self.render_simplegeo_tags,
-		'sg.classifier': self.render_simplegeo_classifiers,	// ctx.match(/^sg-classifiers-/)		
+		'sg.classifier': self.render_simplegeo_classifiers,
 	    };
-	    
-	    mapzen.whosonfirst.yesnofix.callbacks(callbacks);
+	
+	    var handlers = function(d, ctx){
+
+		if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
+		    return self.render_wof_id;
+		}
+
+		else if (ctx.match(/^name-/)){
+		    return self.render_wof_name;
+		}
+
+		else if (ctx.match(/^sg-classifiers-/)){
+		    return self.render_simplegeo_classifiers;
+		}
+
+		else if (callbacks[ctx]){
+		    return callbacks[ctx];
+		}
+
+		else {
+		    return null;
+		}
+	    };
+
+	    mapzen.whosonfirst.yesnofix.text_handlers(handlers);
 
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;

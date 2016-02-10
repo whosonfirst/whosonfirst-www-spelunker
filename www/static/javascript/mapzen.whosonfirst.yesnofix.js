@@ -23,19 +23,19 @@ mapzen.whosonfirst.yesnofix = (function(){
     var no = 0;
     var yes = 1;
     
-    var callbacks = {};
+    var handlers = function(d, ctx){ return null; };
 
     var assertions = [];
     
     var self = {
 
-	'callbacks': function(cb){
+	'text_handlers': function(h){
 
-	    if (cb){
-		callbacks = cb;
+	    if (h){
+		handlers = h;
 	    }
 
-	    return callbacks;
+	    return handlers;
 	},
 
 	// please do not call these 'engage' or 'makeitso' ...
@@ -110,16 +110,17 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    else {
 		// console.log("render text for " + ctx);
 
-		var cb = self.callbacks();
+		var handlers = self.text_handlers();
+		cb = handlers(d, ctx);
 		
-		try {
-		    if (cb[ctx]){
-			return cb[ctx](d, ctx);
+		if (cb){
+		    try {
+			return cb(d, ctx);
+		    } catch (e) {
+			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
 		    }
-		} catch (e) {
-		    console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
 		}
-		
+
 		return self.render_text(d, ctx);
 	    }
 	},
