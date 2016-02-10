@@ -36,7 +36,7 @@ mapzen.whosonfirst.properties = (function(){
 		'sg.classifier': self.render_simplegeo_classifiers,
 	    };
 	
-	    var handlers = function(d, ctx){
+	    var text_renderers = function(d, ctx){
 
 		if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
 		    return self.render_wof_id;
@@ -59,7 +59,7 @@ mapzen.whosonfirst.properties = (function(){
 		}
 	    };
 
-	    mapzen.whosonfirst.yesnofix.text_handlers(handlers);
+	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
 
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;

@@ -22,22 +22,39 @@ mapzen.whosonfirst.yesnofix = (function(){
     var fix = -1;
     var no = 0;
     var yes = 1;
-    
-    var handlers = function(d, ctx){ return null; };
+
+    var _custom_renderers = {
+	'dict': function(d, ctx){ return null; },
+	'text': function(d, ctx){ return null; },
+    };
 
     var assertions = [];
     
     var self = {
 
-	'text_handlers': function(h){
+	'set_custom_renderers': function(t, r){
 
-	    if (h){
-		handlers = h;
+	    if (! _custom_renderers[t]){
+		return;
 	    }
 
-	    return handlers;
+	    if (! r){
+		return;
+	    }
+
+	    _custom_renderers[t] = r;
 	},
 
+	'get_custom_renderer': function(t, d, ctx){
+
+	    if (! _custom_renderers[t]){
+		return null;
+	    }
+
+	    var custom = _custom_renderers[t];
+	    return custom(d, ctx);
+	},
+	
 	// please do not call these 'engage' or 'makeitso' ...
 	
 	'makeitso': function(data, target){
@@ -110,12 +127,11 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    else {
 		// console.log("render text for " + ctx);
 
-		var handlers = self.text_handlers();
-		cb = handlers(d, ctx);
+		var renderer = self.get_custom_renderer('text', d, ctx);
 		
-		if (cb){
+		if (renderer){
 		    try {
-			return cb(d, ctx);
+			return renderer(d, ctx);
 		    } catch (e) {
 			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
 		    }
