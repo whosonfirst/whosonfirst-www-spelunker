@@ -195,7 +195,13 @@ mapzen.whosonfirst.yesnofix = (function(){
 				code.appendChild(body);
 				return code;
 			},
+		    
+		    'render_timestamp': function(text, ctx){
+			var dt = new Date(parseInt(text) * 1000);
+			return render_text(dt.toISOString(), ctx);
 
+			},
+		    
 			'bucket_props': function(props){
 
 				buckets = {};

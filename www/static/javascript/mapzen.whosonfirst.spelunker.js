@@ -161,6 +161,8 @@ mapzen.whosonfirst.spelunker = (function(){
 
 					if ((ctx) && (d)){
 
+					    // TO DO
+
 						if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
 				
 							var root = mapzen.whosonfirst.spelunker.abs_root_url();
@@ -174,15 +176,19 @@ mapzen.whosonfirst.spelunker = (function(){
 							return el;
 						}
 
+					    // DONE
 						else if (ctx == 'wof-id'){
 							return render_code(d, ctx);
 						}
 
+					    //DONE
 						else if (ctx == 'wof-placetype'){
 							var root = mapzen.whosonfirst.spelunker.abs_root_url();
 							var link = root + "placetypes/" + encodeURIComponent(d) + "/";
 							return render_link(link, d, ctx);
 						}
+
+					    // DONE
 
 						else if (ctx == 'wof-concordances-gn:id'){
 							var link = "http://geonames.org/" + encodeURIComponent(d) + "/";
