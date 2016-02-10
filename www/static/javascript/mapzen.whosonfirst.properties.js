@@ -33,8 +33,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
 		'wof.tags': self.render_wof_tags,
-		// (ctx.match(/^name-/)
-		'wof.name': self.render_wof_name,
+		'wof.name': self.render_wof_name,			// (ctx.match(/^name-/)
 		'sg.city': self.render_simplegeo_city,
 		'sg.postcode': self.render_simplegeo_postcode,
 		'sg.tags': self.render_simplegeo_tags,
