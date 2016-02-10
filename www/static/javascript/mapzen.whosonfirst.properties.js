@@ -24,22 +24,25 @@ mapzen.whosonfirst.properties = (function(){
 
 	    var callbacks = {
 		// 'HALP': self.render_wof_id,	// ((possible_wof.indexOf(ctx) != -1) && (d > 0))
-		'wof-id': mapzen.whosonfirst.yesnofix.render_code,
-		'wof-placetype': self.render_placetype,
-		'wof-concordances-gn:id': self.render_geonames_id,
-		'wof-concordances-gp:id': self.render_woedb_id,
-		'wof-concordances-woe:id': self.render_woedb_id,
-		'wof-concordances-tgn:id': self.render_tgn_id,
-		'wof-lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
-		'wof-megacity': self.render_megacity,
-		'wof-tags': self.render_wof_tags,
-		'wof-name': self.render_wof_name,	// (ctx.match(/^name-/)
-		'sg-city': self.render_simplegeo_city,
-		'sg-postcode': self.render_simplegeo_postcode,
-		'sg-tags': self.render_simplegeo_tags,
-		'sg-classifier': self.render_simplegeo_classifiers,	// ctx.match(/^sg-classifiers-/)		
+		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
+		'wof.placetype': self.render_placetype,
+		'wof.concordances.gn:id': self.render_geonames_id,
+		'wof.concordances.gp:id': self.render_woedb_id,
+		'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
+		'wof.megacity': self.render_megacity,
+		'wof.tags': self.render_wof_tags,
+		// (ctx.match(/^name-/)
+		'wof.name': self.render_wof_name,
+		'sg.city': self.render_simplegeo_city,
+		'sg.postcode': self.render_simplegeo_postcode,
+		'sg.tags': self.render_simplegeo_tags,
+		'sg.classifier': self.render_simplegeo_classifiers,	// ctx.match(/^sg-classifiers-/)		
 	    };
 	    
+	    mapzen.whosonfirst.yesnofix.callbacks(callbacks);
+
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;
 	},
