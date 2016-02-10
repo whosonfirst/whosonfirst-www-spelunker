@@ -133,6 +133,8 @@ q {
     font-size: .8em;
 }
 
+/* yesnofix me please */
+
 #props-pretty {
     
 }
@@ -166,6 +168,16 @@ q {
     text-align:left;
     min-width:65%;
     max-width:65%;
+}
+
+.trigger {
+    display:none;
+    padding-left: 1em;
+    filter: FlipH;
+}
+
+.props-content:hover .trigger {
+    display:inline;
 }
 
 #props-pretty td :last-child {

@@ -158,10 +158,11 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var _ctx = (ctx) ? ctx + "." + k : k;
 		
 		var content = document.createElement("td");
-		var body = self.render(d[k], _ctx);
-		
+		content.setAttribute("class", "props-content");
+
+		var body = self.render(d[k], _ctx);		
 		content.appendChild(body);
-		
+
 		row.appendChild(header);
 		row.appendChild(content);
 		
@@ -210,23 +211,53 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    span.setAttribute("title", ctx);
 	    span.setAttribute("class", "props-uoc");
 	    
-	    span.onclick = mapzen.whosonfirst.yesnofix.onclick;
+	    // span.onclick = mapzen.whosonfirst.yesnofix.onclick;
 	    
 	    var el = document.createTextNode(text);
 	    span.appendChild(el);
+
+	    var trigger = self.render_trigger(ctx);
+	    span.appendChild(trigger);
+
 	    return span;
 	},
 	
 	'render_link': function(link, text, ctx){
-	    
+
+	    var span = document.createElement("span");
+
 	    var anchor = document.createElement("a");
 	    anchor.setAttribute("href", link);
 	    anchor.setAttribute("target", "_wof");
 	    var body = self.render_text(text, ctx);
 	    anchor.appendChild(body);
-	    return anchor;
+
+	    span.appendChild(anchor);
+
+	    var trigger = self.render_trigger(ctx);
+	    span.appendChild(trigger);
+
+	    return span;
 	},
-	
+
+	/*
+	  .trigger { display:none; padding-left: 1em; }
+	  .props-content:hover .trigger { display:inline; }
+	*/
+
+	'render_trigger': function(ctx){
+
+	    var edit = document.createTextNode("📝");	// http://emojipedia.org/memo/
+
+	    var trigger = document.createElement("span");
+	    trigger.setAttribute("trigger-id", ctx);
+	    trigger.setAttribute("class", "trigger");
+	    trigger.appendChild(edit);
+	    
+	    trigger.onclick = mapzen.whosonfirst.yesnofix.ontrigger;
+	    return trigger;
+	},
+
 	'render_code': function(text, ctx){
 	    
 	    var code = document.createElement("code");
@@ -282,10 +313,10 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    return sorted;
 	},
 	
-	'onclick': function(e) {
+	'ontrigger': function(e) {
 	    
 	    var target = e.target;
-	    var id = target.getAttribute("id");
+	    var id = target.getAttribute("trigger-id");
 	    var value = target.textContent;
 	    
 	    var enc_id = mapzen.whosonfirst.php.htmlspecialchars(id);
@@ -321,17 +352,23 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    fix.setAttribute("data-id", id);
 	    fix.setAttribute("data-assertion", 0);
 	    
+	    var cancel = document.createElement("button");
+	    cancel.setAttribute("data-id", id);
+
 	    yes.appendChild(document.createTextNode("yes"));
 	    no.appendChild(document.createTextNode("no"));
 	    fix.appendChild(document.createTextNode("fix"));
+	    cancel.appendChild(document.createTextNode("cancel"));
 	    
 	    yes.onclick = mapzen.whosonfirst.yesnofix.onassert;
 	    no.onclick = mapzen.whosonfirst.yesnofix.onassert;
 	    fix.onclick = mapzen.whosonfirst.yesnofix.onassert;
-	    
+	    cancel.onclick = mapzen.whosonfirst.yesnofix.oncancel;
+
 	    input.appendChild(yes);
 	    input.appendChild(no);
 	    input.appendChild(fix);
+	    input.appendChild(cancel);
 	    
 	    return input;
 	},
@@ -365,6 +402,21 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    parent.removeChild(input);
 	},
 	
+	'oncancel': function(e){
+
+	    var target = e.target;
+	    var id = target.getAttribute("data-id");
+	    
+	    if (! id){
+		return false;
+	    }
+
+	    var input = document.getElementById("assert-" + id);
+	    
+	    var parent = input.parentElement;
+	    parent.removeChild(input);
+	},
+
 	// note the lack of validation... we're assuming that kind of sanity
 	// checking is happening above?
 	
