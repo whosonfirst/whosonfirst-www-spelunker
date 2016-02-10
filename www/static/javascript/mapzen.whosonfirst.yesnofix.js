@@ -127,17 +127,28 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    else {
 		// console.log("render text for " + ctx);
 
+		var wrapper = document.createElement("span");
+		wrapper.setAttribute("class", "props-content");
+
+		var content;
+
 		var renderer = self.get_custom_renderer('text', d, ctx);
 		
 		if (renderer){
 		    try {
-			return renderer(d, ctx);
+			content = renderer(d, ctx);
 		    } catch (e) {
 			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
 		    }
 		}
 
-		return self.render_text(d, ctx);
+		content = self.render_text(d, ctx);
+		wrapper.appendChild(content);
+
+		var trigger = self.render_trigger(ctx);
+		wrapper.appendChild(trigger);
+
+		return wrapper;
 	    }
 	},
 	
@@ -158,7 +169,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var _ctx = (ctx) ? ctx + "." + k : k;
 		
 		var content = document.createElement("td");
-		content.setAttribute("class", "props-content");
 
 		var body = self.render(d[k], _ctx);		
 		content.appendChild(body);
@@ -216,15 +226,10 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var el = document.createTextNode(text);
 	    span.appendChild(el);
 
-	    var trigger = self.render_trigger(ctx);
-	    span.appendChild(trigger);
-
 	    return span;
 	},
 	
 	'render_link': function(link, text, ctx){
-
-	    var span = document.createElement("span");
 
 	    var anchor = document.createElement("a");
 	    anchor.setAttribute("href", link);
@@ -232,12 +237,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var body = self.render_text(text, ctx);
 	    anchor.appendChild(body);
 
-	    span.appendChild(anchor);
-
-	    var trigger = self.render_trigger(ctx);
-	    span.appendChild(trigger);
-
-	    return span;
+	    return anchor;
 	},
 
 	/*
