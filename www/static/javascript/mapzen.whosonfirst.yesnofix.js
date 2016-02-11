@@ -161,6 +161,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 		
 		var row = document.createElement("tr");
 		var label_text = k;
+
+		// TO DO: check for custom label text in custom_renderers...
 		
 		var header = document.createElement("th");
 		var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
