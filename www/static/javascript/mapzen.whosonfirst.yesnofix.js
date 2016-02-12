@@ -132,6 +132,9 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var wrapper = document.createElement("span");
 		wrapper.setAttribute("class", "props-content");
 
+		var trigger = self.render_trigger(ctx);
+		wrapper.appendChild(trigger);
+
 		var content;
 
 		var renderer = self.get_custom_renderer('text', d, ctx);
@@ -150,9 +153,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 		}
 
 		wrapper.appendChild(content);
-
-		var trigger = self.render_trigger(ctx);
-		wrapper.appendChild(trigger);
 
 		return wrapper;
 	    }
@@ -368,21 +368,26 @@ mapzen.whosonfirst.yesnofix = (function(){
 	'render_input': function(id){
 	    
 	    var input = document.createElement("div");
+	    input.setAttribute("class", "yesnofix-assert");
 	    input.setAttribute("id", "assert-" + id);
 	    
 	    var yes = document.createElement("button");
+	    yes.setAttribute("class", "yesnofix-assert-yes");
 	    yes.setAttribute("data-id", id);
 	    yes.setAttribute("data-assertion", 1);
 	    
 	    var no = document.createElement("button");
+	    no.setAttribute("class", "yesnofix-assert-no");
 	    no.setAttribute("data-id", id);
 	    no.setAttribute("data-assertion", 0);
 	    
 	    var fix = document.createElement("button");
+	    fix.setAttribute("class", "yesnofix-assert-fix");
 	    fix.setAttribute("data-id", id);
 	    fix.setAttribute("data-assertion", 0);
 	    
 	    var cancel = document.createElement("button");
+	    cancel.setAttribute("class", "yesnofix-assert-cancel");
 	    cancel.setAttribute("data-id", id);
 
 	    yes.appendChild(document.createTextNode("yes"));
@@ -399,7 +404,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    input.appendChild(no);
 	    input.appendChild(fix);
 	    input.appendChild(cancel);
-	    
+	    input.appendChild(document.createElement("br"));
 	    return input;
 	},
 	
