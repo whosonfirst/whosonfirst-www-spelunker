@@ -29,7 +29,9 @@ mapzen.whosonfirst.yesnofix = (function(){
     };
 
     var assertions = [];
-    
+
+    var current = null;
+
     var self = {
 
 	'set_custom_renderers': function(t, r){
@@ -240,9 +242,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    span.setAttribute("id", ctx);
 	    span.setAttribute("title", ctx);
 	    span.setAttribute("class", "props-uoc");
-	    
-	    // span.onclick = mapzen.whosonfirst.yesnofix.onclick;
-	    
+	    	    
 	    var el = document.createTextNode(text);
 	    span.appendChild(el);
 
@@ -338,7 +338,15 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var target = e.target;
 	    var id = target.getAttribute("trigger-id");
 	    var value = target.textContent;
-	    
+
+	    if (id == self.current){
+		return;
+	    }
+
+	    if (self.current){
+		self.collapse(self.current);
+	    }
+
 	    var enc_id = mapzen.whosonfirst.php.htmlspecialchars(id);
 	    var enc_value = mapzen.whosonfirst.php.htmlspecialchars(value);
 	    
@@ -353,6 +361,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    
 	    var input = self.render_input(id);
 	    parent.appendChild(input);
+
+	    self.current = id;
 	},
 	
 	'render_input': function(id){
@@ -416,10 +426,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    
 	    alert("Okay, thanks!");
 	    
-	    var input = document.getElementById("assert-" + id);
-	    
-	    var parent = input.parentElement;
-	    parent.removeChild(input);
+	    self.collapse(id);
 	},
 	
 	'oncancel': function(e){
@@ -431,10 +438,19 @@ mapzen.whosonfirst.yesnofix = (function(){
 		return false;
 	    }
 
+	    self.collapse(id);
+	},
+
+	// this is a bad name... (20160211/thisisaaronland)
+
+	'collapse': function(id){
+
 	    var input = document.getElementById("assert-" + id);
 	    
 	    var parent = input.parentElement;
 	    parent.removeChild(input);
+
+	    self.current = null;
 	},
 
 	// note the lack of validation... we're assuming that kind of sanity
