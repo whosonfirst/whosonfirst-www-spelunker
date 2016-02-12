@@ -133,7 +133,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var content;
 
 		var renderer = self.get_custom_renderer('text', d, ctx);
-		
+		// console.log("rendered for " + ctx + " : " + typeof(renderer));
+
 		if (renderer){
 		    try {
 			content = renderer(d, ctx);
@@ -142,7 +143,10 @@ mapzen.whosonfirst.yesnofix = (function(){
 		    }
 		}
 
-		content = self.render_text(d, ctx);
+		else {
+		    content = self.render_text(d, ctx);
+		}
+
 		wrapper.appendChild(content);
 
 		var trigger = self.render_trigger(ctx);
@@ -168,9 +172,9 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 		if (renderer){
 		    try {
-			label_text = renderer(d, ctx);
+			label_text = renderer(d, _ctx);
 		    } catch (e) {
-			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
+			console.log("UNABLE TO RENDER " + _ctx + " BECAUSE " + e);
 		    }
 		}
 

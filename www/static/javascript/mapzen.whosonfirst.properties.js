@@ -79,6 +79,10 @@ mapzen.whosonfirst.properties = (function(){
 
 	    var dict_renderers = function(d, ctx){
 
+		// TO DO: something to match 3-letter language code + "_x_" + suffix
+		// or more specifically something to match/ convert 3-letter language
+		// codes wrapped up in a handy library (20160211/thisisaaronland)
+
 		if (dict_mappings[ctx]){
 		    return function(){
 			return dict_mappings[ctx];
