@@ -19,7 +19,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
 
-	    var callbacks = {
+	    var text_callbacks = {
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.gn:id': self.render_geonames_id,
@@ -50,8 +50,8 @@ mapzen.whosonfirst.properties = (function(){
 		    return self.render_simplegeo_classifiers;
 		}
 
-		else if (callbacks[ctx]){
-		    return callbacks[ctx];
+		else if (text_callbacks[ctx]){
+		    return text_callbacks[ctx];
 		}
 
 		else {
@@ -59,7 +59,37 @@ mapzen.whosonfirst.properties = (function(){
 		}
 	    };
 
+	    var dict_mappings = {
+		'wof.concordances.dbp:id': 'dbpedia',
+		'wof.concordances.fb:id': 'freebase',
+		'wof.concordances.fct:id': 'factual',
+		'wof.concordances.gp:id': 'geonames',
+		'wof.concordances.gn:id': 'geoplanet',
+		'wof.concordances.loc:id': 'library of congress',
+		'wof.concordances.nyt:id': 'new york times',
+		'wof.concordances.wd:id': 'wikidata',
+		// please build me on the fly using mz.wof.placetypes
+		'wof.hierarchy.continent_id': 'continent',
+		'wof.hierarchy.country_id': 'country',
+		'wof.hierarchy.region_id': 'region',
+		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.locality_id': 'locality',
+		'wof.hierarchy.neighbourhood_id': 'neighbourhood',
+	    };
+
+	    var dict_renderers = function(d, ctx){
+
+		if (dict_mappings[ctx]){
+		    return function(){
+			return dict_mappings[ctx];
+		    };
+		}
+
+		return null;
+	    };
+
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
+	    mapzen.whosonfirst.yesnofix.set_custom_renderers('dict', dict_renderers);
 
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;

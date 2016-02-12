@@ -162,13 +162,27 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var row = document.createElement("tr");
 		var label_text = k;
 
-		// TO DO: check for custom label text in custom_renderers...
-		
+		var _ctx = (ctx) ? ctx + "." + k : k;
+
+		var renderer = self.get_custom_renderer('dict', d, _ctx);
+
+		if (renderer){
+		    try {
+			label_text = renderer(d, ctx);
+		    } catch (e) {
+			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
+		    }
+		}
+
+		/*
+		  unclear if the rule should just be only text (as it currently is)
+		  or whether custom markup is allowed... smells like feature quicksand
+		  so moving along for now (20160211/thisisaaronland)
+		 */
+
 		var header = document.createElement("th");
 		var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
 		header.appendChild(label);
-		
-		var _ctx = (ctx) ? ctx + "." + k : k;
 		
 		var content = document.createElement("td");
 
