@@ -94,3 +94,32 @@
     background-color:#666;
     color:#fff;
 }
+
+#yesnofix-report {
+
+}
+
+#yesnofix-report button {
+    border: solid thin;
+}
+
+#yesnofix-report-show {
+    display:none;
+}
+
+#yesnofix-report-hide {
+    display:none;
+}
+
+#yesnofix-report-foo {
+    display:none;
+}
+
+#yesnofix-report-body {
+    border:solid thin;
+    padding:1em;
+}
+
+#yesnofix-report-submit {
+
+}

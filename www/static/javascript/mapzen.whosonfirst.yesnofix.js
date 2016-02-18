@@ -63,7 +63,64 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    
 	    var pretty = document.createElement("div");
 	    pretty.setAttribute("id", "yesnofix-pretty");
-	    
+
+	    // please put me in a method or something...
+	    // (20160217/thisisaaronland)
+
+	    var report = document.createElement("div");
+	    report.setAttribute("id", "yesnofix-report");
+
+	    var show = document.createElement("button");
+	    show.setAttribute("id", "yesnofix-report-show");
+	    show.appendChild(document.createTextNode("show report"));
+
+	    var hide = document.createElement("button");
+	    hide.setAttribute("id", "yesnofix-report-hide");
+	    hide.appendChild(document.createTextNode("hide report"));
+
+	    var foo = document.createElement("div");
+	    foo.setAttribute("id", "yesnofix-report-foo");
+
+	    var body = document.createElement("pre");
+	    body.setAttribute("id", "yesnofix-report-body");
+
+	    var submit = document.createElement("button");
+	    submit.setAttribute("id", "yesnofix-report-submit");
+	    submit.appendChild(document.createTextNode("submit report"));
+
+	    foo.appendChild(body);
+	    foo.appendChild(submit);
+
+	    show.onclick = function(){
+
+		var s = document.getElementById("yesnofix-report-show");
+		var h = document.getElementById("yesnofix-report-hide");
+		var f = document.getElementById("yesnofix-report-foo");
+
+		s.style = "display:none;";
+		h.style = "display:block;";
+		f.style = "display:block;";
+	    };
+
+	    hide.onclick = function(){
+
+		var s = document.getElementById("yesnofix-report-show");
+		var h = document.getElementById("yesnofix-report-hide");
+		var f = document.getElementById("yesnofix-report-foo");
+
+		s.style = "display:block;";
+		h.style = "display:none;";
+		f.style = "display:none;";
+	    };
+
+	    report.appendChild(show);
+	    report.appendChild(hide);
+	    report.appendChild(foo);
+
+	    pretty.appendChild(report);
+
+	    //
+
 	    buckets = self.bucket_props(props);
 	    
 	    var namespaces = Object.keys(buckets);
@@ -412,6 +469,17 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    self.notify(path + "=" + assertion);
 
 	    self.collapse(id);
+
+	    var foo = document.getElementById("yesnofix-report-foo");
+
+	    if (foo.style.display != "block"){
+		var show = document.getElementById("yesnofix-report-show");
+		show.style = "display:block";
+	    }
+
+	    var b = document.getElementById("yesnofix-report-body");
+	    b.innerHTML = self.report();
+
 	},
 	
 	'oncancel': function(e){
