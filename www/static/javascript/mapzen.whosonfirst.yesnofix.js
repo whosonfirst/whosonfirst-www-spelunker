@@ -457,16 +457,23 @@ mapzen.whosonfirst.yesnofix = (function(){
 		return false;
 	    }
 	    
-	    var cls = el.getAttribute("class");
-	    el.setAttribute("class", cls + " yesnofix-asserted");
-
 	    var path = id;
 	    var value = el.textContent;
 	    var assertion = target.getAttribute("data-assertion");
-	    
+
+	    var str_assertion = "";
+
+	    for (k in status_map){
+
+		if (assertion == status_map[k]){
+		    str_assertion = k;
+		    break;
+		}
+	    }
+
 	    self.assert(path, value, assertion);
 	    
-	    self.notify(path + "=" + assertion);
+	    self.notify(path + "=" + str_assertion);
 
 	    self.collapse(id);
 
@@ -479,6 +486,27 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 	    var b = document.getElementById("yesnofix-report-body");
 	    b.innerHTML = self.report();
+
+	    var cls = el.getAttribute("class");
+	    cls = cls.split(" ");
+	    var count = cls.length;
+
+	    var new_cls = [];
+
+	    for (var i=0; i < count; i++){
+		if (cls[i].match(/^yesnofix-asserted/)){
+		    continue;
+		}
+
+		new_cls.push(cls[i]);
+	    }
+
+	    new_cls.push("yesnofix-asserted");
+	    new_cls.push("yesnofix-asserted-" + str_assertion);
+	    new_cls = new_cls.join(" ");
+
+	    console.log(new_cls);
+	    el.setAttribute("class", new_cls);
 
 	},
 	

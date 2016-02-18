@@ -1,5 +1,16 @@
 .yesnofix-asserted {
-    background-color:yellow !important;
+}
+
+.yesnofix-asserted-yes {
+    background-color:#98fb98 !important;
+}
+
+.yesnofix-asserted-no {
+    background-color:#db7093 !important;
+}
+
+.yesnofix-asserted-fix {
+    background-color:#ffffb2 !important;
 }
 
 /* yesnofix me please */
