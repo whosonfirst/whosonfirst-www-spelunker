@@ -1,0 +1,109 @@
+.yesnofix-asserted {
+    background-color:yellow !important;
+}
+
+/* yesnofix me please */
+
+#yesnofix-pretty {
+    
+}
+
+#yesnofix-pretty ul {
+    list-style-type: none;
+    margin:0px;
+    padding:0px;
+}
+
+#yesnofix-pretty table {
+    width:100%;
+    line-height:2em;
+}
+
+#yesnofix-pretty tr {
+    vertical-align: top;
+    padding-top:.5em;
+    padding-bottom:.5em;
+}
+
+#yesnofix-pretty th {
+    background-color:#ededed;
+    border-right: .75em solid #fff;
+    padding-left: .5em;
+    padding-right: .5em;
+}
+
+#yesnofix-pretty td {
+    border-bottom: 1px solid #ededed;
+    text-align:left;
+    min-width:65%;
+    max-width:65%;
+}
+
+.yesnofix-trigger {
+    display:none;
+    padding-right: 1em;
+}
+
+.yesnofix-content:hover  {
+    font-weight: 700;
+}
+
+.yesnofix-content:hover .yesnofix-trigger {
+    display:inline;
+}
+
+#yesnofix-pretty td :last-child {
+    border-bottom:none;
+}
+
+.yesnofix-uoc {
+    font-family:monospace;
+}
+
+#yesnofix-toggle {
+    display: none;
+    font-family:monospace;
+}
+
+#yesnofix-toggle-raw {
+    display: none;
+}
+
+#yesnofix-toggle-pretty {
+    display: none;
+}
+
+.yesnofix-assert {
+    margin-top:.5em;
+    margin-bottom:1em;
+}
+
+.yesnofix-assert button {
+    border: 1px dotted #333;
+    margin-left:.25em;
+    margin-right:.25em;
+    font-size:small;
+    width:20%;
+    color:#333;
+}
+
+.yesnofix-assert button:hover {
+    border: none;
+}
+
+.yesnofix-assert-yes:hover {
+    background-color:#98fb98;
+}
+
+.yesnofix-assert-no:hover {
+    background-color:#db7093;
+}
+
+.yesnofix-assert-fix:hover {
+    background-color:#ffffb2;
+}
+
+.yesnofix-assert-cancel:hover {
+    background-color:#666;
+    color:#fff;
+}

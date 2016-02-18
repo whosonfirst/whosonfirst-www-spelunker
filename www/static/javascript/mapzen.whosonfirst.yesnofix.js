@@ -62,7 +62,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	'engage': function(props){
 	    
 	    var pretty = document.createElement("div");
-	    pretty.setAttribute("id", "props-pretty");
+	    pretty.setAttribute("id", "yesnofix-pretty");
 	    
 	    buckets = self.bucket_props(props);
 	    
@@ -113,7 +113,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 		// console.log("render text for " + ctx);
 
 		var wrapper = document.createElement("span");
-		wrapper.setAttribute("class", "props-content");
+		wrapper.setAttribute("class", "yesnofix-content");
 
 		var trigger = self.render_trigger(ctx);
 		wrapper.appendChild(trigger);
@@ -220,7 +220,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var span = document.createElement("span");
 	    span.setAttribute("id", ctx);
 	    span.setAttribute("title", ctx);
-	    span.setAttribute("class", "props-uoc");
+	    span.setAttribute("class", "yesnofix-uoc");
 	    	    
 	    var el = document.createTextNode(text);
 	    span.appendChild(el);
@@ -240,8 +240,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 	},
 
 	/*
-	  .trigger { display:none; padding-left: 1em; }
-	  .props-content:hover .trigger { display:inline; }
+	  .yesnofix-trigger { display:none; padding-left: 1em; }
+	  .yesnofix-content:hover .yesnofix-trigger { display:inline; }
 	*/
 
 	'render_trigger': function(ctx){
@@ -250,7 +250,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 	    var trigger = document.createElement("span");
 	    trigger.setAttribute("trigger-id", ctx);
-	    trigger.setAttribute("class", "trigger");
+	    trigger.setAttribute("class", "yesnofix-trigger");
 	    trigger.appendChild(edit);
 	    
 	    trigger.onclick = mapzen.whosonfirst.yesnofix.ontrigger;
@@ -400,6 +400,9 @@ mapzen.whosonfirst.yesnofix = (function(){
 		return false;
 	    }
 	    
+	    var cls = el.getAttribute("class");
+	    el.setAttribute("class", cls + " yesnofix-asserted");
+
 	    var path = id;
 	    var value = el.textContent;
 	    var assertion = target.getAttribute("data-assertion");
