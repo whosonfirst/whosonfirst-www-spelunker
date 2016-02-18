@@ -101,9 +101,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 	
 	'render_controls': function(){
 
-	    // please put me in a method or something...
-	    // (20160217/thisisaaronland)
-
 	    var report = document.createElement("div");
 	    report.setAttribute("id", "yesnofix-report");
 
