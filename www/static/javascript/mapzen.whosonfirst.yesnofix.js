@@ -1,27 +1,13 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-/*
-
-To do:
-
-- tab/keyboard controls
-- flags/callback functions to render certains values as something other than text (a link, as code, etc.)
-
-Open questions:
-
-- to sort or not 
-- to bucket (by prefix) or not
-- update existing assertions or alert or just allow multiple (conflicting?) assertions for the same path
-
- */
-
-
 mapzen.whosonfirst.yesnofix = (function(){
 
-    var fix = -1;
-    var no = 0;
-    var yes = 1;
+    var status_map = {
+	'fix': -1,
+	'no': 0,
+	'yes': 1
+    };
 
     var _custom_renderers = {
 	'dict': function(d, ctx){ return null; },
@@ -112,9 +98,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 	},
 	
 	'render': function(d, ctx){
-	    
-	    // console.log("render context is " + ctx);
-	    // console.log(d);
 	    
 	    if (Array.isArray(d)){
 		// console.log("render list for " + ctx);
@@ -228,10 +211,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    }
 	    
 	    return list;
-	},
-	
-	'render_editable': function(d){
-	    // please write me
 	},
 	
 	'render_text': function(d, ctx){
@@ -350,8 +329,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var enc_id = mapzen.whosonfirst.php.htmlspecialchars(id);
 	    var enc_value = mapzen.whosonfirst.php.htmlspecialchars(value);
 	    
-	    //alert("you clicked " + enc_id + " whose value is \"" + enc_value + "\"");
-	    
 	    var parent = target.parentElement;
 	    
 	    if (! parent){
@@ -374,17 +351,17 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var yes = document.createElement("button");
 	    yes.setAttribute("class", "yesnofix-assert-yes");
 	    yes.setAttribute("data-id", id);
-	    yes.setAttribute("data-assertion", 1);
+	    yes.setAttribute("data-assertion", status_map['yes']);
 	    
 	    var no = document.createElement("button");
 	    no.setAttribute("class", "yesnofix-assert-no");
 	    no.setAttribute("data-id", id);
-	    no.setAttribute("data-assertion", 0);
+	    no.setAttribute("data-assertion", status_map['no']);
 	    
 	    var fix = document.createElement("button");
 	    fix.setAttribute("class", "yesnofix-assert-fix");
 	    fix.setAttribute("data-id", id);
-	    fix.setAttribute("data-assertion", 0);
+	    fix.setAttribute("data-assertion", status_map['fix']);
 	    
 	    var cancel = document.createElement("button");
 	    cancel.setAttribute("class", "yesnofix-assert-cancel");
