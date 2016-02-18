@@ -14,7 +14,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	'text': function(d, ctx){ return null; },
     };
 
-    var assertions = [];
+    var assertions = {};
 
     var current = null;
 
@@ -511,7 +511,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	
 	'assert': function(path, value, assertion){
 	    var dt = new Date();
-	    assertions.push({'path': path, 'value': value, 'assertion': assertion, 'date': dt});
+	    assertions[path] = {'path': path, 'value': value, 'assertion': assertion, 'date': dt};
 	},
 	
 	'report': function(){
@@ -519,9 +519,9 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var report = [];
 	    var count = assertions.length;
 	    
-	    for (var i=0; i < count; i++){
+	    for (path in assertions){
 		
-		var a = assertions[i];
+		var a = assertions[path];
 		
 		var row = [ a['path'], a['value'], a['assertion'], a['date'].toISOString() ];
 		row = row.join(",");
