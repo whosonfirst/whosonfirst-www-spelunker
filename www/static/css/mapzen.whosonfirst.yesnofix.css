@@ -101,6 +101,10 @@
 
 #yesnofix-report button {
     border: solid thin;
+    font-size: small;
+    padding:.4em;
+    padding-left:.6em;
+    padding-right:.6em;
 }
 
 #yesnofix-report-show {
@@ -113,11 +117,15 @@
 
 #yesnofix-report-foo {
     display:none;
+    margin-top:.5em;
+    margin-top:.3em;
 }
 
 #yesnofix-report-body {
     border:solid thin;
     padding:1em;
+    max-height: 100px;
+    overflow: scroll;
 }
 
 #yesnofix-report-submit {
