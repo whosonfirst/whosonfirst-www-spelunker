@@ -64,62 +64,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var pretty = document.createElement("div");
 	    pretty.setAttribute("id", "yesnofix-pretty");
 
-	    // please put me in a method or something...
-	    // (20160217/thisisaaronland)
-
-	    var report = document.createElement("div");
-	    report.setAttribute("id", "yesnofix-report");
-
-	    var show = document.createElement("button");
-	    show.setAttribute("id", "yesnofix-report-show");
-	    show.appendChild(document.createTextNode("show report"));
-
-	    var hide = document.createElement("button");
-	    hide.setAttribute("id", "yesnofix-report-hide");
-	    hide.appendChild(document.createTextNode("hide report"));
-
-	    var foo = document.createElement("div");
-	    foo.setAttribute("id", "yesnofix-report-foo");
-
-	    var body = document.createElement("pre");
-	    body.setAttribute("id", "yesnofix-report-body");
-
-	    var submit = document.createElement("button");
-	    submit.setAttribute("id", "yesnofix-report-submit");
-	    submit.appendChild(document.createTextNode("submit report"));
-
-	    foo.appendChild(body);
-	    foo.appendChild(submit);
-
-	    show.onclick = function(){
-
-		var s = document.getElementById("yesnofix-report-show");
-		var h = document.getElementById("yesnofix-report-hide");
-		var f = document.getElementById("yesnofix-report-foo");
-
-		s.style = "display:none;";
-		h.style = "display:block;";
-		f.style = "display:block;";
-	    };
-
-	    hide.onclick = function(){
-
-		var s = document.getElementById("yesnofix-report-show");
-		var h = document.getElementById("yesnofix-report-hide");
-		var f = document.getElementById("yesnofix-report-foo");
-
-		s.style = "display:block;";
-		h.style = "display:none;";
-		f.style = "display:none;";
-	    };
-
-	    report.appendChild(show);
-	    report.appendChild(hide);
-	    report.appendChild(foo);
-
-	    pretty.appendChild(report);
-
-	    //
+	    var controls = self.render_controls();
+	    pretty.appendChild(controls);
 
 	    buckets = self.bucket_props(props);
 	    
@@ -137,6 +83,72 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    return pretty;				
 	},
 	
+	'render_controls': function(){
+
+	    // please put me in a method or something...
+	    // (20160217/thisisaaronland)
+
+	    var report = document.createElement("div");
+	    report.setAttribute("id", "yesnofix-report");
+
+	    var buttons = document.createElement("div");
+	    buttons.setAttribute("id", "yesnofix-report-buttons");
+
+	    var show = document.createElement("button");
+	    show.setAttribute("id", "yesnofix-report-show");
+	    show.appendChild(document.createTextNode("show report"));
+
+	    var hide = document.createElement("button");
+	    hide.setAttribute("id", "yesnofix-report-hide");
+	    hide.appendChild(document.createTextNode("hide report"));
+
+	    var submit = document.createElement("button");
+	    submit.setAttribute("id", "yesnofix-report-submit");
+	    submit.appendChild(document.createTextNode("submit report"));
+
+	    var br = document.createElement("br");
+	    br.setAttribute("clear", "all");
+
+	    buttons.appendChild(show);
+	    buttons.appendChild(hide);
+	    buttons.appendChild(submit);
+	    buttons.appendChild(br);
+
+	    var body = document.createElement("pre");
+	    body.setAttribute("id", "yesnofix-report-body");
+
+	    show.onclick = function(){
+
+		var sh = document.getElementById("yesnofix-report-show");
+		var hd = document.getElementById("yesnofix-report-hide");
+		var sb = document.getElementById("yesnofix-report-submit");
+		var bd = document.getElementById("yesnofix-report-body");
+
+		sh.style = "display:none;";
+		hd.style = "display:block;";
+		bd.style = "display:block;";
+		sb.style = "display:block;";
+	    };
+
+	    hide.onclick = function(){
+
+		var sh = document.getElementById("yesnofix-report-show");
+		var hd = document.getElementById("yesnofix-report-hide");
+		var sb = document.getElementById("yesnofix-report-submit");
+		var bd = document.getElementById("yesnofix-report-body");
+
+		sh.style = "display:block;";
+		hd.style = "display:none;";
+		bd.style = "display:none;";
+		sb.style = "display:none;";
+	    };
+
+	    report.appendChild(buttons);
+	    report.appendChild(body);
+
+	    return report;
+	},
+
 	'render_bucket': function(ns, bucket){
 	    
 	    var wrapper = document.createElement("div");
@@ -477,15 +489,13 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 	    self.collapse(id);
 
-	    var foo = document.getElementById("yesnofix-report-foo");
+	    var body = document.getElementById("yesnofix-report-body");
+	    body.innerHTML = self.report();
 
-	    if (foo.style.display != "block"){
+	    if (body.style.display != "block"){
 		var show = document.getElementById("yesnofix-report-show");
-		show.style = "display:block";
+		show.style.display = "block";
 	    }
-
-	    var b = document.getElementById("yesnofix-report-body");
-	    b.innerHTML = self.report();
 
 	    var cls = el.getAttribute("class");
 	    cls = cls.split(" ");

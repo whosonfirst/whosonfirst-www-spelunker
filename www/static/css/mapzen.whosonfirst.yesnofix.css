@@ -110,12 +110,19 @@
 
 }
 
-#yesnofix-report button {
+#yesnofix-report-buttons button {
     border: solid thin;
     font-size: small;
     padding:.4em;
     padding-left:.6em;
     padding-right:.6em;
+    float:left;
+    margin-right:.5em;
+    background-color:#A4DDED;
+}
+
+#yesnofix-report-buttons button:hover {
+    background-color:#72A0C1;
 }
 
 #yesnofix-report-show {
@@ -126,19 +133,17 @@
     display:none;
 }
 
-#yesnofix-report-foo {
+#yesnofix-report-submit {
     display:none;
-    margin-top:.5em;
-    margin-top:.3em;
 }
 
 #yesnofix-report-body {
+    display:none;
+    margin-top:.5em;
+    margin-top:.3em;
     border:solid thin;
     padding:1em;
     max-height: 100px;
     overflow: scroll;
-}
-
-#yesnofix-report-submit {
-
+    background-color:#A4DDED;
 }
