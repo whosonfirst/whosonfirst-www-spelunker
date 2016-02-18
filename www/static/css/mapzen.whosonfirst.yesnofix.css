@@ -60,19 +60,6 @@
     font-family:monospace;
 }
 
-#yesnofix-toggle {
-    display: none;
-    font-family:monospace;
-}
-
-#yesnofix-toggle-raw {
-    display: none;
-}
-
-#yesnofix-toggle-pretty {
-    display: none;
-}
-
 .yesnofix-assert {
     margin-top:.5em;
     margin-bottom:1em;
