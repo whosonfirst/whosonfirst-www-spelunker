@@ -111,7 +111,7 @@
 }
 
 #yesnofix-report-buttons button {
-    border: solid thin;
+    border: none;
     font-size: small;
     padding:.4em;
     padding-left:.6em;
@@ -123,6 +123,7 @@
 
 #yesnofix-report-buttons button:hover {
     background-color:#72A0C1;
+    color:#fff;
 }
 
 #yesnofix-report-show {
@@ -135,13 +136,18 @@
 
 #yesnofix-report-submit {
     display:none;
+    background-color:#72A0C1 !important;
+}
+
+#yesnofix-report-submit:hover {
+    color:#fff;
 }
 
 #yesnofix-report-body {
     display:none;
     margin-top:.5em;
     margin-top:.3em;
-    border:solid thin;
+    border:none;
     padding:1em;
     max-height: 100px;
     overflow: scroll;

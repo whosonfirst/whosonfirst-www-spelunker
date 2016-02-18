@@ -15,10 +15,26 @@ mapzen.whosonfirst.yesnofix = (function(){
     };
 
     var assertions = {};
-
     var current = null;
 
+    var submit_handler = function(report){
+	report = encodeURIComponent(report);
+	var data = "data:text/plain," + report;
+	window.open(data, '_report');
+    };
+
     var self = {
+
+	'set_submit_handler': function(handler){
+
+	    if (typeof(handler) != "function"){
+		self.notify("invalid handler", "error");
+		return false;
+	    }
+
+	    submit_handler = handler;
+	    return true;
+	},
 
 	'set_custom_renderers': function(t, r){
 
@@ -141,6 +157,10 @@ mapzen.whosonfirst.yesnofix = (function(){
 		hd.style = "display:none;";
 		bd.style = "display:none;";
 		sb.style = "display:none;";
+	    };
+
+	    submit.onclick = function(){
+		submit_handler(self.report());
 	    };
 
 	    report.appendChild(buttons);
@@ -554,7 +574,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	
 	'report': function(){
 	    
-	    var report = [];
+	    var report = [ "path,value,assertion,date" ];
 	    var count = assertions.length;
 	    
 	    for (path in assertions){
