@@ -429,8 +429,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    
 	    self.assert(path, value, assertion);
 	    
-	    alert("Okay, thanks!");
-	    
+	    self.notify(path + "=" + assertion);
+
 	    self.collapse(id);
 	},
 	
@@ -483,6 +483,37 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    
 	    report = report.join("\n");
 	    return report;
+	},
+
+	'notify': function(msg, ctx){
+
+	    // https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Browser_compatibility
+
+	    var enc_msg = mapzen.whosonfirst.php.htmlspecialchars(msg);
+
+	    if (! window.Notification){
+		alert(enc_msg);
+		return;
+	    }
+
+	    if (Notification.permission == "denied"){
+		alert(enc_msg);
+		return;
+	    }
+
+	    if (Notification.permission != "granted"){
+
+		Notification.requestPermission(function(status){
+		    return self.notify(msg);
+		});
+	    }
+
+	    // TO DO: icons based on ctx (20160217/thisisaaronland)
+
+	    var options = { 'body': enc_msg };
+
+	    var n = new Notification('boundary issues', options);
+	    setTimeout(n.close.bind(n), 5000); 
 	},
     }
     
