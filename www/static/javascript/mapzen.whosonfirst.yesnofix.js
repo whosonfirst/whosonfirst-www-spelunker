@@ -14,6 +14,8 @@ mapzen.whosonfirst.yesnofix = (function(){
 	'text': function(d, ctx){ return null; },
     };
 
+    var _enabled = true;
+
     var assertions = {};
     var current = null;
 
@@ -25,6 +27,20 @@ mapzen.whosonfirst.yesnofix = (function(){
 
     var self = {
 
+	'enabled': function(bool){
+
+	    if (typeof(bool) != "undefined"){
+		if (bool){
+		    _enabled = true;
+		} else {
+		    _enabled = false;
+		}
+	    }
+
+	    console.log("IS ENABLED " + _enabled);
+	    return _enabled;
+	},
+	
 	'set_submit_handler': function(handler){
 
 	    if (typeof(handler) != "function"){
@@ -201,8 +217,11 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var wrapper = document.createElement("span");
 		wrapper.setAttribute("class", "yesnofix-content");
 
-		var trigger = self.render_trigger(ctx);
-		wrapper.appendChild(trigger);
+		if (_enabled){
+
+		    var trigger = self.render_trigger(ctx);
+		    wrapper.appendChild(trigger);
+		}
 
 		var content;
 
