@@ -92,9 +92,14 @@ mapzen.whosonfirst.properties = (function(){
 		return null;
 	    };
 
+	    var exclusions = function(d, ctx){
+
+	    };
+	    
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('dict', dict_renderers);
-
+	    // mapzen.whosonfirst.yesnofix.set_exclusions(exclusions);
+	    
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;
 	},

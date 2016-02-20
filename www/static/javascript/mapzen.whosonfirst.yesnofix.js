@@ -14,6 +14,10 @@ mapzen.whosonfirst.yesnofix = (function(){
 	'text': function(d, ctx){ return null; },
     };
 
+    var _exclusions = {
+	'text': function(d, ctx){ return null; },
+    };
+
     var _enabled = true;
 
     var assertions = {};
@@ -73,6 +77,29 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 	    var custom = _custom_renderers[t];
 	    return custom(d, ctx);
+	},
+
+	'set_exclusions': function(t, e){
+
+	    if (! _exclusions[t]){
+		return;
+	    }
+
+	    if ((! e) || (typeof(e) != "function")){
+		return;
+	    }
+
+	    _exclusions[t] = e;
+	},
+
+	'get_exclusion': function(t, d, ctx){
+
+	    if (! _exclusions[t]){
+		return null;
+	    }
+
+	    var exclude =  _exclusions[t];
+	    return exclude(d, ctx);
 	},
 	
 	// please do not call these 'engage' or 'makeitso' ...
