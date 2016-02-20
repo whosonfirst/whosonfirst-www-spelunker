@@ -92,13 +92,23 @@ mapzen.whosonfirst.properties = (function(){
 		return null;
 	    };
 
-	    var exclusions = function(d, ctx){
+	    var text_exclusions = function(d, ctx){
+
+		return function(){
+
+		    if (ctx.match(/^geom/)){
+			return true;
+		    }
+
+		    return false;
+		};
 
 	    };
 	    
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('dict', dict_renderers);
-	    // mapzen.whosonfirst.yesnofix.set_exclusions(exclusions);
+
+	    mapzen.whosonfirst.yesnofix.set_custom_exclusions('text', text_exclusions);
 	    
 	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
 	    return pretty;

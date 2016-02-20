@@ -79,7 +79,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    return custom(d, ctx);
 	},
 
-	'set_exclusions': function(t, e){
+	'set_custom_exclusions': function(t, e){
 
 	    if (! _exclusions[t]){
 		return;
@@ -92,7 +92,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    _exclusions[t] = e;
 	},
 
-	'get_exclusion': function(t, d, ctx){
+	'get_custom_exclusion': function(t, d, ctx){
 
 	    if (! _exclusions[t]){
 		return null;
@@ -244,7 +244,22 @@ mapzen.whosonfirst.yesnofix = (function(){
 		var wrapper = document.createElement("span");
 		wrapper.setAttribute("class", "yesnofix-content");
 
-		if (_enabled){
+		var add_trigger = true;
+
+		if (! _enabled){
+		    add_trigger = false;
+		}
+
+		if (add_trigger){
+
+		    var exclusion = self.get_custom_exclusion('text', d, ctx);
+
+		    if ((exclusion) && (exclusion(d, ctx))){
+			    add_trigger = false;
+		    }
+		}
+
+		if (add_trigger){
 
 		    var trigger = self.render_trigger(ctx);
 		    wrapper.appendChild(trigger);
