@@ -592,7 +592,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    no.appendChild(document.createTextNode("no – this data is incorrect and should be removed"));
 
 	    var fix = document.createElement("li");
-	    fix.appendChild(document.createTextNode("fix – this data is not entirely wrong but should needs to be corrected"));
+	    fix.appendChild(document.createTextNode("fix – this data is not entirely wrong but needs to be corrected"));
 
 	    options.appendChild(yes);
 	    options.appendChild(no);
