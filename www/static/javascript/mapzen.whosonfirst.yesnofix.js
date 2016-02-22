@@ -510,7 +510,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    fix.setAttribute("class", "yesnofix-assert-fix");
 	    fix.setAttribute("data-id", id);
 	    fix.setAttribute("data-assertion", status_map['fix']);
-	    fix.setAttribute("title", "this value is somewhere between weird data and kind-of correct, but still needs some help");
+	    fix.setAttribute("title", "this value is somewhere between weird-data and kind-of-correct, but still needs some help");
 	    
 	    var cancel = document.createElement("button");
 	    cancel.setAttribute("class", "yesnofix-assert-cancel");

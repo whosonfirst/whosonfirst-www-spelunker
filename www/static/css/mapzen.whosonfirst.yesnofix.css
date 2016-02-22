@@ -111,6 +111,13 @@
     font-size:small !important;
     border: none !important;
     background-color:#fff !important;
+    width: auto !important;
+    margin-left:1em !important;
+    color: #ccc !important;
+}
+
+.yesnofix-assert-about:hover {
+    color: #ffae19 !important;
 }
 
 #yesnofix-report {
