@@ -15,6 +15,13 @@ mapzen.whosonfirst.config = (function(){
 	    var data = root + "data/";
 	    
 	    mapzen.whosonfirst.data.endpoint(data);
+
+	    // You can probably turn this on safely but it is still technically
+	    // a work in progress; the code is being merged with master now but
+	    // disabled to make sure the rendering stuff works correcty and because
+	    // we like to fly close to the sun... (20160222/thisisaaronland)
+
+	    mapzen.whosonfirst.yesnofix.enabled(false);
 	}
     };
 

@@ -41,7 +41,6 @@ mapzen.whosonfirst.yesnofix = (function(){
 		}
 	    }
 
-	    console.log("IS ENABLED " + _enabled);
 	    return _enabled;
 	},
 	
