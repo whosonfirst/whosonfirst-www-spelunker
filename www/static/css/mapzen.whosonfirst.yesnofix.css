@@ -81,7 +81,7 @@
     margin-left:.25em;
     margin-right:.25em;
     font-size:small;
-    width:20%;
+    width:15%;
     color:#333;
 }
 
@@ -104,6 +104,13 @@
 .yesnofix-assert-cancel:hover {
     background-color:#666;
     color:#fff;
+}
+
+.yesnofix-assert-about {
+    padding: 0px !important;
+    font-size:small !important;
+    border: none !important;
+    background-color:#fff !important;
 }
 
 #yesnofix-report {

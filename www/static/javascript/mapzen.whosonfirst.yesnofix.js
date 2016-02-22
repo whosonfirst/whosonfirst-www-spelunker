@@ -498,39 +498,56 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    yes.setAttribute("class", "yesnofix-assert-yes");
 	    yes.setAttribute("data-id", id);
 	    yes.setAttribute("data-assertion", status_map['yes']);
-	    
+	    yes.setAttribute("title", "yes, this value is correct");
+
 	    var no = document.createElement("button");
 	    no.setAttribute("class", "yesnofix-assert-no");
 	    no.setAttribute("data-id", id);
 	    no.setAttribute("data-assertion", status_map['no']);
+	    no.setAttribute("title", "no, this value is incorrect");
 	    
 	    var fix = document.createElement("button");
 	    fix.setAttribute("class", "yesnofix-assert-fix");
 	    fix.setAttribute("data-id", id);
 	    fix.setAttribute("data-assertion", status_map['fix']);
+	    fix.setAttribute("title", "this value is somewhere between weird data and kind-of correct, but still needs some help");
 	    
 	    var cancel = document.createElement("button");
 	    cancel.setAttribute("class", "yesnofix-assert-cancel");
 	    cancel.setAttribute("data-id", id);
+	    cancel.setAttribute("title", "actually, never mind");
+
+	    var about = document.createElement("button");
+	    about.setAttribute("class", "yesnofix-assert-about");
+	    about.setAttribute("title", "wait... what's going? what is this?");
 
 	    yes.appendChild(document.createTextNode("yes"));
 	    no.appendChild(document.createTextNode("no"));
 	    fix.appendChild(document.createTextNode("fix"));
 	    cancel.appendChild(document.createTextNode("cancel"));
+	    about.appendChild(document.createTextNode("?"));
 	    
 	    yes.onclick = mapzen.whosonfirst.yesnofix.onassert;
 	    no.onclick = mapzen.whosonfirst.yesnofix.onassert;
 	    fix.onclick = mapzen.whosonfirst.yesnofix.onassert;
 	    cancel.onclick = mapzen.whosonfirst.yesnofix.oncancel;
+	    about.onclick = mapzen.whosonfirst.yesnofix.onabout;
 
 	    input.appendChild(yes);
 	    input.appendChild(no);
 	    input.appendChild(fix);
 	    input.appendChild(cancel);
+	    input.appendChild(about);
+
 	    input.appendChild(document.createElement("br"));
 	    return input;
 	},
 	
+	'onabout': function(){
+	    alert("ABOUT ALL THE THINGS");
+	    return false;
+	},
+
 	'onassert' : function(e){
 	    
 	    var target = e.target;
