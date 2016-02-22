@@ -550,16 +550,49 @@ mapzen.whosonfirst.yesnofix = (function(){
 
 	    var text = document.createElement("div");
 	    text.setAttribute("id", "yesnofix-about-text");
-	    text.appendChild(document.createTextNode("..."));
+
+	    var head = document.createElement("h2");
+	    head.appendChild(document.createTextNode("What is Yes No Fix ?"));
+
+	    var intro = document.createElement("p");
+	    intro.appendChild(document.createTextNode("intro..."));
+
+	    var options = document.createElement("ul");
+
+	    var yes = document.createElement("li");
+	    yes.appendChild(document.createTextNode("yes – this data is correct"));
+
+	    var no = document.createElement("li");
+	    no.appendChild(document.createTextNode("no – this data is incorrect"));
+
+	    var fix = document.createElement("li");
+	    fix.appendChild(document.createTextNode("fix – this data is not entirely incorrect but isn't entirely correct either"));
+
+	    options.appendChild(yes);
+	    options.appendChild(no);
+	    options.appendChild(fix);
+
+	    var outro = document.createElement("p");
+	    outro.appendChild(document.createTextNode("outro..."));
+
+	    text.appendChild(head);
+	    text.appendChild(intro);
+	    text.appendChild(options);
+	    text.appendChild(outro);
 
 	    var close = document.createElement("div");
 	    close.setAttribute("id", "yesnofix-about-close");
-	    close.appendChild(document.createTextNode("close"));
+
+	    var button = document.createElement("button");
+	    button.setAttribute("id", "yesnofix-about-close-button");
+	    button.appendChild(document.createTextNode("okay!"));
+
+	    close.appendChild(button);
 
 	    about.appendChild(text);
 	    about.appendChild(close);
 
-	    close.onclick = function(){
+	    button.onclick = function(){
 		var about = document.getElementById("yesnofix-about");
 		var parent = about.parentElement;
 		parent.removeChild(about);

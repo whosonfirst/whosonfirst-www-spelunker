@@ -169,7 +169,7 @@
 }
 
 #yesnofix-about {
-    z-index: 100 !important;
+    z-index: 2000 !important;	// because the leaflet attribution widget is z-index 1000....
     border:8px solid #333;
     background-color: #fff;
     width: 50%;
@@ -181,7 +181,19 @@
     left:25%;
 }
 
+#yesnofix-about-text {
+    y-overflow: scroll;
+}
+
 #yesnofix-about-close {
     margin-top:2em;
     text-align: right;
+    position:absolute;
+    bottom: 2em;
+    right: 2em;
+}
+
+#yesnofix-about-close-button {
+    border: solid thin;
+    padding: .5em;
 }
