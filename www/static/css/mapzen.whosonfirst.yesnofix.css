@@ -167,3 +167,19 @@
     overflow: scroll;
     background-color:#A4DDED;
 }
+
+#yesnofix-about {
+    z-index: 100 !important;
+    border:8px solid #333;
+    background-color: #fff;
+    width: 50%;
+    padding: 1.5em;
+    position: absolute;
+    top: 50px;
+    left:25%;
+}
+
+#yesnofix-about-close {
+    margin-top:2em;
+    text-align: right;
+}

@@ -544,7 +544,30 @@ mapzen.whosonfirst.yesnofix = (function(){
 	},
 	
 	'onabout': function(){
-	    alert("ABOUT ALL THE THINGS");
+
+	    var about = document.createElement("div");
+	    about.setAttribute("id", "yesnofix-about");
+
+	    var text = document.createElement("div");
+	    text.setAttribute("id", "yesnofix-about-text");
+	    text.appendChild(document.createTextNode("..."));
+
+	    var close = document.createElement("div");
+	    close.setAttribute("id", "yesnofix-about-close");
+	    close.appendChild(document.createTextNode("close"));
+
+	    about.appendChild(text);
+	    about.appendChild(close);
+
+	    close.onclick = function(){
+		var about = document.getElementById("yesnofix-about");
+		var parent = about.parentElement;
+		parent.removeChild(about);
+	    };
+
+	    var body = document.body;
+	    body.insertBefore(about, body.firstChild);
+
 	    return false;
 	},
 
