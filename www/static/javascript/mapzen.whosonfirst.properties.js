@@ -100,7 +100,17 @@ mapzen.whosonfirst.properties = (function(){
 			return true;
 		    }
 
-		    return false;
+		    else if ((ctx.match(/^edtf/)) && (d == "uuuu")){
+			return true;
+		    }
+
+		    else if (ctx == 'wof.lastmodified'){
+			return true;
+		    }
+
+		    else {
+			return false;
+		    }
 		};
 
 	    };

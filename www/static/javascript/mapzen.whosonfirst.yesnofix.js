@@ -264,6 +264,12 @@ mapzen.whosonfirst.yesnofix = (function(){
 		    wrapper.appendChild(trigger);
 		}
 
+		else {
+
+		    var lock = self.render_locked(ctx);
+		    wrapper.appendChild(lock);   
+		}
+		
 		var content;
 
 		var renderer = self.get_custom_renderer('text', d, ctx);
@@ -386,7 +392,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	},
 
 	/*
-	  .yesnofix-trigger { display:none; padding-left: 1em; }
+	  .yesnofix-trigger { display:none; padding-right: 1em; }
 	  .yesnofix-content:hover .yesnofix-trigger { display:inline; }
 	*/
 
@@ -397,10 +403,30 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var trigger = document.createElement("span");
 	    trigger.setAttribute("trigger-id", ctx);
 	    trigger.setAttribute("class", "yesnofix-trigger");
+	    trigger.setAttribute("title", "assert an opinion about this attribute");
+
 	    trigger.appendChild(edit);
 	    
 	    trigger.onclick = mapzen.whosonfirst.yesnofix.ontrigger;
 	    return trigger;
+	},
+
+	/*
+	  .yesnofix-locked { display:none; padding-right: 1em; }
+	  .yesnofix-content:hover .yesnofix-locked { display:inline; }
+	*/
+
+	'render_locked': function(ctx){
+	    
+	    var icon = document.createTextNode("🔒");	// http://emojipedia.org/memo/
+
+	    var locked = document.createElement("span");
+	    locked.setAttribute("class", "yesnofix-locked");
+	    locked.setAttribute("title", "this attribute is locked");
+
+	    locked.appendChild(icon);
+	    
+	    return locked;
 	},
 
 	'render_code': function(text, ctx){

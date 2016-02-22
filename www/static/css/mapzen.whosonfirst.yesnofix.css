@@ -63,6 +63,15 @@
     display:inline;
 }
 
+.yesnofix-locked {
+    display:none;
+    padding-right: 1em;
+}
+
+.yesnofix-content:hover .yesnofix-locked {
+    display:inline;
+}
+
 #yesnofix-pretty td :last-child {
     border-bottom:none;
 }
