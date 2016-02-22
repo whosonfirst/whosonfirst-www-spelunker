@@ -4,6 +4,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.data = (function(){
 
 	var _endpoint = "https://whosonfirst.mapzen.com/data/";
+	_endpoint = "https://s3.amazonaws.com/whosonfirst.mapzen.com/data/";
 
 	var self = {
 

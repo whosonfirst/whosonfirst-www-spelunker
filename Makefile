@@ -35,6 +35,10 @@ tangram:
 	if test -e www/static/javascript/tangram.min.js; then cp www/static/javascript/tangram.min.js www/static/javascript/tangram.min.js.bak; fi
 	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
 
+refill:
+	if test -e www/tangram/refill.yaml; then cp www/tangram/refill.yaml www/tangram/refill.yaml.bak; fi
+	curl -s -o www/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
+
 js: js-dependencies js-app
 
 js-dependencies:
@@ -49,6 +53,6 @@ js-app:
 
 refill:
 	if test -f www/static/tangram/refill.yaml; then cp www/static/tangram/refill.yaml www/static/tangram/refill.yaml.old; fi
-	curl -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill/gh-pages/refill.yaml
+	curl -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
 	if test -f www/static/tangram/images/poi_icons_18@2x.png; then cp www/static/tangram/images/poi_icons_18@2x.png www/static/tangram/images/poi_icons_18@2x.png.old; fi
 	curl -o www/static/tangram/images/poi_icons_18@2x.png https://raw.githubusercontent.com/tangrams/refill/gh-pages/images/poi_icons_18%402x.png
