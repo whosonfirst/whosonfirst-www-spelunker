@@ -173,9 +173,11 @@
     border:8px solid #333;
     background-color: #fff;
     width: 50%;
+    min-height:50%;
+    max-height:50%;    
     padding: 1.5em;
-    position: absolute;
-    top: 50px;
+    position: fixed;
+    top: 25%;
     left:25%;
 }
 
