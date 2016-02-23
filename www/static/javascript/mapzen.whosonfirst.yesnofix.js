@@ -254,20 +254,16 @@ mapzen.whosonfirst.yesnofix = (function(){
 		    var exclusion = self.get_custom_exclusion('text', d, ctx);
 
 		    if ((exclusion) && (exclusion(d, ctx))){
-			    add_trigger = false;
+
+			var lock = self.render_locked(ctx);
+			wrapper.appendChild(lock);   
 		    }
-		}
 
-		if (add_trigger){
+		    else {
 
-		    var trigger = self.render_trigger(ctx);
-		    wrapper.appendChild(trigger);
-		}
-
-		else {
-
-		    var lock = self.render_locked(ctx);
-		    wrapper.appendChild(lock);   
+			var trigger = self.render_trigger(ctx);
+			wrapper.appendChild(trigger);
+		    }
 		}
 		
 		var content;
