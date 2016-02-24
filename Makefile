@@ -2,7 +2,7 @@ upgrade:
 	sudo apt-get update
 	sudo apt-get upgrade
 
-build:	setup data install
+build:	setup data index
 
 setup:
 	ubuntu/setup-ubuntu.sh
