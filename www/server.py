@@ -770,10 +770,11 @@ def searchify():
     
     esc_q = flask.g.search_idx.escape(q)
 
+    # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
+
     query = {
-        'query_string': {
-            'query': esc_q
-        }
+        # 'query_string': { 'query': esc_q }
+        'match': { '_all': { 'query': esc_q, 'operator': 'and' } }
     }
 
     query = enfilterify(query)
@@ -890,6 +891,10 @@ def facetify(query):
         facets[k] = results
 
     return facets
+
+# because you know this is all going to break in 2.x...
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-filtered-query.html
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html
 
 def enfilterify(query):
 
