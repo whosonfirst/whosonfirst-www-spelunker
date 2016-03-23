@@ -5,7 +5,7 @@ mapzen.whosonfirst.leaflet = (function(){
 
 	var self = {
 		'draw_point': function(map, geojson, style, handler){
-						
+			
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,

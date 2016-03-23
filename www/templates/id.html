@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
+{% block head %}{% endblock %}
 {% block content %}
 
 <div class="row" id="wof-record" data-wof-id="{{ doc.properties.get('wof:id') |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">

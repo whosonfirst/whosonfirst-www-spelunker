@@ -153,23 +153,75 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
 
 		'screenshot': function(id, on_screenshot){
+		    
+		    if (! on_screenshot){
+			
+			on_screenshot = function(sh) {
+			    window.open(sh.url);
+			    return false;
+			};
+		    }
 
-			if (! on_screenshot){
+		    var scene = self.scene(id);
 
-				on_screenshot = function(sh) {
-					window.open(sh.url);
-				};
-			}
+		    if (! scene){
+			console.log("failed to retrieve scene");
+			return false;
+		    }
 
-			var scene = self.scene(id);
+		    var el = document.getElementById("wof-record");
+		    var wofid = el.getAttribute("data-wof-id");
 
-			if (! scene){
-				console.log("failed to retrieve scene");
-				return false;
-			}
+		    // FIX ME
 
-			scene.screenshot().then(on_screenshot);
-			return true;
+		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+		    url = "https://s3.amazonaws.com/whosonfirst.mapzen.com" + url;
+
+		    // akin to a Leaflet "layer" - draw with the polygon overlay style (defined below)
+
+		    scene.config.layers.wof = {
+		      	"data": { "source":"wof" },
+			"draw": { "polygons-overlay": { "color": "rgba(255, 255, 0, 0.6)"}, "lines": { "color": "rgb(255, 0, 153)", "width": "4px", "order":1000 } }
+		    };
+		    
+		    // the polygon overlay 
+
+		    scene.config.styles['polygons-overlay'] = { "base": "polygons",  "blend": "overlay" };
+		    
+		    // the data being styled
+		    
+		    var on_fetch = function(feature){
+
+			var wof = {
+			    type: 'GeoJSON',
+			    data: feature,
+			    // url: url
+			};
+
+			scene.setDataSource('wof', wof);
+
+			var on_rebuild = function(){
+
+			    var on_render = function(rsp){
+				
+				scene.setDataSource('wof', { type: 'GeoJSON', data: {} });
+				on_screenshot(rsp);
+			    };
+
+			    scene.screenshot().then(on_render);
+			};
+
+			scene.updateConfig({ rebuild: true }).then(function() {  });
+			scene.updateConfig({ rebuild: true }).then(on_rebuild);
+
+		    };
+
+		    var on_fail = function(){
+			console.log("sad face");
+		    };
+
+		    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
+		    return false;
 		}
 	};
 
