@@ -21,7 +21,9 @@ index:
 	ubuntu/setup-postgis-index.sh $(data)
 	ubuntu/setup-elasticsearch-index.sh $(data)
 
-mapzen:
+mapzen: styleguide tangram refill
+
+styleguide:
 	if test -e www/static/css/mapzen.styleguide.css; then cp www/static/css/mapzen.styleguide.css www/static/css/mapzen.styleguide.css.bak; fi
 	curl -s -o www/static/css/mapzen.styleguide.css https://mapzen.com/common/styleguide/styles/styleguide.css
 
@@ -31,7 +33,7 @@ tangram:
 	if test -e www/static/javascript/tangram.min.js; then cp www/static/javascript/tangram.min.js www/static/javascript/tangram.min.js.bak; fi
 	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
 
-refill	tangram:
+refill:
 	if test -e www/static/tangram/refill.yaml; then cp www/static/tangram/refill.yaml www/static/tangram/refill.yaml.bak; fi
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
 
