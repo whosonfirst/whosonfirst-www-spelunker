@@ -32,7 +32,7 @@
 {% if doc.properties.get("src:lbl:centroid") %}Its <span class="hey-look">label centroid</span> is derived from <a href="{{ url_for('searchify') }}?q={{ doc.properties.get('src:lbl:centroid', 'unknown') | e}}" class="hey-look">{{ doc.properties.get('src:lbl:centroid', 'unknown') | e}}</a>.{% elif doc.properties.get("src:centroid_lbl") %}Its <span class="hey-look">label centroid</span> is derived from <a href="{{ url_for('searchify') }}?q={{ doc.properties.get('src:centroid_lbl', 'unknown') | e}}" class="hey-look">{{ doc.properties.get('src:centroid_lbl', 'unknown') | e}}</a> ... and it looks like the label centroid needs to be reprocessed.{% else %}OH NOES!!! MISSING <span class="hey-look">LABEL CENTROID</span>{% endif %}
 {% endif %}
 
-<span style="font-style:italic;">Experimental: <a href="#" class="hey-look" onclick="javascript:mapzen.whosonfirst.leaflet.tangram.screenshot_as_file('map');return false;" title="screenshot this map">screenshot this map</a> (will not include Who's on First data... yet)</span>
+<span style="font-style:italic;">Experimental: <a href="#" class="hey-look" onclick="javascript:mapzen.whosonfirst.leaflet.tangram.screenshot_as_file('map');return false;" title="screenshot this map">screenshot this map</a> (this takes a few seconds to complete)</span>
 </small></div>
 
 <div class="row">

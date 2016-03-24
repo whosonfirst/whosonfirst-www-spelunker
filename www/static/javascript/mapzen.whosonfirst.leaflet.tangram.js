@@ -137,7 +137,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'screenshot_as_file': function(id){
 
 			if (typeof(saveAs) == "undefined"){
-				console.log("missing 'saveAs' controls");
+				mapzen.whosonfirst.log.error("missing 'saveAs' controls");
 				return false
 			}
 
@@ -165,17 +165,25 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		    var scene = self.scene(id);
 
 		    if (! scene){
-			console.log("failed to retrieve scene");
+			mapzen.whosonfirst.log.error("failed to retrieve scene, trying to render screenshot");
 			return false;
 		    }
 
 		    var el = document.getElementById("wof-record");
+
+		    if (! el){
+			mapzen.whosonfirst.log.error("unable to locate 'wof-record' element, trying to render screenshot");
+			return false;
+		    }
+		    
 		    var wofid = el.getAttribute("data-wof-id");
 
-		    // FIX ME
+		    if (! el){
+			mapzen.whosonfirst.log.error("unable to locate 'data-wof-id' attribute, trying to render screenshot");
+			return false;
+		    }
 
 		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
-		    url = "https://s3.amazonaws.com/whosonfirst.mapzen.com" + url;
 
 		    // akin to a Leaflet "layer" - draw with the polygon overlay style (defined below)
 
@@ -188,7 +196,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		    scene.config.styles['polygons-overlay'] = { "base": "polygons",  "blend": "overlay" };
 		    
-		    // the data being styled
+		    // The data being styled - see the way we're calling mapzen.whosonfirst.net.fetch below?
+		    // That's because we should already have a cache of the data locally so it will return
+		    // right away. With that data we hand off to the scene object and carry on with the
+		    // screenshot. (20160322/thisisaaronland)
 		    
 		    var on_fetch = function(feature){
 
@@ -198,12 +209,18 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			    // url: url
 			};
 
+			// Draw the stuff which really means draws the stuff after
+			// we invoke 'updateConfig' - this will not require updating
+			// the config soon but today, it does (20160322/thisisaaronland)
+
 			scene.setDataSource('wof', wof);
 
 			var on_rebuild = function(){
 
 			    var on_render = function(rsp){
-				
+
+				// remove the stuff (leaving the Leaflet GeoJSON stuff)
+
 				scene.setDataSource('wof', { type: 'GeoJSON', data: {} });
 				on_screenshot(rsp);
 			    };
@@ -211,13 +228,16 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			    scene.screenshot().then(on_render);
 			};
 
+			// This is deliberate while we are waiting on updates to Tangram.js
+			// It's not pretty but it works (20160323/thisisaaronland)
+
 			scene.updateConfig({ rebuild: true }).then(function() {  });
 			scene.updateConfig({ rebuild: true }).then(on_rebuild);
 
 		    };
 
 		    var on_fail = function(){
-			console.log("sad face");
+			mapzen.whosonfirst.log.error("failed to render screenshot");
 		    };
 
 		    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
