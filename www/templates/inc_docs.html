@@ -24,7 +24,7 @@
     {% if doc['properties']['iso:country'] |e %}
     this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span>
     {% else %}
-    this is a <a href={{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a>
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a>
     {% endif %}
   </small>
   {% if doc.properties.get('gn:population', None) %}
