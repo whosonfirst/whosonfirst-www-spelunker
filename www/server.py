@@ -1080,8 +1080,14 @@ def get_by_id(id):
     rsp = flask.g.search_idx.search(body)
     docs = rsp['rows']
 
+    # WTF... why do I need to do this? it would appear that updates are not being
+    # applied but rather being indexed as new records even though they have the
+    # same ID because... ??? (20160329/thisisaaronland)
+    #
+    # see also: https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/12
+
     try:
-        return docs[0]
+        return docs[-1]
     except Exception, e:
         print "failed to retrieve %s" % id
         return None
