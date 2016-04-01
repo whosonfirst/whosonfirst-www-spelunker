@@ -314,12 +314,12 @@ def descendants(id):
     facet_url = pagination_url
 
     template_args = {
+        'doc': doc,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
         'facets': facets,
         'facet_url': facet_url,
-        'doc': doc,
         'es_query': body,
     }
 

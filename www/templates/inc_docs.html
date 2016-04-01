@@ -74,8 +74,8 @@
 {% include "inc_pagination.html" %}
 </div>
 
-  {% if doc %}
-  <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.doc.js') }}"></script>
-  {% else %}
+  {% if docs %}
   <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.docs.js') }}"></script>
+  {% else %}
+  <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.doc.js') }}"></script>
   {% endif %}
