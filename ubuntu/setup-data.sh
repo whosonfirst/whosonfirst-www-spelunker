@@ -26,7 +26,7 @@ fi
 
 # please to make generic and move in to another script
 
-PLACETYPES='continent country region locality neighbourhood'
+PLACETYPES='borough continent country region locality neighbourhood'
 
 if [ ! -d ${DATA} ]
 then
