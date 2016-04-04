@@ -58,3 +58,14 @@ js-app:
 	cat www/static/javascript/mapzen.whosonfirst.log.js www/static/javascript/mapzen.whosonfirst.php.js www/static/javascript/mapzen.whosonfirst.placetypes.js www/static/javascript/mapzen.whosonfirst.data.js www/static/javascript/mapzen.whosonfirst.geojson.js www/static/javascript/mapzen.whosonfirst.leaflet.js www/static/javascript/mapzen.whosonfirst.leaflet.styles.js www/static/javascript/mapzen.whosonfirst.leaflet.handlers.js www/static/javascript/mapzen.whosonfirst.leaflet.tangram.js www/static/javascript/mapzen.whosonfirst.net.js www/static/javascript/mapzen.whosonfirst.enmapify.js www/static/javascript/mapzen.whosonfirst.properties.js www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.spelunker.js > www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 	echo "" >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
+
+es-schema:
+	if test -e schema/elasticsearch/mappings.spelunker.json; then cp schema/elasticsearch/mappings.spelunker.json schema/elasticsearch/mappings.spelunker.json.bak; fi
+	curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
+
+es-reload:
+	curl -s -XDELETE 'http://$(host):9200/whosonfirst' | python -mjson.tool
+	cat "schema/elasticsearch/mappings.spelunker.json" | curl -s -XPUT 'http://$(host):9200/whosonfirst' -d @- | python -mjson.tool
+
+es-index:
+	sudo -u www-data ./ubuntu/setup-elasticsearch-index.sh $(data)
