@@ -216,3 +216,31 @@
 #yesnofix-about-close-button:hover {
     background-color: #999;
 }
+
+#yesnofix-about-submit {
+    margin-top:2em;
+    text-align: right;
+    position:absolute;
+    bottom: 2em;
+    width:90%;
+}
+
+#yesnofix-about-cancel-button {
+    border: solid thin;
+    padding: .5em;
+}
+
+#yesnofix-about-cancel-button:hover {
+    background-color: #999;
+}
+
+#yesnofix-about-submit-button {
+    border: solid thin;
+    padding: .5em;
+    float: right;
+    margin-left:2em;
+}
+
+#yesnofix-about-submit-button:hover {
+    background-color: #999;
+}

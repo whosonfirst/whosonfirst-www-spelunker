@@ -251,9 +251,11 @@ mapzen.whosonfirst.properties = (function(){
 	    close.setAttribute("id", "yesnofix-about-submit");
 
 	    var cancel_button = document.createElement("button");
+	    cancel_button.setAttribute("id", "yesnofix-about-cancel-button");
 	    cancel_button.appendChild(document.createTextNode("cancel"));
 
 	    var submit_button = document.createElement("button");
+	    submit_button.setAttribute("id", "yesnofix-about-submit-button");
 	    submit_button.appendChild(document.createTextNode("submit"));
 
 	    close.appendChild(cancel_button);
