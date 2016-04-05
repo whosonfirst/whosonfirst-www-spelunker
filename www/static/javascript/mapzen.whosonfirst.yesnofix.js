@@ -101,9 +101,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    return exclude(d, ctx);
 	},
 	
-	// please do not call these 'engage' or 'makeitso' ...
-	
-	'makeitso': function(data, target){
+	'apply': function(data, target){
 	    
 	    var el = document.getElementById(target);
 	    
@@ -111,13 +109,13 @@ mapzen.whosonfirst.yesnofix = (function(){
 		return false;
 	    }
 	    
-	    var pretty = self.engage(data);
+	    var pretty = self.render(data);
 	    el.appendChild(pretty);
 
 	    return true;
 	},
 	
-	'engage': function(props){
+	'render': function(props){
 	    
 	    var pretty = document.createElement("div");
 	    pretty.setAttribute("id", "yesnofix-pretty");
@@ -222,14 +220,14 @@ mapzen.whosonfirst.yesnofix = (function(){
 		}
 
 	    var sorted = self.sort_bucket(bucket);
-	    var body = self.render(sorted, ns);
+	    var body = self.render_data(sorted, ns);
 	    
 	    wrapper.appendChild(body);
 	    
 	    return wrapper;
 	},
 	
-	'render': function(d, ctx){
+	'render_data': function(d, ctx){
 	    
 	    if (Array.isArray(d)){
 		// console.log("render list for " + ctx);
@@ -327,7 +325,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 		
 		var content = document.createElement("td");
 
-		var body = self.render(d[k], _ctx);		
+		var body = self.render_data(d[k], _ctx);		
 		content.appendChild(body);
 
 		row.appendChild(header);
@@ -348,7 +346,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    }
 	    
 	    if (count <= 1){
-		return self.render(d[0], ctx);
+		return self.render_data(d[0], ctx);
 	    }
 	    
 	    var list = document.createElement("ul");
@@ -356,7 +354,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    for (var i=0; i < count; i++){
 		
 		var item = document.createElement("li");
-		var body = self.render(d[i], ctx + "#" + i);
+		var body = self.render_data(d[i], ctx + "#" + i);
 		
 		item.appendChild(body);
 		list.appendChild(item);

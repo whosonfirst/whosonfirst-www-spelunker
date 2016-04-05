@@ -122,7 +122,7 @@ mapzen.whosonfirst.properties = (function(){
 
 	    mapzen.whosonfirst.yesnofix.set_custom_exclusions('text', text_exclusions);
 	    
-	    var pretty = mapzen.whosonfirst.yesnofix.engage(props);
+	    var pretty = mapzen.whosonfirst.yesnofix.render(props);
 	    return pretty;
 	},
 
