@@ -114,7 +114,9 @@ mapzen.whosonfirst.properties = (function(){
 		};
 
 	    };
-	    
+
+	    mapzen.whosonfirst.yesnofix.set_submit_handler(self.submit_handler);
+
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
 	    mapzen.whosonfirst.yesnofix.set_custom_renderers('dict', dict_renderers);
 
@@ -202,6 +204,73 @@ mapzen.whosonfirst.properties = (function(){
             var link = root + "tags/" + encodeURIComponent(d) + "/";
             return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
+
+	// pending a final working soundbox installation
+	// (20160405/thisisaaronland)
+	
+	'submit_handler': function(report){
+
+	    var close_modal = function(){
+		var about = document.getElementById("yesnofix-about");
+		var parent = about.parentElement;
+		parent.removeChild(about);
+	    };
+
+	    var on_submit = function(){
+
+		close_modal();
+
+		report = encodeURIComponent(report);
+		var data = "data:text/plain," + report;
+		window.open(data, '_report');
+	    };
+
+	    var on_cancel = function(){
+		close_modal();
+	    };
+
+	    // See this - we are purposefully re-using the CSS from the
+	    // default about widget (20160405/thisisaaronland)
+
+	    var about = document.createElement("div");
+	    about.setAttribute("id", "yesnofix-about");
+
+	    var text = document.createElement("div");
+	    text.setAttribute("id", "yesnofix-about-text");
+
+	    var head = document.createElement("h2");
+	    head.appendChild(document.createTextNode("You have found an experimental feature!"));
+
+	    var intro = document.createElement("p");
+	    intro.appendChild(document.createTextNode("LET ME TELL YOU ABOUT IT..."));
+
+	    text.appendChild(head);
+	    text.appendChild(intro);
+
+	    var close = document.createElement("div");
+	    close.setAttribute("id", "yesnofix-about-submit");
+
+	    var cancel_button = document.createElement("button");
+	    cancel_button.appendChild(document.createTextNode("cancel"));
+
+	    var submit_button = document.createElement("button");
+	    submit_button.appendChild(document.createTextNode("submit"));
+
+	    close.appendChild(cancel_button);
+	    close.appendChild(submit_button);
+
+	    about.appendChild(text);
+	    about.appendChild(close);
+
+	    cancel_button.onclick = on_cancel;
+	    submit_button.onclick = on_submit;
+
+	    var body = document.body;
+	    body.insertBefore(about, body.firstChild);
+
+	    return false;
+	},
+
     };
 
     return self;
