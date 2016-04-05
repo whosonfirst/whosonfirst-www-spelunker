@@ -536,7 +536,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    fix.setAttribute("class", "yesnofix-assert-fix");
 	    fix.setAttribute("data-id", id);
 	    fix.setAttribute("data-assertion", status_map['fix']);
-	    fix.setAttribute("title", "this value is somewhere between weird-data and kind-of-correct, but still needs some help");
+	    fix.setAttribute("title", "this value is somewhere between weird data and kind-of-correct data, but still needs some help");
 	    
 	    var cancel = document.createElement("button");
 	    cancel.setAttribute("class", "yesnofix-assert-cancel");
@@ -581,25 +581,25 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    head.appendChild(document.createTextNode("What is Yes No Fix ?"));
 
 	    var intro = document.createElement("p");
-	    intro.appendChild(document.createTextNode("intro..."));
+	    intro.appendChild(document.createTextNode("Yes No Fix allows you to offer an opinion about the contents of this web page. Those opinions can then be bundled up as a report and sent to its authors. When you say:"));
 
 	    var options = document.createElement("ul");
 
 	    var yes = document.createElement("li");
-	    yes.appendChild(document.createTextNode("yes – this data is correct"));
+	    yes.appendChild(document.createTextNode("Yes, this means this data is correct"));
 
 	    var no = document.createElement("li");
-	    no.appendChild(document.createTextNode("no – this data is incorrect and should be removed"));
+	    no.appendChild(document.createTextNode("No, this means this data is incorrect and should be removed"));
 
 	    var fix = document.createElement("li");
-	    fix.appendChild(document.createTextNode("fix – this data is not entirely wrong but needs to be corrected"));
+	    fix.appendChild(document.createTextNode("Fix, this means this data is not entirely wrong but needs to be corrected"));
 
 	    options.appendChild(yes);
 	    options.appendChild(no);
 	    options.appendChild(fix);
 
 	    var outro = document.createElement("p");
-	    outro.appendChild(document.createTextNode("outro..."));
+	    outro.appendChild(document.createTextNode("The details of where a report is sent and how it is processed will vary from website to website."));
 
 	    text.appendChild(head);
 	    text.appendChild(intro);
