@@ -15,6 +15,10 @@ window.addEventListener("load", function load(event){
         lon = parseFloat(match[3]);
 
 	map = mapzen.whosonfirst.leaflet.tangram.map_with_latlon('map', lat, lon, zoom);
+
+	var more = {'donot_fit_map': true};
+
+	mapzen.whosonfirst.enmapify.render_id(map, wofid, null, more);
     }
 
     else {
@@ -25,9 +29,8 @@ window.addEventListener("load", function load(event){
 	// first we draw the map
 
 	map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', bbox);
+	mapzen.whosonfirst.enmapify.render_id(map, wofid);
     }
-
-    mapzen.whosonfirst.enmapify.render_id(map, wofid);
 
     // now we format the properties hash
     

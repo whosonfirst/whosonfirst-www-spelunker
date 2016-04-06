@@ -80,7 +80,10 @@ mapzen.whosonfirst.leaflet = (function(){
 		},
 
 		'fit_map': function(map, geojson, force){
-			
+
+		    console.log("FITTING THE MAP");
+		    return;
+
 			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
 
 			if (! bbox){
