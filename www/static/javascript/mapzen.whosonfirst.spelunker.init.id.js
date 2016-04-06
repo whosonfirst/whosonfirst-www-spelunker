@@ -1,21 +1,40 @@
 window.addEventListener("load", function load(event){
 
-    	var wof = document.getElementById("wof-record");
-    	var wofid = wof.getAttribute("data-wof-id");
+    var wof = document.getElementById("wof-record");
+    var wofid = wof.getAttribute("data-wof-id");
+
+    var map;
+
+    var hash = location.hash;
+    var match = hash.match(/^#?(\d+)\/(-?\d+\.\d+)\/(-?\d+\.\d+)/);
+
+    if (match){
+
+        zoom = parseInt(match[1]);
+        lat = parseFloat(match[2]);
+        lon = parseFloat(match[3]);
+
+	map = mapzen.whosonfirst.leaflet.tangram.map_with_latlon('map', lat, lon, zoom);
+    }
+
+    else {
+
     	var bbox = wof.getAttribute("data-wof-bbox");
     	bbox = bbox.split(",");
 
 	// first we draw the map
 
-	var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', bbox);
-	mapzen.whosonfirst.enmapify.render_id(map, wofid);
+	map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', bbox);
+    }
 
-	// now we format the properties hash
+    mapzen.whosonfirst.enmapify.render_id(map, wofid);
 
-	var url = mapzen.whosonfirst.data.id2abspath(wofid);
-
-	var cb = function(feature){
-
+    // now we format the properties hash
+    
+    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+    
+    var cb = function(feature){
+	
 		var props = feature['properties'];
 		var id = props['wof:id'];
 

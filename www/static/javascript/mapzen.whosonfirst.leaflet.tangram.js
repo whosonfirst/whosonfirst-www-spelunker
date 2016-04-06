@@ -38,6 +38,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				var map = L.map(id);
 				map.scrollWheelZoom.disable();
 
+			    	if (L.Hash){
+			    	    var hash = new L.Hash(map);
+				}
+
 				var tangram = self.tangram();
 				tangram.addTo(map);
 
