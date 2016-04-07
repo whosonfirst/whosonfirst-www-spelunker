@@ -221,7 +221,7 @@ mapzen.whosonfirst.properties = (function(){
 		close_modal();
 
 		report = encodeURIComponent(report);
-		var data = "data:text/plain," + report;
+		var data = "data:text/plain;charset=UTF-8," + report;
 		window.open(data, '_report');
 	    };
 
@@ -241,8 +241,34 @@ mapzen.whosonfirst.properties = (function(){
 	    var head = document.createElement("h2");
 	    head.appendChild(document.createTextNode("You have found an experimental feature!"));
 
-	    var intro = document.createElement("p");
-	    intro.appendChild(document.createTextNode("LET ME TELL YOU ABOUT IT..."));
+	    var intro = document.createElement("div");
+
+	    var p1_sentences = [
+		"Thank you for taking the time to fact-check this data.",
+		"There are two pieces to any data collection project: the reporting and the collecting.",
+		"If you're reading this it means that only the reporting piece is live for Who's On First.",
+		"We expect the collection piece to be live shortly but in the meantime you can generate a text version of your report.",
+		"Soon you will be able to send it to Who's On First directly",
+		"If you'd like to know more about this project all the details are available in this blog post:",
+	    ];
+	    
+	    var p1_text = p1_sentences.join(" ");
+
+	    var p1 = document.createElement("p");
+	    p1.appendChild(document.createTextNode(p1_text));
+
+	    var href = "https://mapzen.com/blog/yes-no-fix/";
+
+	    var link = document.createElement("a");
+	    link.setAttribute("href", href);
+	    link.setAttribute("target", "blog");
+	    link.appendChild(document.createTextNode(href));
+
+	    var p2 = document.createElement("p");
+	    p2.appendChild(link);
+
+	    intro.appendChild(p1);
+	    intro.appendChild(p2);
 
 	    text.appendChild(head);
 	    text.appendChild(intro);
