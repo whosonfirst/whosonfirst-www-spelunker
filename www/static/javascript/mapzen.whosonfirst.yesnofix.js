@@ -578,8 +578,16 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    var head = document.createElement("h2");
 	    head.appendChild(document.createTextNode("What is Yes No Fix ?"));
 
+	    var intro_sentences = [
+		"Yes No Fix allows you to fact-check and offer an opinion about the contents of this web page.",
+		"Those opinions can then be bundled up as a report and sent to its authors.",
+		"When you say:"
+	    ];
+
+	    var intro_text = intro_sentences.join(" ");
+
 	    var intro = document.createElement("p");
-	    intro.appendChild(document.createTextNode("Yes No Fix allows you to offer an opinion about the contents of this web page. Those opinions can then be bundled up as a report and sent to its authors. When you say:"));
+	    intro.appendChild(document.createTextNode(intro_text));
 
 	    var options = document.createElement("ul");
 
@@ -596,8 +604,15 @@ mapzen.whosonfirst.yesnofix = (function(){
 	    options.appendChild(no);
 	    options.appendChild(fix);
 
+	    var outro_sentences = [
+		"When you're done yes-no-fix-ing things click the \"show report\" button to review your work and submit your report.",
+		"The details of where a report is sent and how it is processed will vary from website to website."
+	    ];
+
+	    var outro_text = outro_sentences.join(" ");
+
 	    var outro = document.createElement("p");
-	    outro.appendChild(document.createTextNode("The details of where a report is sent and how it is processed will vary from website to website."));
+	    outro.appendChild(document.createTextNode(outro_text));
 
 	    text.appendChild(head);
 	    text.appendChild(intro);
