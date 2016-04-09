@@ -257,7 +257,7 @@ mapzen.whosonfirst.properties = (function(){
 	    var p1 = document.createElement("p");
 	    p1.appendChild(document.createTextNode(p1_text));
 
-	    var href = "https://mapzen.com/blog/yes-no-fix/";
+	    var href = "https://mapzen.com/blog/yesnofix/";
 
 	    var link = document.createElement("a");
 	    link.setAttribute("href", href);
