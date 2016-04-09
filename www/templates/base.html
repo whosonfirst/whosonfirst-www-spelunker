@@ -43,7 +43,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.properties.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.yesnofix.js') }}"></script>
 
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.config.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.config.js?cb=yesnofix') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.js') }}"></script>
 
@@ -84,7 +84,7 @@
 
     <div class="container">
       <div class="footer">
-	<div class="pull-right">this is thing made by <a href="http://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> and you can <span class="hey-look">read about the details</span> over on the handy <a href="{{ url_for('about') }}">about page</div>
+	<div class="pull-right">this is a <a href="https://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> gig which is a <a href="https://mapzen.com/" class="hey-look">mapzen</a> gig / you can <span class="hey-look">read all the details</span> on the handy <a href="{{ url_for('about') }}" class="hey-look">about</a> page / see also <a href="https://twitter.com/alloftheplaces" class="hey-look" target="twitter">@alloftheplaces</a></div>
       </div>
     </div>
 
