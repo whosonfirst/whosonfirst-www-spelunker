@@ -2,17 +2,20 @@ upgrade:
 	sudo apt-get update
 	sudo apt-get upgrade
 
-build:	setup data index
+build-local:	setup-local data index
 
-setup:
+setup-app:
 	ubuntu/setup-ubuntu.sh
 	ubuntu/setup-py-mapzen.sh
+	ubuntu/setup-spelunker.sh
+	ubuntu/setup-gunicorn.sh
+
+setup-local: setup-app
 	ubuntu/setup-certified.sh
 	sudo ubuntu/setup-certified-ca.sh
 	sudo ubuntu/setup-certified-certs.sh
-	ubuntu/setup-gunicorn.sh
+	ubuntu/setup-postgis.sh
 	ubuntu/setup-nginx.sh $(data)
-	ubuntu/setup-spelunker.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
