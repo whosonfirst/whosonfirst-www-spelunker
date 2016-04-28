@@ -25,7 +25,7 @@ mapzen.whosonfirst.yesnofix = (function(){
 
     var submit_handler = function(report){
 	report = encodeURIComponent(report);
-	var data = "data:text/plain," + report;
+	var data = "data:text/plain;charset=UTF-8," + report;
 	window.open(data, '_report');
     };
 
