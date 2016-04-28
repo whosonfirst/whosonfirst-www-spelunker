@@ -108,6 +108,14 @@ mapzen.whosonfirst.properties = (function(){
 			return true;
 		    }
 
+		    else if (ctx == 'wof.geomhash'){
+			return true;
+		    }
+
+		    else if (ctx == 'wof.id'){
+			return true;
+		    }
+
 		    else {
 			return false;
 		    }
