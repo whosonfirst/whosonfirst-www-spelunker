@@ -5,28 +5,36 @@ mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
 
-		'render_id': function(map, wofid, on_fetch, more={}){
+		'render_id': function(map, wofid, on_fetch, more){
+		    
+		    if (! more){
+			more = {}
+		    }
+		    
+		    var _self = self;
+		    
+		    if (! wofid){
+			mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
+			return false;
+		    }
+		    
+		    if (! on_fetch){
 			
-			var _self = self;
-			
-			if (! wofid){
-				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
-				return false;
-			}
-			
-			if (! on_fetch){
-
-				on_fetch = function(geojson){
-					self.render_feature(map, geojson, more);
-				};
-			}
-
-			var url = mapzen.whosonfirst.data.id2abspath(wofid);
-
-			mapzen.whosonfirst.net.fetch(url, on_fetch);
+			on_fetch = function(geojson){
+			    self.render_feature(map, geojson, more);
+			};
+		    }
+		    
+		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+		    
+		    mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
-		'render_feature_outline': function(map, feature, more={}){
+		'render_feature_outline': function(map, feature, more){
+
+		    if (! more){
+			more = {}
+		    }
 
 		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
