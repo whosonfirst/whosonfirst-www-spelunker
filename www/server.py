@@ -19,9 +19,10 @@ import math
 import json
 
 import mapzen.whosonfirst.utils as utils
-import mapzen.whosonfirst.spatial as spatial
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
+
+# import mapzen.whosonfirst.spatial as spatial
 
 # http://flask.pocoo.org/snippets/35/
 

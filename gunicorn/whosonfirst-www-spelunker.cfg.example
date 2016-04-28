@@ -5,7 +5,7 @@ import os
 import multiprocessing
 import ConfigParser
 
-import mapzen.whosonfirst.spatial as spatial
+# import mapzen.whosonfirst.spatial as spatial
 
 spelunker_port = 'YOUR-SPELUNKER-PORT-GOES-HERE'
 spelunker_root = 'YOUR-SPELUNKER-WWW-GOES-HERE'
@@ -22,8 +22,8 @@ worker_class = "egg:gunicorn#gevent"
 cfg = ConfigParser.ConfigParser()
 cfg.read(spelunker_cfg)
 
-dsn = spatial.cfg2dsn(cfg, 'spatial')
-os.environ['WOF_SPATIAL_DSN'] = dsn
+# dsn = spatial.cfg2dsn(cfg, 'spatial')
+# os.environ['WOF_SPATIAL_DSN'] = dsn
 
 os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
 os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
