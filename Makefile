@@ -10,12 +10,15 @@ setup-app:
 	ubuntu/setup-spelunker.sh
 	ubuntu/setup-gunicorn.sh
 
-setup-local: setup-app
+setup-nginx:
 	ubuntu/setup-certified.sh
 	sudo ubuntu/setup-certified-ca.sh
 	sudo ubuntu/setup-certified-certs.sh
-	ubuntu/setup-postgis.sh
 	ubuntu/setup-nginx.sh $(data)
+
+setup-local: setup-app setup-nginx
+	ubuntu/setup-elasticsearch.sh
+	# ubuntu/setup-postgis.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
