@@ -50,8 +50,8 @@ refill:
 	if test -e www/static/tangram/images/poi_icons_18@2x.png; then cp www/static/tangram/images/poi_icons_18@2x.png www/static/tangram/images/poi_icons_18@2x.png.bak; fi
 	curl -s -o www/static/tangram/images/poi_icons_18@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/poi_icons_18%402x.png
 
-	if test -e www/static/tangram/building-grid; then cp www/static/tangram/building-grid www/static/tangram/building-grid.bak; fi
-	curl -s -o www/static/tangram/building-grid https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
+	if test -e www/static/tangram/images/building-grid.gif; then cp www/static/tangram/images/building-grid.gif www/static/tangram/images/building-grid.gif.bak; fi
+	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
 
 js: js-dependencies js-app
 
