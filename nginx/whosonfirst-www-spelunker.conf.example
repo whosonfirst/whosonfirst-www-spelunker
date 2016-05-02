@@ -19,7 +19,10 @@ server {
 	ssl_prefer_server_ciphers on;
 
 	location / {
-	# location /something-else {
+		 return 301 /spelunker;
+	}
+
+	location /spelunker {
 
 	    proxy_pass http://127.0.0.1:7777;
 	    proxy_set_header Host $http_host;
@@ -27,7 +30,7 @@ server {
     	    proxy_set_header X-Scheme $scheme;
 
 	    # http://flask.pocoo.org/snippets/35/
-	    # proxy_set_header X-Script-Name /something-else;
+	    proxy_set_header X-Script-Name /spelunker;
     	}
 
 	# /data - strictly speaking the stuff around serving static wof-data files
