@@ -11,10 +11,12 @@ mapzen.whosonfirst.config = (function(){
 
         'init': function(){
 	    
-	    var root = document.body.getAttribute("data-abs-root-url");
+	    /*
+	    var root = '/';	// document.body.getAttribute("data-abs-root-url");
 	    var data = root + "data/";
 	    
 	    mapzen.whosonfirst.data.endpoint(data);
+	    */
 
 	    // You can probably turn this on safely but it is still technically
 	    // a work in progress; the code is being merged with master now but

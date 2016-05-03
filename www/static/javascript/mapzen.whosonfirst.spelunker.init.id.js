@@ -35,7 +35,7 @@ window.addEventListener("load", function load(event){
     // now we format the properties hash
     
     var url = mapzen.whosonfirst.data.id2abspath(wofid);
-    
+
     var cb = function(feature){
 	
 		var props = feature['properties'];
