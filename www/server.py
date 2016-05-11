@@ -1151,7 +1151,7 @@ def has_concordance(src, label):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
-    facets = facetify(query)
+    # facets = facetify(query)
 
     pagination_url = build_pagination_url()
     facet_url = pagination_url
@@ -1162,8 +1162,8 @@ def has_concordance(src, label):
         'pagination_url': pagination_url,
         'src': label,
         'es_query': body,
-        'facets': facets,
-        'facet_url': facet_url,
+        # 'facets': facets,
+        # 'facet_url': facet_url,
     }
 
     return flask.render_template('has_concordance.html', **template_args)
