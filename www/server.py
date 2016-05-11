@@ -194,11 +194,6 @@ def random_place():
     logging.debug("redirect random to %s" % url)
     return flask.redirect(url)
 
-@app.route("/wikidata/", methods=["GET"])
-@app.route("/wd/", methods=["GET"])
-def for_wikidata():
-    return has_concordance('wd:id', 'Wikidata')
-
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
@@ -208,6 +203,15 @@ def for_geonames():
 @app.route("/gp/", methods=["GET"])
 def for_geoplanet():
     return has_concordance('gp:id', 'GeoPlanet')
+
+@app.route("/tgn/", methods=["GET"])
+def for_tgn():
+    return has_concordance('tgn:id', 'the Getty Thesaurus of Geographic Names')
+
+@app.route("/wikidata/", methods=["GET"])
+@app.route("/wd/", methods=["GET"])
+def for_wikidata():
+    return has_concordance('wd:id', 'Wikidata')
 
 @app.route("/woe/", methods=["GET"])
 def for_woe():

@@ -23,9 +23,10 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.gn:id': self.render_geonames_id,
-		'wof.concordances.gp:id': self.render_woedb_id,
-		'wof.concordances.woe:id': self.render_woedb_id,
+		//'wof.concordances.gp:id': self.render_woedb_id,
+		//'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.concordances.wd:id': self.render_wikidata_id,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
 		'wof.tags': self.render_wof_tags,
@@ -163,6 +164,11 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_woedb_id': function(d, ctx){
 	    var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_wikidata_id': function(d, ctx){
+	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
