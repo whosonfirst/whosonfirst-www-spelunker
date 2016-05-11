@@ -194,6 +194,25 @@ def random_place():
     logging.debug("redirect random to %s" % url)
     return flask.redirect(url)
 
+@app.route("/wikidata/", methods=["GET"])
+@app.route("/wd/", methods=["GET"])
+def for_wikidata():
+    return has_concordance('wd:id', 'Wikidata')
+
+@app.route("/geonames/", methods=["GET"])
+@app.route("/gn/", methods=["GET"])
+def for_geonames():
+    return has_concordance('gn:id', 'Geonames')
+
+@app.route("/geoplanet/", methods=["GET"])
+@app.route("/gp/", methods=["GET"])
+def for_geoplanet():
+    return has_concordance('gp:id', 'GeoPlanet')
+
+@app.route("/woe/", methods=["GET"])
+def for_woe():
+    return has_concordance('gp:id', 'Where On Earth (now GeoPlanet)')
+
 @app.route("/geoplanet/id/<int:id>", methods=["GET"])
 @app.route("/geoplanet/id/<int:id>/", methods=["GET"])
 @app.route("/woe/id/<int:id>", methods=["GET"])
@@ -1081,6 +1100,7 @@ def get_by_id(id):
     rsp = flask.g.search_idx.search(body)
     docs = rsp['rows']
 
+
     # WTF... why do I need to do this? it would appear that updates are not being
     # applied but rather being indexed as new records even though they have the
     # same ID because... ??? (20160329/thisisaaronland)
@@ -1092,6 +1112,57 @@ def get_by_id(id):
     except Exception, e:
         print "failed to retrieve %s" % id
         return None
+
+def has_concordance(src, label):
+
+    concordance = "wof:concordances.%s" % src
+
+    filter = {
+            'exists': { 'field': concordance  }
+    }
+
+    query = {
+        'match_all': {}
+    }
+
+    body = {
+         'query': {
+            'filtered': {
+                'filter': filter,
+                'query': query
+            }
+         }
+    }
+
+    args = {'per_page': 50}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'src': label,
+        'es_query': body,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('has_concordance.html', **template_args)
 
 def get_by_concordance(id, src):
 
