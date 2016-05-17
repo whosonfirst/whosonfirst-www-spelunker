@@ -1205,7 +1205,7 @@ def languages():
 def has_language(lang, spoken=False):
 
     field = "wof:lang_x_official"
-    field = "wof:lang"
+    # field = "wof:lang"
 
     if spoken:
         field = "wof:lang_x_spoken"
