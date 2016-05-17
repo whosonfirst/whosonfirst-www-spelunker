@@ -194,6 +194,16 @@ def random_place():
     logging.debug("redirect random to %s" % url)
     return flask.redirect(url)
 
+@app.route("/languages/<string:lang>", methods=["GET"])
+@app.route("/languages/<string:lang>/", methods=["GET"])
+def for_lang_official(lang):
+    return has_language(lang)
+
+@app.route("/languages/<string:lang>/spoken", methods=["GET"])
+@app.route("/languages/<string:lang>/spoken/", methods=["GET"])
+def for_lang_spoken(lang):
+    return has_language(lang, True)
+
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
@@ -1190,6 +1200,74 @@ def get_by_concordance(id, src):
     except Exception, e:
         print "failed to retrieve %s" % id
         return None
+
+def languages():
+    pass
+
+def has_language(lang, spoken=False):
+
+    field = "wof:lang_x_official"
+    # field = "wof:lang"
+
+    if spoken:
+        field = "wof:lang_x_spoken"
+
+    esc_lang = flask.g.search_idx.escape(lang)
+
+    filter = {
+            'term': { field: esc_lang  }
+    }
+
+    query = {
+        'match_all': {}
+    }
+
+    query = {
+            'filtered': {
+                'filter': filter,
+                'query': query
+            }
+    }
+
+    body = {
+         'query': query
+    }
+
+    # import pprint
+    # print pprint.pformat(body)
+
+    args = {'per_page': 50}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    lang_full = lang
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'lang': lang,
+        'lang_full': lang_full,
+        'es_query': body,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('has_language.html', **template_args)
 
 def inflate_hierarchy(doc):
 
