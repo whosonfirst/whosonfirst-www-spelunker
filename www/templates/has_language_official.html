@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Who's On First places where the official language is {{ lang_full |e }}{% endblock %}
+{% block content %}
+{% if pagination.count == 0 %}
+
+<div class="row"><span style="font-size:2em;">😿 </span> where the official language is <q class="hey-look">{{ lang_full|e }}</q></div>
+
+{% else %}
+
+<div class="row"><h3>
+{% if pagination.total == 1 %}
+There is <span class="hey-look">one place</span> where the official language is <q class="hey-look">{{ lang_full |e }}</q>
+{% else %}
+There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> where the official languag is <q class="hey-look">{{ lang_full |e }}</q>
+{% if pagination.pages > 1 %}
+and this <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+{% endif %}
+{% endif %}
+</h3></div>
+
+{% include "inc_docs.html" %}
+
+{% endif %}
+
+{% endblock %}
