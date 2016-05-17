@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Who's On First places where people speak {{ lang_full |e }}{% endblock %}
+{% block content %}
+{% if pagination.count == 0 %}
+
+<div class="row"><span style="font-size:2em;">😿 </span> can not find any places where people speak <q class="hey-look">{{ lang_full|e }}</q></div>
+
+{% else %}
+
+<div class="row"><h3>
+{% if pagination.total == 1 %}
+There is <span class="hey-look">one place</span> where people speak <q class="hey-look">{{ lang_full |e }}</q>
+{% else %}
+There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> where people speak <q class="hey-look">{{ lang_full |e }}</q>
+{% if pagination.pages > 1 %}
+and this <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+{% endif %}
+{% endif %}
+</h3></div>
+
+{% include "inc_docs.html" %}
+
+{% endif %}
+
+{% endblock %}
