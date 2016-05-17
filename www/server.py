@@ -12,11 +12,13 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 
+import re
 import time
 import random
 import types
 import math
 import json
+import pycountry
 
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.search as search
@@ -1206,8 +1208,36 @@ def languages():
 
 def has_language(lang, spoken=False):
 
+    pylang = None
+
+    # https://pypi.python.org/pypi/pycountry/
+
+    try:
+        if len(lang) == 2:
+            pylang = pycountry.languages.get(iso639_1_code=lang)
+        elif len(lang) == 3:
+            pylang = pycountry.languages.get(iso639_3_code=lang)
+        elif re.match("^[a-zA-Z ]+$", lang):
+            str_lang = lang.title()
+            pylang = pycountry.languages.get(name=str_lang)
+
+            if pylang:
+                lang = pylang.iso639_3_code
+
+        else:
+            pass
+
+    except Exception, e:
+        logging.error("weird and freakish language tag %s failed because %s" % (lang, e))
+
+    if not pylang:
+        logging.warning("unrecognized language %s" % lang)
+        flask.abort(404)
+        
+    lang_common = pylang.name
+
     field = "wof:lang_x_official"
-    # field = "wof:lang"
+    field = "wof:lang"
 
     if spoken:
         field = "wof:lang_x_spoken"
@@ -1254,14 +1284,12 @@ def has_language(lang, spoken=False):
     pagination_url = build_pagination_url()
     facet_url = pagination_url
 
-    lang_full = lang
-
     template_args = {
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
         'lang': lang,
-        'lang_full': lang_full,
+        'lang_common': lang_common,
         'es_query': body,
         'facets': facets,
         'facet_url': facet_url,

@@ -16,3 +16,5 @@ sudo apt-get install -y gdal-bin
 # of Go because... (20160205/thisisaaronland)
 # sudo apt-get install -y golang
 sudo apt-get install -y make nginx gunicorn python-gevent python-flask
+
+sudo easy_install pycountry
