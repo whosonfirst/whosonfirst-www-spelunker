@@ -1267,7 +1267,12 @@ def has_language(lang, spoken=False):
         'facet_url': facet_url,
     }
 
-    return flask.render_template('has_language.html', **template_args)
+    template = "has_language_official.html"
+
+    if spoken:
+        template = "has_language_spoken.html"
+
+    return flask.render_template(template, **template_args)
 
 def inflate_hierarchy(doc):
 
