@@ -17,6 +17,8 @@ and this <span class="hey-look">page {{ pagination.page |number_format|e }}</spa
 {% endif %}
 {% endif %}
 
+{% include "inc_languages_caveat.html" %}
+
 <small class="see-also">See all the places where <a href="{{ url_for('for_lang_spoken', lang=lang) }}" class="hey-look">people speak</a> {{ lang_common |e }} or just all the <a href="{{ url_for('languages_official') }}" class="hey-look">official languages</a> in Who's On First</small>
 </h3></div>
 

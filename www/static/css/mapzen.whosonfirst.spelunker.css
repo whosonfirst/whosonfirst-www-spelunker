@@ -176,3 +176,11 @@ q {
     margin-top:.75em;
     margin-bottom:1em;
 }
+
+.caveat {
+    color:#666;
+}
+
+.caveat:before {
+    content: " – ";
+}
