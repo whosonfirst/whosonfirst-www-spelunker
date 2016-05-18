@@ -7,7 +7,7 @@
 
 <h3>
 <span class="hey-look">#brands</span> in Who's On First
-  {% include "inc_brands_caveat.html" %}
+{% include "inc_brands_caveat.html" %}
 </h3>
 
 <ul class="list-inline">
@@ -22,6 +22,7 @@
 </div>
 </div>
 
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/localforage.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.brands.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.namify.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.brands.js') }}"></script>

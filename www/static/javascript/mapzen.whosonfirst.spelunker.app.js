@@ -437,6 +437,9 @@ mapzen.whosonfirst.data = (function(){
 
 	var _endpoint = "https://whosonfirst.mapzen.com/data/";
 
+    	// this should only be necessary if the mapzen servers are poorly configured
+	// _endpoint = "https://s3.amazonaws.com/whosonfirst.mapzen.com/data/";
+
 	var self = {
 
 		'endpoint': function(e){
@@ -561,7 +564,7 @@ mapzen.whosonfirst.leaflet = (function(){
 
 	var self = {
 		'draw_point': function(map, geojson, style, handler){
-						
+			
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
@@ -579,12 +582,19 @@ mapzen.whosonfirst.leaflet = (function(){
 			// https://github.com/Leaflet/Leaflet.label
 			
 			try {
-				var props = geojson['properties'];
+			    var props = geojson['properties'];
+			    
+			    if (props){
 				var label = props['lflt:label_text'];
-
+				
 				if (label){
-					layer.bindLabel(label, {noHide: true });
+				    layer.bindLabel(label, {noHide: true });
 				}
+			    }
+			    
+			    else {
+				console.log("polygon is missing a properties dictionary");
+			    }
 			}
 			
 			catch (e){
@@ -629,7 +639,7 @@ mapzen.whosonfirst.leaflet = (function(){
 		},
 
 		'fit_map': function(map, geojson, force){
-			
+
 			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
 
 			if (! bbox){
@@ -869,6 +879,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				var map = L.map(id);
 				map.scrollWheelZoom.disable();
 
+			    	if (L.Hash){
+			    	    var hash = new L.Hash(map);
+				}
+
 				var tangram = self.tangram();
 				tangram.addTo(map);
 
@@ -968,7 +982,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'screenshot_as_file': function(id){
 
 			if (typeof(saveAs) == "undefined"){
-				console.log("missing 'saveAs' controls");
+				mapzen.whosonfirst.log.error("missing 'saveAs' controls");
 				return false
 			}
 
@@ -984,23 +998,95 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		// requires https://github.com/tangrams/tangram/releases/tag/v0.5.0
 
 		'screenshot': function(id, on_screenshot){
+		    
+		    if (! on_screenshot){
+			
+			on_screenshot = function(sh) {
+			    window.open(sh.url);
+			    return false;
+			};
+		    }
 
-			if (! on_screenshot){
+		    var scene = self.scene(id);
 
-				on_screenshot = function(sh) {
-					window.open(sh.url);
-				};
-			}
+		    if (! scene){
+			mapzen.whosonfirst.log.error("failed to retrieve scene, trying to render screenshot");
+			return false;
+		    }
 
-			var scene = self.scene(id);
+		    var el = document.getElementById("wof-record");
 
-			if (! scene){
-				console.log("failed to retrieve scene");
-				return false;
-			}
+		    if (! el){
+			mapzen.whosonfirst.log.error("unable to locate 'wof-record' element, trying to render screenshot");
+			return false;
+		    }
+		    
+		    var wofid = el.getAttribute("data-wof-id");
 
-			scene.screenshot().then(on_screenshot);
-			return true;
+		    if (! el){
+			mapzen.whosonfirst.log.error("unable to locate 'data-wof-id' attribute, trying to render screenshot");
+			return false;
+		    }
+
+		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+
+		    // akin to a Leaflet "layer" - draw with the polygon overlay style (defined below)
+
+		    scene.config.layers.wof = {
+		      	"data": { "source":"wof" },
+			"draw": { "polygons-overlay": { "color": "rgba(255, 255, 0, 0.6)"}, "lines": { "color": "rgb(255, 0, 153)", "width": "4px", "order":1000 } }
+		    };
+		    
+		    // the polygon overlay 
+
+		    scene.config.styles['polygons-overlay'] = { "base": "polygons",  "blend": "overlay" };
+		    
+		    // The data being styled - see the way we're calling mapzen.whosonfirst.net.fetch below?
+		    // That's because we should already have a cache of the data locally so it will return
+		    // right away. With that data we hand off to the scene object and carry on with the
+		    // screenshot. (20160322/thisisaaronland)
+		    
+		    var on_fetch = function(feature){
+
+			var wof = {
+			    type: 'GeoJSON',
+			    data: feature,
+			    // url: url
+			};
+
+			// Draw the stuff which really means draws the stuff after
+			// we invoke 'updateConfig' - this will not require updating
+			// the config soon but today, it does (20160322/thisisaaronland)
+
+			scene.setDataSource('wof', wof);
+
+			var on_rebuild = function(){
+
+			    var on_render = function(rsp){
+
+				// remove the stuff (leaving the Leaflet GeoJSON stuff)
+
+				scene.setDataSource('wof', { type: 'GeoJSON', data: {} });
+				on_screenshot(rsp);
+			    };
+
+			    scene.screenshot().then(on_render);
+			};
+
+			// This is deliberate while we are waiting on updates to Tangram.js
+			// It's not pretty but it works (20160323/thisisaaronland)
+
+			scene.updateConfig({ rebuild: true }).then(function() {  });
+			scene.updateConfig({ rebuild: true }).then(on_rebuild);
+
+		    };
+
+		    var on_fail = function(){
+			mapzen.whosonfirst.log.error("failed to render screenshot");
+		    };
+
+		    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
+		    return false;
 		}
 	};
 
@@ -1094,37 +1180,51 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
-		'render_id': function(map, wofid, on_fetch){
-			
-			var _self = self;
-			
-			if (! wofid){
-				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
-				return false;
-			}
-			
-			if (! on_fetch){
 
-				on_fetch = function(geojson){
-					self.render_feature(map, geojson);
-				};
-			}
-
-			var url = mapzen.whosonfirst.data.id2abspath(wofid);
-
-			mapzen.whosonfirst.net.fetch(url, on_fetch);
+		'render_id': function(map, wofid, on_fetch, more){
+		    
+		    if (! more){
+			more = {}
+		    }
+		    
+		    var _self = self;
+		    
+		    if (! wofid){
+			mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
+			return false;
+		    }
+		    
+		    if (! on_fetch){
+			
+			on_fetch = function(geojson){
+			    self.render_feature(map, geojson, more);
+			};
+		    }
+		    
+		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+		    
+		    mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
-		'render_feature_outline': function(map, feature){
+		'render_feature_outline': function(map, feature, more){
 
+		    if (! more){
+			more = {}
+		    }
+
+		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-			mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+		    }
+		    
+		    mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 		},
 
-		'render_feature': function(map, feature){
+		'render_feature': function(map, feature, more){
 
+		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-			
+		    }
+
 			var props = feature['properties'];
 			
 			var child_id = props['wof:id'];
@@ -1135,7 +1235,9 @@ mapzen.whosonfirst.enmapify = (function(){
 			
 			var on_parent = function(parent_feature){
 				
+			    if (! more['donot_fit_map']){
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
+			    }
 
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
@@ -1182,19 +1284,21 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
+			    if (! more['donot_fit_map']){
 				var force = true;
 				mapzen.whosonfirst.leaflet.fit_map(map, child_feature, force);
-
-				child_feature['properties']['lflt:label_text'] = "";
-				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
-
-				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
-				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-
-				// we're defining this as a local function to ensure that it gets called
-				// after any breaches are drawn (20150909/thisisaaronland)
-
-				var draw_centroids = function(){
+			    }
+			    
+			    child_feature['properties']['lflt:label_text'] = "";
+			    mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
+			    
+			    child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
+			    mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+			    
+			    // we're defining this as a local function to ensure that it gets called
+			    // after any breaches are drawn (20150909/thisisaaronland)
+			    
+			    var draw_centroids = function(){
 
 					// I don't know why this is necessary...
 					// (20150909/thisisaaronland)
@@ -1307,377 +1411,1217 @@ mapzen.whosonfirst.enmapify = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-/*
+mapzen.whosonfirst.properties = (function(){
 
-To do:
+    var self = {
 
-- tab/keyboard controls
-- flags/callback functions to render certains values as something other than text (a link, as code, etc.)
+	'render': function(props){
 
-Open questions:
+	    var possible_wof = [
+		'wof.belongsto',
+		'wof.parent_id', 'wof.children',
+		'wof.breaches',
+		'wof.supersedes',
+		'wof.superseded_by',
+		// TO DO : please to write js.whosonfirst.placetypes...
+		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.region_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.locality_id', 'wof.hierarchy.neighbourhood_id',
+		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
+	    ];
 
-- to sort or not 
-- to bucket (by prefix) or not
-- update existing assertions or alert or just allow multiple (conflicting?) assertions for the same path
+	    var text_callbacks = {
+		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
+		'wof.placetype': self.render_placetype,
+		'wof.concordances.gn:id': self.render_geonames_id,
+		//'wof.concordances.gp:id': self.render_woedb_id,
+		//'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.concordances.wd:id': self.render_wikidata_id,
+		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
+		'wof.megacity': self.render_megacity,
+		'wof.tags': self.render_wof_tags,
+		'wof.name': self.render_wof_name,
+		'sg.city': self.render_simplegeo_city,
+		'sg.postcode': self.render_simplegeo_postcode,
+		'sg.tags': self.render_simplegeo_tags,
+		'sg.classifier': self.render_simplegeo_classifiers,
+	    };
+	
+	    var text_renderers = function(d, ctx){
 
- */
+		if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
+		    return self.render_wof_id;
+		}
 
+		else if (ctx.match(/^name-/)){
+		    return self.render_wof_name;
+		}
+
+		else if (ctx.match(/^sg-classifiers-/)){
+		    return self.render_simplegeo_classifiers;
+		}
+
+		else if (text_callbacks[ctx]){
+		    return text_callbacks[ctx];
+		}
+
+		else {
+		    return null;
+		}
+	    };
+
+	    var dict_mappings = {
+		'wof.concordances.dbp:id': 'dbpedia',
+		'wof.concordances.fb:id': 'freebase',
+		'wof.concordances.fct:id': 'factual',
+		'wof.concordances.gn:id': 'geonames',
+		'wof.concordances.gp:id': 'geoplanet',
+		'wof.concordances.loc:id': 'library of congress',
+		'wof.concordances.nyt:id': 'new york times',
+		'wof.concordances.wd:id': 'wikidata',
+		// please build me on the fly using mz.wof.placetypes
+		'wof.hierarchy.continent_id': 'continent',
+		'wof.hierarchy.country_id': 'country',
+		'wof.hierarchy.region_id': 'region',
+		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.locality_id': 'locality',
+		'wof.hierarchy.neighbourhood_id': 'neighbourhood',
+	    };
+
+	    var dict_renderers = function(d, ctx){
+
+		// TO DO: something to match 3-letter language code + "_x_" + suffix
+		// or more specifically something to match/ convert 3-letter language
+		// codes wrapped up in a handy library (20160211/thisisaaronland)
+
+		if (dict_mappings[ctx]){
+		    return function(){
+			return dict_mappings[ctx];
+		    };
+		}
+
+		return null;
+	    };
+
+	    var text_exclusions = function(d, ctx){
+
+		return function(){
+
+		    if (ctx.match(/^geom/)){
+			return true;
+		    }
+
+		    else if ((ctx.match(/^edtf/)) && (d == "uuuu")){
+			return true;
+		    }
+
+		    else if (ctx == 'wof.lastmodified'){
+			return true;
+		    }
+
+		    else if (ctx == 'wof.geomhash'){
+			return true;
+		    }
+
+		    else if (ctx == 'wof.id'){
+			return true;
+		    }
+
+		    else {
+			return false;
+		    }
+		};
+
+	    };
+
+	    mapzen.whosonfirst.yesnofix.set_submit_handler(self.submit_handler);
+
+	    mapzen.whosonfirst.yesnofix.set_custom_renderers('text', text_renderers);
+	    mapzen.whosonfirst.yesnofix.set_custom_renderers('dict', dict_renderers);
+
+	    mapzen.whosonfirst.yesnofix.set_custom_exclusions('text', text_exclusions);
+	    
+	    var pretty = mapzen.whosonfirst.yesnofix.render(props);
+	    return pretty;
+	},
+
+	// TO DO : make 'mapzen.whosonfirst.spelunker.abs_root_url' something like
+	// 'mapzen.whosonfirst.common.abs_root_url' or equivalent...
+
+	'render_wof_id': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "id/" + encodeURIComponent(d) + "/";
+	    var el = mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	    
+	    var text = el.children[0];
+	    text.setAttribute("data-value", mapzen.whosonfirst.php.htmlspecialchars(d));
+	    text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + mapzen.whosonfirst.php.htmlspecialchars(d));
+	    
+	    return el;
+	    
+	},
+
+	'render_wof_placetype': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "placetypes/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_geonames_id': function(d, ctx){
+	    var link = "http://geonames.org/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_woedb_id': function(d, ctx){
+	    var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_wikidata_id': function(d, ctx){
+	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_tgn_id': function(d, ctx){
+	    var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_megacity': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "megacities/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
+	},
+
+	'render_wof_tags': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "tags/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_wof_name': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "search/?q=" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_simplegeo_city': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "search/?q=" + encodeURIComponent(d) + "&placetype=locality";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);	    
+	},
+	
+	'render_simplegeo_postcode': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "postalcodes/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);	    
+	},
+
+	'render_simplegeo_classifiers': function(d, ctx){
+	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
+	    var link = root + "categories/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_simplegeo_tags': function(d, ctx){
+            var root = mapzen.whosonfirst.spelunker.abs_root_url();
+            var link = root + "tags/" + encodeURIComponent(d) + "/";
+            return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	// pending a final working soundbox installation
+	// (20160405/thisisaaronland)
+	
+	'submit_handler': function(report){
+
+	    var close_modal = function(){
+		var about = document.getElementById("yesnofix-about");
+		var parent = about.parentElement;
+		parent.removeChild(about);
+	    };
+
+	    var on_submit = function(){
+
+		close_modal();
+
+		report = encodeURIComponent(report);
+		var data = "data:text/plain;charset=UTF-8," + report;
+		window.open(data, '_report');
+	    };
+
+	    var on_cancel = function(){
+		close_modal();
+	    };
+
+	    // See this - we are purposefully re-using the CSS from the
+	    // default about widget (20160405/thisisaaronland)
+
+	    var about = document.createElement("div");
+	    about.setAttribute("id", "yesnofix-about");
+
+	    var text = document.createElement("div");
+	    text.setAttribute("id", "yesnofix-about-text");
+
+	    var head = document.createElement("h2");
+	    head.appendChild(document.createTextNode("You have found an experimental feature!"));
+
+	    var intro = document.createElement("div");
+
+	    var p1_sentences = [
+		"Thank you for taking the time to fact-check this data.",
+		"There are two pieces to any data collection project: the reporting and the collecting.",
+		"If you're reading this it means that only the reporting piece is live for Who's On First.",
+		"We expect the collection piece to be live shortly but in the meantime you can generate a text version of your report.",
+		"Soon you will be able to send it to Who's On First directly",
+		"If you'd like to know more about this project all the details are available in this blog post:",
+	    ];
+	    
+	    var p1_text = p1_sentences.join(" ");
+
+	    var p1 = document.createElement("p");
+	    p1.appendChild(document.createTextNode(p1_text));
+
+	    var href = "https://mapzen.com/blog/yesnofix/";
+
+	    var link = document.createElement("a");
+	    link.setAttribute("href", href);
+	    link.setAttribute("target", "blog");
+	    link.appendChild(document.createTextNode(href));
+
+	    var p2 = document.createElement("p");
+	    p2.appendChild(link);
+
+	    intro.appendChild(p1);
+	    intro.appendChild(p2);
+
+	    text.appendChild(head);
+	    text.appendChild(intro);
+
+	    var close = document.createElement("div");
+	    close.setAttribute("id", "yesnofix-about-submit");
+
+	    var cancel_button = document.createElement("button");
+	    cancel_button.setAttribute("id", "yesnofix-about-cancel-button");
+	    cancel_button.appendChild(document.createTextNode("cancel"));
+
+	    var submit_button = document.createElement("button");
+	    submit_button.setAttribute("id", "yesnofix-about-submit-button");
+	    submit_button.appendChild(document.createTextNode("submit"));
+
+	    close.appendChild(cancel_button);
+	    close.appendChild(submit_button);
+
+	    about.appendChild(text);
+	    about.appendChild(close);
+
+	    cancel_button.onclick = on_cancel;
+	    submit_button.onclick = on_submit;
+
+	    var body = document.body;
+	    body.insertBefore(about, body.firstChild);
+
+	    return false;
+	},
+
+    };
+
+    return self;
+
+})();
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.yesnofix = (function(){
 
-		var fix = -1;
-		var no = 0;
-		var yes = 1;
-
-		var assertions = [];
-
-		var self = {
-
-			// please do not call these 'engage' or 'makeitso' ...
-
-			'makeitso': function(data, target){
-
-				var el = document.getElementById(target);
-
-				if (! el){
-					return false;
-				}
-
-				var pretty = self.engage(data);
-				el.appendChild(pretty);
-				
-				return true;
-			},
-
-			'engage': function(props){
-
-				var pretty = document.createElement("div");
-				pretty.setAttribute("id", "props-pretty");
-
-				buckets = self.bucket_props(props);
-
-				var namespaces = Object.keys(buckets);
-				namespaces = namespaces.sort();
-
-				var count_ns = namespaces.length;
-
-				for (var i=0; i < count_ns; i++){
-					var ns = namespaces[i];
-					var dom = self.render_bucket(ns, buckets[ns]);
-					pretty.appendChild(dom);
-				}
-
-				return pretty;				
-			},
-
-			'render_bucket': function(ns, bucket){
-
-				var wrapper = document.createElement("div");
-
-				var header = document.createElement("h3");
-				var content = document.createTextNode(ns);
-				header.appendChild(content);
-			
-				var sorted = self.sort_bucket(bucket);
-				var body = self.render(sorted, ns);
-
-				wrapper.appendChild(header);
-				wrapper.appendChild(body);
-
-				return wrapper;
-			},
-
-			'render': function(d, ctx){
-				
-				// console.log("render context is " + ctx);
-				// console.log(d);
-
-				if (Array.isArray(d)){
-					// console.log("render list for " + ctx);
-					return self.render_list(d, ctx);
-				}
-				
-				else if (typeof(d) == "object"){
-					// console.log("render dict for " + ctx);
-					return self.render_dict(d, ctx);
-				}
-				
-				else {
-					// console.log("render text for " + ctx);
-					return self.render_text(d, ctx);
-				}
-			},
-
-			'render_dict': function(d, ctx){
-
-				var table = document.createElement("table");
-				table.setAttribute("class", "table");
-
-				for (k in d){
-
-					var row = document.createElement("tr");
-					var label_text = k;
-
-					var header = document.createElement("th");
-					var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
-					header.appendChild(label);
-
-					var _ctx = (ctx) ? ctx + "." + k : k;
-
-					var content = document.createElement("td");
-					var body = self.render(d[k], _ctx);
-
-					content.appendChild(body);
-
-					row.appendChild(header);
-					row.appendChild(content);
-
-					table.appendChild(row);
-				}
-
-				return table;
-			},
-
-			'render_list': function(d, ctx){
-
-				var count = d.length;
-
-				if (count == 0){
-					return self.render_text("–", ctx);
-				}
-
-				if (count <= 1){
-					return render(d[0], ctx);
-				}
-
-				var list = document.createElement("ul");
-				
-				for (var i=0; i < count; i++){
-					
-					var item = document.createElement("li");
-					var body = self.render(d[i], ctx + "#" + i);
-
-					item.appendChild(body);
-					list.appendChild(item);
-				}
-
-				return list;
-			},
-
-			'render_editable': function(d){
-				// please write me
-			},
-
-			'render_text': function(d, ctx){
-
-				var text = mapzen.whosonfirst.php.htmlspecialchars(d);
-
-				var span = document.createElement("span");
-				span.setAttribute("id", ctx);
-				span.setAttribute("title", ctx);
-				span.setAttribute("class", "props-uoc");
-
-				span.onclick = mapzen.whosonfirst.yesnofix.onclick;
-
-				var el = document.createTextNode(text);
-				span.appendChild(el);
-				return span;
-			},
-
-			'render_link': function(link, text, ctx){
-
-				var anchor = document.createElement("a");
-				anchor.setAttribute("href", link);
-				anchor.setAttribute("target", "_wof");
-				var body = self.render_text(text, ctx);
-				anchor.appendChild(body);
-				return anchor;
-			},
-
-			'render_code': function(text, ctx){
-
-				var code = document.createElement("code");
-				var body = self.render_text(text, ctx);
-				code.appendChild(body);
-				return code;
-			},
-
-			'bucket_props': function(props){
-
-				buckets = {};
-				
-				for (k in props){
-					parts = k.split(":", 2);
-
-					ns = parts[0];
-					pred = parts[1];
-
-					if (parts.length != 2){
-						ns = "global";
-						pred = k;
-					}
-
-					if (! buckets[ns]){
-						buckets[ns] = {};					
-					}
-					
-					buckets[ns][pred] = props[k];
-				}
-				
-				return buckets;
-			},
-
-			'sort_bucket': function(bucket){
-					
-				var sorted = {};
-
-				var keys = Object.keys(bucket);
-				keys = keys.sort();
-
-				var count_keys = keys.length;
-
-				for (var j=0; j < count_keys; j++){
-					var k = keys[j];
-					sorted[k] = bucket[k];
-				}
-
-				return sorted;
-			},
-
-			'onclick': function(e) {
-
-				var target = e.target;
-				var id = target.getAttribute("id");
-				var value = target.textContent;
-
-				var enc_id = mapzen.whosonfirst.php.htmlspecialchars(id);
-				var enc_value = mapzen.whosonfirst.php.htmlspecialchars(value);
-
-				//alert("you clicked " + enc_id + " whose value is \"" + enc_value + "\"");
-
-				var parent = target.parentElement;
-
-				if (! parent){
-					// PLEASE TO MAKE ERRORS...
-					return;
-				}
-
-				var input = self.render_input(id);
-				parent.appendChild(input);
-			},
-
-			'render_input': function(id){
-				
-				var input = document.createElement("div");
-				input.setAttribute("id", "assert-" + id);
-
-				var yes = document.createElement("button");
-				yes.setAttribute("data-id", id);
-				yes.setAttribute("data-assertion", 1);
-
-				var no = document.createElement("button");
-				no.setAttribute("data-id", id);
-				no.setAttribute("data-assertion", 0);
-
-				var fix = document.createElement("button");
-				fix.setAttribute("data-id", id);
-				fix.setAttribute("data-assertion", 0);
-
-				yes.appendChild(document.createTextNode("yes"));
-				no.appendChild(document.createTextNode("no"));
-				fix.appendChild(document.createTextNode("fix"));
-
-				yes.onclick = mapzen.whosonfirst.yesnofix.onassert;
-				no.onclick = mapzen.whosonfirst.yesnofix.onassert;
-				fix.onclick = mapzen.whosonfirst.yesnofix.onassert;
-
-				input.appendChild(yes);
-				input.appendChild(no);
-				input.appendChild(fix);
-				
-				return input;
-			},
-
-			'onassert' : function(e){
-
-				var target = e.target;
-				var id = target.getAttribute("data-id");
-
-				if (! id){
-					return false;
-				}
-
-				var el = document.getElementById(id);
-
-				if (! el){
-					return false;
-				}
-
-				var path = id;
-				var value = el.textContent;
-				var assertion = target.getAttribute("data-assertion");
-
-				self.assert(path, value, assertion);
-
-				alert("Okay, thanks!");
-
-				var input = document.getElementById("assert-" + id);
-
-				var parent = input.parentElement;
-				parent.removeChild(input);
-			},
-			
-			// note the lack of validation... we're assuming that kind of sanity
-			// checking is happening above?
-
-			'assert': function(path, value, assertion){
-				var dt = new Date();
-				assertions.push({'path': path, 'value': value, 'assertion': assertion, 'date': dt});
-			},
-
-			'report': function(){
-
-				var report = [];
-				var count = assertions.length;
-
-				for (var i=0; i < count; i++){
-
-					var a = assertions[i];
-
-					var row = [ a['path'], a['value'], a['assertion'], a['date'].toISOString() ];
-					row = row.join(",");
-
-					report.push(row);
-				}
-
-				report = report.join("\n");
-				return report;
-			},
+    var status_map = {
+	'fix': -1,
+	'no': 0,
+	'yes': 1
+    };
+
+    var _custom_renderers = {
+	'dict': function(d, ctx){ return null; },
+	'text': function(d, ctx){ return null; },
+    };
+
+    var _exclusions = {
+	'text': function(d, ctx){ return null; },
+    };
+
+    var _enabled = true;
+
+    var assertions = {};
+    var current = null;
+
+    var submit_handler = function(report){
+	report = encodeURIComponent(report);
+	var data = "data:text/plain;charset=UTF-8," + report;
+	window.open(data, '_report');
+    };
+
+    var self = {
+
+	'enabled': function(bool){
+
+	    if (typeof(bool) != "undefined"){
+		if (bool){
+		    _enabled = true;
+		} else {
+		    _enabled = false;
 		}
-	
-		return self;
+	    }
 
-})();var mapzen = mapzen || {};
+	    return _enabled;
+	},
+	
+	'set_submit_handler': function(handler){
+
+	    if (typeof(handler) != "function"){
+		self.notify("invalid handler", "error");
+		return false;
+	    }
+
+	    submit_handler = handler;
+	    return true;
+	},
+
+	'set_custom_renderers': function(t, r){
+
+	    if (! _custom_renderers[t]){
+		return;
+	    }
+
+	    if (! r){
+		return;
+	    }
+
+	    _custom_renderers[t] = r;
+	},
+
+	'get_custom_renderer': function(t, d, ctx){
+
+	    if (! _custom_renderers[t]){
+		return null;
+	    }
+
+	    var custom = _custom_renderers[t];
+	    return custom(d, ctx);
+	},
+
+	'set_custom_exclusions': function(t, e){
+
+	    if (! _exclusions[t]){
+		return;
+	    }
+
+	    if ((! e) || (typeof(e) != "function")){
+		return;
+	    }
+
+	    _exclusions[t] = e;
+	},
+
+	'get_custom_exclusion': function(t, d, ctx){
+
+	    if (! _exclusions[t]){
+		return null;
+	    }
+
+	    var exclude =  _exclusions[t];
+	    return exclude(d, ctx);
+	},
+	
+	'apply': function(data, target){
+	    
+	    var el = document.getElementById(target);
+	    
+		if (! el){
+		return false;
+	    }
+	    
+	    var pretty = self.render(data);
+	    el.appendChild(pretty);
+
+	    return true;
+	},
+	
+	'render': function(props){
+	    
+	    var pretty = document.createElement("div");
+	    pretty.setAttribute("id", "yesnofix-pretty");
+
+	    var controls = self.render_controls();
+	    pretty.appendChild(controls);
+
+	    buckets = self.bucket_props(props);
+	    
+	    var namespaces = Object.keys(buckets);
+	    namespaces = namespaces.sort();
+
+	    var count_ns = namespaces.length;
+	    
+	    for (var i=0; i < count_ns; i++){
+		var ns = namespaces[i];
+		var dom = self.render_bucket(ns, buckets[ns]);
+		pretty.appendChild(dom);
+	    }
+
+	    return pretty;				
+	},
+	
+	'render_controls': function(){
+
+	    var report = document.createElement("div");
+	    report.setAttribute("id", "yesnofix-report");
+
+	    var buttons = document.createElement("div");
+	    buttons.setAttribute("id", "yesnofix-report-buttons");
+
+	    var show = document.createElement("button");
+	    show.setAttribute("id", "yesnofix-report-show");
+	    show.appendChild(document.createTextNode("show report"));
+
+	    var hide = document.createElement("button");
+	    hide.setAttribute("id", "yesnofix-report-hide");
+	    hide.appendChild(document.createTextNode("hide report"));
+
+	    var submit = document.createElement("button");
+	    submit.setAttribute("id", "yesnofix-report-submit");
+	    submit.appendChild(document.createTextNode("submit report"));
+
+	    var br = document.createElement("br");
+	    br.setAttribute("clear", "all");
+
+	    buttons.appendChild(show);
+	    buttons.appendChild(hide);
+	    buttons.appendChild(submit);
+	    buttons.appendChild(br);
+
+	    var body = document.createElement("pre");
+	    body.setAttribute("id", "yesnofix-report-body");
+
+	    show.onclick = function(){
+
+		var sh = document.getElementById("yesnofix-report-show");
+		var hd = document.getElementById("yesnofix-report-hide");
+		var sb = document.getElementById("yesnofix-report-submit");
+		var bd = document.getElementById("yesnofix-report-body");
+
+		sh.style = "display:none;";
+		hd.style = "display:block;";
+		bd.style = "display:block;";
+		sb.style = "display:block;";
+	    };
+
+	    hide.onclick = function(){
+
+		var sh = document.getElementById("yesnofix-report-show");
+		var hd = document.getElementById("yesnofix-report-hide");
+		var sb = document.getElementById("yesnofix-report-submit");
+		var bd = document.getElementById("yesnofix-report-body");
+
+		sh.style = "display:block;";
+		hd.style = "display:none;";
+		bd.style = "display:none;";
+		sb.style = "display:none;";
+	    };
+
+	    submit.onclick = function(){
+		submit_handler(self.report());
+	    };
+
+	    report.appendChild(buttons);
+	    report.appendChild(body);
+
+	    return report;
+	},
+
+	'render_bucket': function(ns, bucket){
+	    
+	    var wrapper = document.createElement("div");
+
+		if (ns != '_global_'){
+
+			var header = document.createElement("h3");
+			var content = document.createTextNode(ns);
+			header.appendChild(content);
+
+			wrapper.appendChild(header);			
+		}
+
+	    var sorted = self.sort_bucket(bucket);
+	    var body = self.render_data(sorted, ns);
+	    
+	    wrapper.appendChild(body);
+	    
+	    return wrapper;
+	},
+	
+	'render_data': function(d, ctx){
+	    
+	    if (Array.isArray(d)){
+		// console.log("render list for " + ctx);
+		return self.render_list(d, ctx);
+	    }
+	    
+	    else if (typeof(d) == "object"){
+		// console.log("render dict for " + ctx);
+		return self.render_dict(d, ctx);
+	    }
+	    
+	    else {
+		// console.log("render text for " + ctx);
+
+		var wrapper = document.createElement("span");
+		wrapper.setAttribute("class", "yesnofix-content");
+
+		var add_trigger = true;
+
+		if (! _enabled){
+		    add_trigger = false;
+		}
+
+		if (add_trigger){
+
+		    var exclusion = self.get_custom_exclusion('text', d, ctx);
+
+		    if ((exclusion) && (exclusion(d, ctx))){
+
+			var lock = self.render_locked(ctx);
+			wrapper.appendChild(lock);   
+		    }
+
+		    else {
+
+			var trigger = self.render_trigger(ctx);
+			wrapper.appendChild(trigger);
+		    }
+		}
+		
+		var content;
+
+		var renderer = self.get_custom_renderer('text', d, ctx);
+		// console.log("rendered for " + ctx + " : " + typeof(renderer));
+
+		if (renderer){
+		    try {
+			content = renderer(d, ctx);
+		    } catch (e) {
+			console.log("UNABLE TO RENDER " + ctx + " BECAUSE " + e);
+		    }
+		}
+
+		else {
+		    content = self.render_text(d, ctx);
+		}
+
+		wrapper.appendChild(content);
+
+		return wrapper;
+	    }
+	},
+	
+	'render_dict': function(d, ctx){
+	    
+	    var table = document.createElement("table");
+	    table.setAttribute("class", "table");
+	    
+	    for (k in d){
+		
+		var row = document.createElement("tr");
+		var label_text = k;
+
+		var _ctx = (ctx) ? ctx + "." + k : k;
+
+		var renderer = self.get_custom_renderer('dict', d, _ctx);
+
+		if (renderer){
+		    try {
+			label_text = renderer(d, _ctx);
+		    } catch (e) {
+			console.log("UNABLE TO RENDER " + _ctx + " BECAUSE " + e);
+		    }
+		}
+
+		/*
+		  unclear if the rule should just be only text (as it currently is)
+		  or whether custom markup is allowed... smells like feature quicksand
+		  so moving along for now (20160211/thisisaaronland)
+		 */
+
+		var header = document.createElement("th");
+		var label = document.createTextNode(self.htmlspecialchars(label_text));
+		header.appendChild(label);
+		
+		var content = document.createElement("td");
+
+		var body = self.render_data(d[k], _ctx);		
+		content.appendChild(body);
+
+		row.appendChild(header);
+		row.appendChild(content);
+		
+		table.appendChild(row);
+	    }
+	    
+	    return table;
+	},
+	
+	'render_list': function(d, ctx){
+	    
+	    var count = d.length;
+	    
+	    if (count == 0){
+		return self.render_text("–", ctx);
+	    }
+	    
+	    if (count <= 1){
+		return self.render_data(d[0], ctx);
+	    }
+	    
+	    var list = document.createElement("ul");
+	    
+	    for (var i=0; i < count; i++){
+		
+		var item = document.createElement("li");
+		var body = self.render_data(d[i], ctx + "#" + i);
+		
+		item.appendChild(body);
+		list.appendChild(item);
+	    }
+	    
+	    return list;
+	},
+	
+	'render_text': function(d, ctx){
+	    
+	    var text = self.htmlspecialchars(d);
+	    
+	    var span = document.createElement("span");
+	    span.setAttribute("id", ctx);
+	    span.setAttribute("title", ctx);
+	    span.setAttribute("class", "yesnofix-uoc");
+	    	    
+	    var el = document.createTextNode(text);
+	    span.appendChild(el);
+
+	    return span;
+	},
+	
+	'render_link': function(link, text, ctx){
+
+	    var anchor = document.createElement("a");
+	    anchor.setAttribute("href", link);
+	    anchor.setAttribute("target", "_wof");
+	    var body = self.render_text(text, ctx);
+	    anchor.appendChild(body);
+
+	    return anchor;
+	},
+
+	/*
+	  .yesnofix-trigger { display:none; padding-right: 1em; }
+	  .yesnofix-content:hover .yesnofix-trigger { display:inline; }
+	*/
+
+	'render_trigger': function(ctx){
+
+	    var edit = document.createTextNode("📝");	// http://emojipedia.org/memo/
+
+	    var trigger = document.createElement("span");
+	    trigger.setAttribute("trigger-id", ctx);
+	    trigger.setAttribute("class", "yesnofix-trigger");
+	    trigger.setAttribute("title", "assert an opinion about this attribute");
+
+	    trigger.appendChild(edit);
+	    
+	    trigger.onclick = mapzen.whosonfirst.yesnofix.ontrigger;
+	    return trigger;
+	},
+
+	/*
+	  .yesnofix-locked { display:none; padding-right: 1em; }
+	  .yesnofix-content:hover .yesnofix-locked { display:inline; }
+	*/
+
+	'render_locked': function(ctx){
+	    
+	    var icon = document.createTextNode("🔒");	// http://emojipedia.org/memo/
+
+	    var locked = document.createElement("span");
+	    locked.setAttribute("class", "yesnofix-locked");
+	    locked.setAttribute("title", "this attribute is locked");
+
+	    locked.appendChild(icon);
+	    
+	    return locked;
+	},
+
+	'render_code': function(text, ctx){
+	    
+	    var code = document.createElement("code");
+	    var body = self.render_text(text, ctx);
+	    code.appendChild(body);
+	    return code;
+	},
+	
+	'render_timestamp': function(text, ctx){
+	    var dt = new Date(parseInt(text) * 1000);
+	    return self.render_text(dt.toISOString(), ctx);
+	},
+	
+	'bucket_props': function(props){
+	    
+	    buckets = {};
+	    
+	    for (k in props){
+		parts = k.split(":", 2);
+		
+		ns = parts[0];
+		pred = parts[1];
+		
+		if (parts.length != 2){
+		    ns = "_global_";
+		    pred = k;
+		}
+		
+		if (! buckets[ns]){
+		    buckets[ns] = {};					
+		}
+		
+		buckets[ns][pred] = props[k];
+	    }
+	    
+	    return buckets;
+	},
+	
+	'sort_bucket': function(bucket){
+	    
+	    var sorted = {};
+	    
+	    var keys = Object.keys(bucket);
+	    keys = keys.sort();
+	    
+	    var count_keys = keys.length;
+	    
+	    for (var j=0; j < count_keys; j++){
+		var k = keys[j];
+		sorted[k] = bucket[k];
+	    }
+	    
+	    return sorted;
+	},
+	
+	'ontrigger': function(e) {
+	    
+	    var target = e.target;
+	    var id = target.getAttribute("trigger-id");
+	    var value = target.textContent;
+
+	    if (id == self.current){
+		return;
+	    }
+
+	    if (self.current){
+		self.collapse(self.current);
+	    }
+
+	    var enc_id = self.htmlspecialchars(id);
+	    var enc_value = self.htmlspecialchars(value);
+	    
+	    var parent = target.parentElement;
+	    
+	    if (! parent){
+		// PLEASE TO MAKE ERRORS...
+		return;
+	    }
+	    
+	    var input = self.render_input(id);
+	    parent.appendChild(input);
+
+	    self.current = id;
+	},
+	
+	'render_input': function(id){
+	    
+	    var input = document.createElement("div");
+	    input.setAttribute("class", "yesnofix-assert");
+	    input.setAttribute("id", "assert-" + id);
+	    
+	    var yes = document.createElement("button");
+	    yes.setAttribute("class", "yesnofix-assert-yes");
+	    yes.setAttribute("data-id", id);
+	    yes.setAttribute("data-assertion", status_map['yes']);
+	    yes.setAttribute("title", "yes, this value is correct");
+
+	    var no = document.createElement("button");
+	    no.setAttribute("class", "yesnofix-assert-no");
+	    no.setAttribute("data-id", id);
+	    no.setAttribute("data-assertion", status_map['no']);
+	    no.setAttribute("title", "no, this value is incorrect");
+	    
+	    var fix = document.createElement("button");
+	    fix.setAttribute("class", "yesnofix-assert-fix");
+	    fix.setAttribute("data-id", id);
+	    fix.setAttribute("data-assertion", status_map['fix']);
+	    fix.setAttribute("title", "this value is somewhere between weird data and kind-of-correct data, but still needs some help");
+	    
+	    var cancel = document.createElement("button");
+	    cancel.setAttribute("class", "yesnofix-assert-cancel");
+	    cancel.setAttribute("data-id", id);
+	    cancel.setAttribute("title", "actually, never mind");
+
+	    var about = document.createElement("button");
+	    about.setAttribute("class", "yesnofix-assert-about");
+	    about.setAttribute("title", "wait... what's going? what is this?");
+
+	    yes.appendChild(document.createTextNode("yes"));
+	    no.appendChild(document.createTextNode("no"));
+	    fix.appendChild(document.createTextNode("fix"));
+	    cancel.appendChild(document.createTextNode("cancel"));
+	    about.appendChild(document.createTextNode("?"));
+	    
+	    yes.onclick = mapzen.whosonfirst.yesnofix.onassert;
+	    no.onclick = mapzen.whosonfirst.yesnofix.onassert;
+	    fix.onclick = mapzen.whosonfirst.yesnofix.onassert;
+	    cancel.onclick = mapzen.whosonfirst.yesnofix.oncancel;
+	    about.onclick = mapzen.whosonfirst.yesnofix.onabout;
+
+	    input.appendChild(yes);
+	    input.appendChild(no);
+	    input.appendChild(fix);
+	    input.appendChild(cancel);
+	    input.appendChild(about);
+
+	    input.appendChild(document.createElement("br"));
+	    return input;
+	},
+	
+	'onabout': function(){
+
+	    var about = document.createElement("div");
+	    about.setAttribute("id", "yesnofix-about");
+
+	    var text = document.createElement("div");
+	    text.setAttribute("id", "yesnofix-about-text");
+
+	    var head = document.createElement("h2");
+	    head.appendChild(document.createTextNode("What is Yes No Fix ?"));
+
+	    var intro_sentences = [
+		"Yes No Fix allows you to fact-check and offer an opinion about the contents of this web page.",
+		"Those opinions can then be bundled up as a report and sent to its authors.",
+		"When you say:"
+	    ];
+
+	    var intro_text = intro_sentences.join(" ");
+
+	    var intro = document.createElement("p");
+	    intro.appendChild(document.createTextNode(intro_text));
+
+	    var options = document.createElement("ul");
+
+	    var yes = document.createElement("li");
+	    yes.appendChild(document.createTextNode("Yes, this means this data is correct"));
+
+	    var no = document.createElement("li");
+	    no.appendChild(document.createTextNode("No, this means this data is incorrect and should be removed"));
+
+	    var fix = document.createElement("li");
+	    fix.appendChild(document.createTextNode("Fix, this means this data is not entirely wrong but needs to be corrected"));
+
+	    options.appendChild(yes);
+	    options.appendChild(no);
+	    options.appendChild(fix);
+
+	    var outro_sentences = [
+		"When you're done yes-no-fix-ing things click the \"show report\" button to review your work and submit your report.",
+		"The details of where a report is sent and how it is processed will vary from website to website."
+	    ];
+
+	    var outro_text = outro_sentences.join(" ");
+
+	    var outro = document.createElement("p");
+	    outro.appendChild(document.createTextNode(outro_text));
+
+	    text.appendChild(head);
+	    text.appendChild(intro);
+	    text.appendChild(options);
+	    text.appendChild(outro);
+
+	    var close = document.createElement("div");
+	    close.setAttribute("id", "yesnofix-about-close");
+
+	    var button = document.createElement("button");
+	    button.setAttribute("id", "yesnofix-about-close-button");
+	    button.appendChild(document.createTextNode("okay!"));
+
+	    close.appendChild(button);
+
+	    about.appendChild(text);
+	    about.appendChild(close);
+
+	    button.onclick = function(){
+		var about = document.getElementById("yesnofix-about");
+		var parent = about.parentElement;
+		parent.removeChild(about);
+	    };
+
+	    var body = document.body;
+	    body.insertBefore(about, body.firstChild);
+
+	    return false;
+	},
+
+	'onassert' : function(e){
+	    
+	    var target = e.target;
+	    var id = target.getAttribute("data-id");
+	    
+	    if (! id){
+		return false;
+	    }
+	    
+	    var el = document.getElementById(id);
+	    
+	    if (! el){
+		return false;
+	    }
+	    
+	    var path = id;
+	    var value = el.textContent;
+	    var assertion = target.getAttribute("data-assertion");
+
+	    var str_assertion = "";
+
+	    for (k in status_map){
+
+		if (assertion == status_map[k]){
+		    str_assertion = k;
+		    break;
+		}
+	    }
+
+	    self.assert(path, value, assertion);
+	    
+	    self.notify(path + "=" + str_assertion);
+
+	    self.collapse(id);
+
+	    var body = document.getElementById("yesnofix-report-body");
+	    body.innerHTML = self.report();
+
+	    if (body.style.display != "block"){
+		var show = document.getElementById("yesnofix-report-show");
+		show.style.display = "block";
+	    }
+
+	    var cls = el.getAttribute("class");
+	    cls = cls.split(" ");
+	    var count = cls.length;
+
+	    var new_cls = [];
+
+	    for (var i=0; i < count; i++){
+		if (cls[i].match(/^yesnofix-asserted/)){
+		    continue;
+		}
+
+		new_cls.push(cls[i]);
+	    }
+
+	    new_cls.push("yesnofix-asserted");
+	    new_cls.push("yesnofix-asserted-" + str_assertion);
+	    new_cls = new_cls.join(" ");
+
+	    console.log(new_cls);
+	    el.setAttribute("class", new_cls);
+
+	},
+	
+	'oncancel': function(e){
+
+	    var target = e.target;
+	    var id = target.getAttribute("data-id");
+	    
+	    if (! id){
+		return false;
+	    }
+
+	    self.collapse(id);
+	},
+
+	// this is a bad name... (20160211/thisisaaronland)
+
+	'collapse': function(id){
+
+	    var input = document.getElementById("assert-" + id);
+	    
+	    var parent = input.parentElement;
+	    parent.removeChild(input);
+
+	    self.current = null;
+	},
+
+	// note the lack of validation... we're assuming that kind of sanity
+	// checking is happening above?
+	
+	'assert': function(path, value, assertion){
+	    var dt = new Date();
+	    assertions[path] = {'path': path, 'value': value, 'assertion': assertion, 'date': dt};
+	},
+	
+	'report': function(){
+	    
+	    var report = [ "path,value,assertion,date" ];
+	    var count = assertions.length;
+	    
+	    for (path in assertions){
+		
+		var a = assertions[path];
+		
+		var row = [ a['path'], a['value'], a['assertion'], a['date'].toISOString() ];
+		row = row.join(",");
+		
+		report.push(row);
+	    }
+	    
+	    report = report.join("\n");
+	    return report;
+	},
+
+	'notify': function(msg, ctx){
+
+	    // it turns out this stuff is super annoying...
+	    // (20160321/thisisaaronland)
+
+	    return;
+
+	    // https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API/Using_the_Notifications_API#Browser_compatibility
+
+	    var enc_msg = self.htmlspecialchars(msg);
+
+	    if (! window.Notification){
+		alert(enc_msg);
+		return;
+	    }
+
+	    if (Notification.permission == "denied"){
+		alert(enc_msg);
+		return;
+	    }
+
+	    if (Notification.permission != "granted"){
+
+		Notification.requestPermission(function(status){
+		    return self.notify(msg);
+		});
+	    }
+
+	    // TO DO: icons based on ctx (20160217/thisisaaronland)
+
+	    var options = { 'body': enc_msg };
+
+	    var n = new Notification('boundary issues', options);
+	    setTimeout(n.close.bind(n), 5000); 
+	},
+
+	'htmlspecialchars': function(string, quote_style, charset, double_encode){
+	    //       discuss at: http://phpjs.org/functions/htmlspecialchars/
+	    //      original by: Mirek Slugen
+	    //      improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	    //      bugfixed by: Nathan
+	    //      bugfixed by: Arno
+	    //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+	    //      bugfixed by: Brett Zamir (http://brett-zamir.me)
+	    //       revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	    //         input by: Ratheous
+	    //         input by: Mailfaker (http://www.weedem.fr/)
+	    //         input by: felix
+	    // reimplemented by: Brett Zamir (http://brett-zamir.me)
+	    //             note: charset argument not supported
+	    //        example 1: htmlspecialchars("<a href='test'>Test</a>", 'ENT_QUOTES');
+	    //        returns 1: '&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;'
+	    //        example 2: htmlspecialchars("ab\"c'd", ['ENT_NOQUOTES', 'ENT_QUOTES']);
+	    //        returns 2: 'ab"c&#039;d'
+	    //        example 3: htmlspecialchars('my "&entity;" is still here', null, null, false);
+	    //        returns 3: 'my &quot;&entity;&quot; is still here'
+	    
+	    var optTemp = 0,
+	    i = 0,
+	    noquotes = false;
+	    if (typeof quote_style === 'undefined' || quote_style === null) {
+		quote_style = 2;
+	    }
+	    string = string.toString();
+	    if (double_encode !== false) {
+		// Put this first to avoid double-encoding
+		string = string.replace(/&/g, '&amp;');
+	    }
+	    string = string.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+	    
+	    var OPTS = {
+		'ENT_NOQUOTES'          : 0,
+		'ENT_HTML_QUOTE_SINGLE' : 1,
+		'ENT_HTML_QUOTE_DOUBLE' : 2,
+		'ENT_COMPAT'            : 2,
+		'ENT_QUOTES'            : 3,
+		'ENT_IGNORE'            : 4
+	    };
+	    if (quote_style === 0) {
+		noquotes = true;
+	    }
+	    if (typeof quote_style !== 'number') {
+		// Allow for a single string or an array of string flags
+		quote_style = [].concat(quote_style);
+		for (i = 0; i < quote_style.length; i++) {
+		    // Resolve string input to bitwise e.g. 'ENT_IGNORE' becomes 4
+		    if (OPTS[quote_style[i]] === 0) {
+			noquotes = true;
+		    } else if (OPTS[quote_style[i]]) {
+			optTemp = optTemp | OPTS[quote_style[i]];
+		    }
+		}
+		quote_style = optTemp;
+	    }
+	    if (quote_style & OPTS.ENT_HTML_QUOTE_SINGLE) {
+		string = string.replace(/'/g, '&#039;');
+	    }
+	    if (!noquotes) {
+		string = string.replace(/"/g, '&quot;');
+	    }
+	    
+	    return string;
+	}
+	
+    }
+    
+    return self;
+    
+})();
+var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
 
-		'abs_root_url': function(){
-			var body = document.body;
-			return body.getAttribute("data-abs-root-url");
-		},
+	    // this is invoked by by mapzen.whosonfirst.spelunker.init.js
+	    // which is running code (20160202/thisisaaronland)
+
+	    'init': function(){
+		mapzen.whosonfirst.config.init();
+	    },
+
+	    'abs_root_url': function(){
+		var body = document.body;
+		return body.getAttribute("data-abs-root-url");
+	    },
+	    	    
+	    'draw_list': function(classname){
 		
-		'toggle_data_endpoint': function(placetype){
-			// var root = location.origin + "/";
-			// var data = 'data/';
-			// mapzen.whosonfirst.data.endpoint(root + 'data/');
-		},
-
-		'draw_list': function(classname){
-
-			var locs = document.getElementsByClassName(classname);
+		var locs = document.getElementsByClassName(classname);
 			var count = locs.length;
 			
 			var swlat = undefined;
@@ -1786,357 +2730,9 @@ mapzen.whosonfirst.spelunker = (function(){
 			}
 		},
 
-		'render_properties': function(props){
-
-			var render = function(d, ctx){
-
-				// console.log("render context is " + ctx);
-
-				if (Array.isArray(d)){
-					return render_list(d, ctx);
-				}
-
-				else if (typeof(d) == "object"){
-					return render_dict(d, ctx);
-				}
-
-				else {
-
-					var possible_wof = [
-						'wof-belongsto',
-						'wof-parent_id', 'wof-children',
-						'wof-breaches',
-						'wof-supersedes',
-						'wof-superseded_by',
-						// TO DO : please to write js-whosonfirst-placetypes...
-						'wof-hierarchy-continent_id', 'wof-hierarchy-country_id', 'wof-hierarchy-region_id',
-						'wof-hierarchy-county_id', 'wof-hierarchy-locality_id', 'wof-hierarchy-neighbourhood_id',
-						'wof-hierarchy-campus_id', 'wof-hierarchy-venue_id'
-					];
-
-					if ((ctx) && (d)){
-
-						if ((possible_wof.indexOf(ctx) != -1) && (d > 0)){
-				
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "id/" + encodeURIComponent(d) + "/";
-							var el = render_link(link, d, ctx);
-
-							var text = el.children[0];
-							text.setAttribute("data-value", mapzen.whosonfirst.php.htmlspecialchars(d));
-							text.setAttribute("class", "props-uoc props-uoc-name props-uoc-name_" + mapzen.whosonfirst.php.htmlspecialchars(d));
-
-							return el;
-						}
-
-						else if (ctx == 'wof-id'){
-							return render_code(d, ctx);
-						}
-
-						else if (ctx == 'wof-placetype'){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "placetypes/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);
-						}
-
-						else if (ctx == 'wof-concordances-gn:id'){
-							var link = "http://geonames.org/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);							
-						}
-
-						/*
-						else if (ctx == 'wof-concordances-mzb:id'){
-							var link = "https://s3.amazonaws.com/osm-polygons.mapzen.com/" + encodeURIComponent(d) + ".tgz";
-							return render_link(link, d, ctx);							
-						}
-						*/
-
-						else if ((ctx == 'wof-concordances-gp:id') || (ctx == 'wof-concordances-woe:id')){
-							var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);							
-						}
-
-						else if (ctx == 'wof-concordances-tgn:id'){
-							var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
-							return render_link(link, d, ctx);
-						}
-
-						else if (ctx == 'wof-lastmodified'){
-							var dt = new Date(parseInt(d) * 1000);
-							return render_text(dt.toISOString(), ctx);
-						}
-						
-						else if ((ctx == 'wof-megacity') && (d == 1)){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "megacities/";
-							return render_link(link, "HOW BIG WOW MEGA SO CITY", ctx);
-						}
-
-						else if (ctx == 'wof-tags'){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "tags/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);
-						}
-
-						else if ((ctx.match(/^name-/)) || (ctx == 'wof-name')){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "search/?q=" + encodeURIComponent(d);
-							return render_link(link, d, ctx);
-						}
-
-						else if (ctx == 'sg-city'){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "search/?q=" + encodeURIComponent(d) + "&placetype=locality";
-							return render_link(link, d, ctx);
-						}
-
-						else if (ctx == 'sg-postcode'){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "postalcodes/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);
-						}
-
-						else if (ctx == 'sg-tags'){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "tags/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);
-						}
-						
-						else if (ctx.match(/^sg-classifiers-/)){
-							var root = mapzen.whosonfirst.spelunker.abs_root_url();
-							var link = root + "categories/" + encodeURIComponent(d) + "/";
-							return render_link(link, d, ctx);
-						}
-
-						else {
-							return render_text(d, ctx);
-						}
-					  }
-
-					  else {
-						return render_text(d, ctx);
-					}
-				}
-			};
-
-			var render_dict = function(d, ctx){
-
-				var table = document.createElement("table");
-				table.setAttribute("class", "table");
-
-				for (k in d){
-					var row = document.createElement("tr");
-				
-					// console.log("render context is " + ctx);
-
-					var label_text = k;
-
-					if (ctx == 'wof-concordances'){
-
-						if (k == 'gn:id'){
-							label_text = 'geonames';
-						}
-
-						else if ((k == 'gp:id') || (k == 'woe:id')){
-							label_text = 'geoplanet';
-						}
-
-						else if (k == 'fct:id'){
-							label_text = 'factual';
-						}
-
-						else if (k == 'tgn:id'){
-							label_text = 'tgn (getty)';
-						}
-
-						else if (k == 'oa:id'){
-							label_text = 'our airports';
-						}
-
-						else if (k == 'sg:id'){
-							label_text = 'simplegeo';
-						}
-
-						else {}
-
-					}
-
-					var header = document.createElement("th");
-					var label = document.createTextNode(mapzen.whosonfirst.php.htmlspecialchars(label_text));
-					header.appendChild(label);
-
-					var _ctx = (ctx) ? ctx + "-" + k : k;
-
-					var content = document.createElement("td");
-					var body = render(d[k], _ctx);
-
-					content.appendChild(body);
-
-					row.appendChild(header);
-					row.appendChild(content);
-
-					table.appendChild(row);
-				}
-
-				return table;
-			};
-
-			var render_list = function(d, ctx){
-
-				var count = d.length;
-
-				if (count == 0){
-					return render_text("–", ctx);
-				}
-
-				if (count <= 1){
-					return render(d[0], ctx);
-				}
-
-				var list = document.createElement("ul");
-				
-				for (var i=0; i < count; i++){
-					
-					var item = document.createElement("li");
-					var body = render(d[i], ctx);
-
-					item.appendChild(body);
-					list.appendChild(item);
-				}
-
-				return list;
-			};
-
-			var render_editable = function(d){
-				// please write me
-			};
-
-			var render_text = function(d, ctx){
-
-				var text = mapzen.whosonfirst.php.htmlspecialchars(d);
-
-				var span = document.createElement("span");
-				span.setAttribute("id", ctx);
-				span.setAttribute("class", "props-uoc");
-
-				var el = document.createTextNode(text);
-				span.appendChild(el);
-				return span;
-			};
-
-			var render_link = function(link, text, ctx){
-
-				var anchor = document.createElement("a");
-				anchor.setAttribute("href", link);
-				anchor.setAttribute("target", "_wof");
-				var body = render_text(text, ctx);
-				anchor.appendChild(body);
-				return anchor;
-			}
-
-			var render_code = function(text, ctx){
-
-				var code = document.createElement("code");
-				var body = render_text(text, ctx);
-				code.appendChild(body);
-				return code;
-			}
-
-			var bucket_props = function(props){
-
-				buckets = {};
-
-				for (k in props){
-					parts = k.split(":", 2);
-
-					ns = parts[0];
-					pred = parts[1];
-
-					if (parts.length != 2){
-						ns = "misc";
-						pred = k;
-					}
-
-					if (! buckets[ns]){
-						buckets[ns] = {};					
-					}
-					
-					buckets[ns][pred] = props[k];
-				}
-				
-				return buckets;
-			};
-
-			var sort_bucket = function(bucket){
-
-				var sorted = {};
-
-				var keys = Object.keys(bucket);
-				keys = keys.sort();
-
-				var count_keys = keys.length;
-
-				for (var j=0; j < count_keys; j++){
-					var k = keys[j];
-					sorted[k] = bucket[k];
-				}
-
-				return sorted;
-			};
-
-			var render_bucket = function(ns, bucket){
-
-				var wrapper = document.createElement("div");
-
-				var header = document.createElement("h3");
-				var content = document.createTextNode(ns);
-				header.appendChild(content);
-			
-				var sorted = sort_bucket(bucket);
-				var body = render(sorted, ns);
-				
-				wrapper.appendChild(header);
-				wrapper.appendChild(body);
-
-				return wrapper;
-			};
-
-			var pretty = document.createElement("div");
-			pretty.setAttribute("id", "props-pretty");
-			
-			buckets = bucket_props(props);
-
-			// these two go first
-
-			wof_bucket = render_bucket('wof', buckets['wof'])
-			pretty.appendChild(wof_bucket);
-			delete buckets['wof']
-
-			if (buckets['name']){
-				name_bucket = render_bucket('name', buckets['name'])
-				pretty.appendChild(name_bucket);
-				delete buckets['name'];
-			}
-
-			// now render the rest of them
-
-			var namespaces = Object.keys(buckets);
-			namespaces = namespaces.sort();
-
-			var count_ns = namespaces.length;
-
-			for (var i=0; i < count_ns; i++){
-
-				var ns = namespaces[i]
-				var dom = render_bucket(ns, buckets[ns]);
-				pretty.appendChild(dom);
-			}
-
-			return pretty;
-		}
 	};
 
 	return self;
 })();
 
-// last bundled at 2016-02-02T00:52:52 UTC
+// last bundled at 2016-05-18T01:16:42 UTC
