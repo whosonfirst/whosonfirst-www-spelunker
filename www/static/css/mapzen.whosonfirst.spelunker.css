@@ -170,3 +170,9 @@ q {
 #props-toggle-pretty {
     display: none;
 }
+
+.see-also {
+    display:block;
+    margin-top:.75em;
+    margin-bottom:1em;
+}

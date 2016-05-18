@@ -196,11 +196,71 @@ def random_place():
     logging.debug("redirect random to %s" % url)
     return flask.redirect(url)
 
+@app.route("/languages", methods=["GET"])
+@app.route("/languages/", methods=["GET"])
+def languages_official():
+    return languages()
+
+@app.route("/languages/spoken", methods=["GET"])
+@app.route("/languages/spoken/", methods=["GET"])
+def languages_spoken():
+    return languages(True)
+
+def languages(spoken=False):
+
+    field = "wof:lang_x_official"
+
+    if spoken:
+        field = "wof:lang_x_spoken"
+
+    field = 'wof:lang'
+
+    aggrs = {
+        'languages': {
+            'terms': {
+                'field': field,
+                'size': 0,
+            }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('languages', {})
+    buckets = results.get('buckets', [])
+
+    for b in buckets:
+
+        try:
+            lang = pycountry.languages.get(iso639_3_code=b['key'])
+            b['lang_common'] = lang.name
+        except Exception, e:
+            b['lang_common'] = b['key']
+
+    template = "languages_official.html"
+
+    if spoken:
+        template = "languages_spoken.html"
+
+    return flask.render_template(template, languages=buckets)
+
 @app.route("/languages/<string:lang>", methods=["GET"])
 @app.route("/languages/<string:lang>/", methods=["GET"])
 def for_lang_official(lang):
     return has_language(lang)
 
+@app.route("/languages/spoken/<string:lang>", methods=["GET"])
+@app.route("/languages/spoken/<string:lang>/", methods=["GET"])
 @app.route("/languages/<string:lang>/spoken", methods=["GET"])
 @app.route("/languages/<string:lang>/spoken/", methods=["GET"])
 def for_lang_spoken(lang):
@@ -1203,9 +1263,6 @@ def get_by_concordance(id, src):
         print "failed to retrieve %s" % id
         return None
 
-def languages():
-    pass
-
 def has_language(lang, spoken=False):
 
     pylang = None
@@ -1230,17 +1287,18 @@ def has_language(lang, spoken=False):
     except Exception, e:
         logging.error("weird and freakish language tag %s failed because %s" % (lang, e))
 
-    if not pylang:
+    if pylang:
+        lang_common = pylang.name
+    else:
         logging.warning("unrecognized language %s" % lang)
-        flask.abort(404)
-        
-    lang_common = pylang.name
+        lang_common = lang
 
     field = "wof:lang_x_official"
-    field = "wof:lang"
 
     if spoken:
         field = "wof:lang_x_spoken"
+
+    field = "wof:lang"
 
     esc_lang = flask.g.search_idx.escape(lang)
 
