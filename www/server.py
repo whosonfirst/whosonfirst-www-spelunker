@@ -196,6 +196,36 @@ def random_place():
     logging.debug("redirect random to %s" % url)
     return flask.redirect(url)
 
+@app.route("/brands", methods=["GET"])
+@app.route("/brands/", methods=["GET"])
+def brands():
+
+    aggrs = {
+        'brands': {
+            'terms': {
+                'field': 'wof:brand_id',
+                'size': 0,
+            }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('brands', {})
+    buckets = results.get('buckets', [])
+
+    return flask.render_template('brands.html', brands=buckets)
+
 @app.route("/languages", methods=["GET"])
 @app.route("/languages/", methods=["GET"])
 def languages_official():
