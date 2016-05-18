@@ -179,8 +179,12 @@ q {
 
 .caveat {
     color:#666;
+    background-color: #ffff99;
+    padding:.35em;
+    padding-left:.6em;
+    padding-right:.6em;
 }
 
 .caveat:before {
-    content: " – ";
+    /* content: " – "; */
 }

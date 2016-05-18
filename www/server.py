@@ -344,16 +344,15 @@ def for_lang_official(lang):
 def for_lang_spoken(lang):
     return has_language(lang, True)
 
-# this does not work yet
-# @app.route("/concordances/", methods=["GET"])
-# @app.route("/concordances/", methods=["GET"])
+@app.route("/concordances/", methods=["GET"])
+@app.route("/concordances/", methods=["GET"])
 def concordances():
 
     aggrs = {
         'concordances': {
 
             'terms': {
-                'field': 'wof:concordances',
+                'field': 'wof:concordances_sources',
                 'size': 0,
            }
         }
