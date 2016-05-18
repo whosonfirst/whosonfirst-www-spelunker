@@ -5,18 +5,25 @@
 <div class="row">
 <div class="col-md-12">
 
-<h3><span class="hey-look">#brands</span> in Who's On First</h3>
+<h3>
+<span class="hey-look">#brands</span> in Who's On First
+  {% include "inc_brands_caveat.html" %}
+</h3>
 
 <ul class="list-inline">
 {% for b in brands %}
 <li style="color:#666;">
   <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is a {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> are a {% endif %}</small>
-  <a href="" class="hey-look">{{ b.key|e }}</a>
+  <a href="#" class="hey-look wof-namify-brand" data-wof-id="{{ b.key|e }}">{{ b.key|e }}</a>
 </li>
 {% endfor %}
 </ul>
 
 </div>
 </div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.brands.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.namify.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.brands.js') }}"></script>
 
 {% endblock %}
