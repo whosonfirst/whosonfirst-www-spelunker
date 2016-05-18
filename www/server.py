@@ -213,7 +213,7 @@ def languages(spoken=False):
     if spoken:
         field = "wof:lang_x_spoken"
 
-    field = 'wof:lang'
+    # field = 'wof:lang'
 
     aggrs = {
         'languages': {
@@ -1298,7 +1298,7 @@ def has_language(lang, spoken=False):
     if spoken:
         field = "wof:lang_x_spoken"
 
-    field = "wof:lang"
+    # field = "wof:lang"
 
     esc_lang = flask.g.search_idx.escape(lang)
 
