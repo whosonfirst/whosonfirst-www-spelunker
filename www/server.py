@@ -226,6 +226,54 @@ def brands():
 
     return flask.render_template('brands.html', brands=buckets)
 
+@app.route("/brands/<int:id>", methods=["GET"])
+@app.route("/brands/<int:id>/", methods=["GET"])
+def brand(id):
+
+    brand_id = sanitize_int(id)
+
+    query = {
+        'term': {
+            'wof:brand_id': brand_id
+        }
+    }
+
+    query = enfilterify(query)
+    
+    body = {
+        'query': query,
+    }
+
+    args = {'per_page': 50}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+    
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'es_query': body,
+        'brand': brand_id,
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'facets': facets,
+        'facet_url': facet_url
+    }
+
+    return flask.render_template('brand.html', **template_args)
+
 @app.route("/languages", methods=["GET"])
 @app.route("/languages/", methods=["GET"])
 def languages_official():
@@ -1294,6 +1342,8 @@ def get_by_concordance(id, src):
         return None
 
 def has_language(lang, spoken=False):
+
+    lang = sanitize_str(lang)
 
     pylang = None
 

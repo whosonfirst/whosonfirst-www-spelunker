@@ -14,7 +14,7 @@
 {% for b in brands %}
 <li style="color:#666;">
   <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is a {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> are a {% endif %}</small>
-  <a href="#" class="hey-look wof-namify-brand" data-wof-id="{{ b.key|e }}">{{ b.key|e }}</a>
+  <a href="{{ url_for('brand', id=b.key) }}" class="hey-look wof-namify-brand" data-wof-id="{{ b.key|e }}">{{ b.key|e }}</a>
 </li>
 {% endfor %}
 </ul>

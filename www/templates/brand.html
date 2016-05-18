@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}#brands | {{ brand |e }}{% endblock %}
+{% block content %}
+
+<div class="row">
+<h3>Places that are a #<q class="wof-namify-brand" data-wof-id="{{ brand |e }}">{{ brand |e }}</a></h3>
+</div>
+
+{% include "inc_docs.html" %}
+
+{% endblock %}
