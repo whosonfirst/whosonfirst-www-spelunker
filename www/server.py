@@ -344,28 +344,66 @@ def for_lang_official(lang):
 def for_lang_spoken(lang):
     return has_language(lang, True)
 
+# this does not work yet
+# @app.route("/concordances/", methods=["GET"])
+# @app.route("/concordances/", methods=["GET"])
+def concordances():
+
+    aggrs = {
+        'concordances': {
+
+            'terms': {
+                'field': 'wof:concordances',
+                'size': 0,
+           }
+        }
+    }
+        
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('concordances', {})
+    buckets = results.get('buckets', [])
+
+    return flask.render_template('concordances.html', concordances=buckets)
+
+@app.route("/concordances/<string:src>", methods=["GET"])
+@app.route("/concordances/<string:src>/", methods=["GET"])
+def for_concordance(src):
+    label = src
+    return has_concordance(src, label)
+
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
-    return has_concordance('gn:id', 'Geonames')
+    return has_concordance('gn', 'Geonames')
 
 @app.route("/geoplanet/", methods=["GET"])
 @app.route("/gp/", methods=["GET"])
 def for_geoplanet():
-    return has_concordance('gp:id', 'GeoPlanet')
+    return has_concordance('gp', 'GeoPlanet')
 
 @app.route("/tgn/", methods=["GET"])
 def for_tgn():
-    return has_concordance('tgn:id', 'the Getty Thesaurus of Geographic Names')
+    return has_concordance('tgn', 'the Getty Thesaurus of Geographic Names')
 
 @app.route("/wikidata/", methods=["GET"])
 @app.route("/wd/", methods=["GET"])
 def for_wikidata():
-    return has_concordance('wd:id', 'Wikidata')
+    return has_concordance('wd', 'Wikidata')
 
 @app.route("/woe/", methods=["GET"])
 def for_woe():
-    return has_concordance('gp:id', 'Where On Earth (now GeoPlanet)')
+    return has_concordance('gp', 'Where On Earth (now GeoPlanet)')
 
 @app.route("/geoplanet/id/<int:id>", methods=["GET"])
 @app.route("/geoplanet/id/<int:id>/", methods=["GET"])
@@ -1268,6 +1306,9 @@ def get_by_id(id):
         return None
 
 def has_concordance(src, label):
+
+    src = sanitize_str(src)
+    src = "%s:id" % src
 
     concordance = "wof:concordances.%s" % src
 

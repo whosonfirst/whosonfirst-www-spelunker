@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Concordances{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3><span class="hey-look">Concordances</span> in Who's On First <small>places where <span class="hey-look">this</span> equals <span class="hey-look">that</span></h3>
+
+<ul class="list-inline">
+{% for b in placetypes %}
+<li style="color:#666;">
+  {%if b.key == "ocean" %}
+  <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is an {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> are an {% endif %}</small>
+  {% else %}
+  <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is a {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> are a {% endif %}</small>
+  {% endif %}
+  <a href="#" class="hey-look">{{ b.key|e }}</a>
+</li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+{% endblock %}
