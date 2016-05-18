@@ -29,6 +29,9 @@ index:
 
 mapzen: styleguide tangram refill yesnofix
 
+pyzen:
+	./ubuntu/setup-py-mapzen.sh
+
 yesnofix:
 	if test -e www/static/javascript/mapzen.whosonfirst.yesnofix.js; then cp www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.yesnofix.js.bak; fi
 	curl -s -o www/static/javascript/mapzen.whosonfirst.yesnofix.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst-yesnofix/master/src/mapzen.whosonfirst.yesnofix.js

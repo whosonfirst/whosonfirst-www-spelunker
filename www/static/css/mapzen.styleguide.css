@@ -4817,10 +4817,10 @@ label {
 .tall label {
   display: block; }
 
-.tall input[type="text"] {
+.tall input[type="text"], .tall input[type="email"] {
   width: 100%; }
 
-input[type="text"] {
+input[type="text"], input[type="email"] {
   padding: 3px 5px;
   border: 1px solid #ccc; }
 
