@@ -23,6 +23,7 @@ import pycountry
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
+import mapzen.whosonfirst.sources as src
 
 # import mapzen.whosonfirst.spatial as spatial
 
@@ -373,17 +374,52 @@ def concordances():
     results = aggregations.get('concordances', {})
     buckets = results.get('buckets', [])
 
-    return flask.render_template('concordances.html', concordances=buckets)
+    for b in buckets:
 
-@app.route("/concordances/<string:src>", methods=["GET"])
-@app.route("/concordances/<string:src>/", methods=["GET"])
-def for_concordance(src):
-    label = src
-    return has_concordance(src, label)
+        prefix, key = b['key'].split(':')
+
+        source = src.get_source_by_prefix(prefix)
+        
+        b['prefix'] = prefix
+
+        if source:
+            b['fullname'] = source.details['fullname']
+            b['name'] = source.details['name']
+        else:
+            b['fullname'] = prefix
+            b['name'] = prefix
+
+    count_concordances = len(buckets)
+
+    return flask.render_template('concordances.html', concordances=buckets, count_concordances=count_concordances)
+
+@app.route("/concordances/<string:who>", methods=["GET"])
+@app.route("/concordances/<string:who>/", methods=["GET"])
+def for_concordance(who):
+
+    who = sanitize_str(who)
+    source = None
+
+    if not source:
+        source = src.get_source_by_name(who)
+    
+    if not source:
+        source = src.get_source_by_prefix(who)
+
+    if not source:
+        flask.abort(404)
+
+    lookup = source.lookup_key()
+    fullname = source.details['fullname']
+
+    return has_concordance(lookup, fullname)
 
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
+
+    # flask.redirect(location, code=301)
+
     return has_concordance('gn', 'Geonames')
 
 @app.route("/geoplanet/", methods=["GET"])
@@ -1307,9 +1343,9 @@ def get_by_id(id):
 def has_concordance(src, label):
 
     src = sanitize_str(src)
-    src = "%s:id" % src
-
     concordance = "wof:concordances.%s" % src
+
+    print concordance
 
     filter = {
             'exists': { 'field': concordance  }

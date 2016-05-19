@@ -16,7 +16,11 @@ There are <span class="hey-look">{{ pagination.total |number_format|e }} places<
 and this <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
 {% endif %}
 {% endif %}
-</h3></div>
+
+<small class="see-also">See all the <span class="hey-look">other things</span> that Who's On First <a href="{{ url_for('concordances') }}" class="hey-look">holds hands with</a></small>
+</h3>
+
+</div>
 
 {% include "inc_docs.html" %}
 
