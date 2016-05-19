@@ -13,7 +13,7 @@ There is <span class="hey-look">one place</span> where the official language is 
 {% else %}
 There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> where the official language is <q class="hey-look">{{ lang_common |e }}</q>
 {% if pagination.pages > 1 %}
-and this <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
 {% endif %}
 {% endif %}
 
