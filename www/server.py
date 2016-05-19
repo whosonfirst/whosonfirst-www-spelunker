@@ -1347,8 +1347,6 @@ def has_concordance(src, label):
     src = sanitize_str(src)
     concordance = "wof:concordances.%s" % src
 
-    print concordance
-
     filter = {
             'exists': { 'field': concordance  }
     }
@@ -1363,6 +1361,8 @@ def has_concordance(src, label):
             'query': query
         }
     }
+
+    query = enfilterify(query)
     
     body = {
          'query': query
