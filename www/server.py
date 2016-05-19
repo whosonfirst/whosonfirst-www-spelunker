@@ -417,28 +417,30 @@ def for_concordance(who):
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
-
-    # flask.redirect(location, code=301)
-
-    return has_concordance('gn', 'Geonames')
+    location = flask.url_for('for_concordance', who='geonames')
+    return flask.redirect(location, code=301)
 
 @app.route("/geoplanet/", methods=["GET"])
 @app.route("/gp/", methods=["GET"])
+@app.route("/woe", methods=["GET"])
+@app.route("/woe/", methods=["GET"])
 def for_geoplanet():
-    return has_concordance('gp', 'GeoPlanet')
-
+    location = flask.url_for('for_concordance', who='geoplanet')
+    return flask.redirect(location, code=301)
+    
 @app.route("/tgn/", methods=["GET"])
 def for_tgn():
-    return has_concordance('tgn', 'the Getty Thesaurus of Geographic Names')
+    location = flask.url_for('for_concordance', who='tgn')
+    return flask.redirect(location, code=301)
 
 @app.route("/wikidata/", methods=["GET"])
 @app.route("/wd/", methods=["GET"])
 def for_wikidata():
-    return has_concordance('wd', 'Wikidata')
+    location = flask.url_for('for_concordance', who='wikidata')
+    return flask.redirect(location, code=301)
 
-@app.route("/woe/", methods=["GET"])
-def for_woe():
-    return has_concordance('gp', 'Where On Earth (now GeoPlanet)')
+# Please update all the 'info_concordance' stuff as follows
+# https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/25
 
 @app.route("/geoplanet/id/<int:id>", methods=["GET"])
 @app.route("/geoplanet/id/<int:id>/", methods=["GET"])
@@ -1394,7 +1396,7 @@ def has_concordance(src, label):
         'facet_url': facet_url,
     }
 
-    return flask.render_template('has_concordance.html', **template_args)
+    return flask.render_template('concordance.html', **template_args)
 
 def get_by_concordance(id, src):
 
