@@ -1220,9 +1220,19 @@ def enfilterify(query):
             tag = get_single(tag)
             esc_tag = flask.g.search_idx.escape(tag)
 
-            filters.append({ 'term': {
-                'sg:tags' : esc_tag
-            }})
+            # filters.append({ 'term': {
+            #     'sg:tags' : esc_tag
+            # }})
+
+            # https://stackoverflow.com/questions/16776260/elasticsearch-multi-match-with-filter
+
+            filters.append({ 'query': { 'multi_match': {
+                'query': esc_tag,
+                'type': 'best_fields',
+                'fields': [ 'sg:tags', 'wof:tags' ],
+                'operator': 'OR',
+            }}})
+
         else:
 
             esc_tags = map(flask.g.search_idx.escape, tag)
