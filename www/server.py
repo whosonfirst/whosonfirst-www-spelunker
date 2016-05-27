@@ -653,7 +653,12 @@ def placetypes():
     results = aggregations.get('placetypes', {})
     buckets = results.get('buckets', [])
 
-    return flask.render_template('placetypes.html', placetypes=buckets)
+    total_count = 0
+
+    for b in buckets:
+        total_count += b['doc_count']
+
+    return flask.render_template('placetypes.html', placetypes=buckets, total_count=total_count)
 
 @app.route("/placetypes/<placetype>", methods=["GET"])
 @app.route("/placetypes/<placetype>/", methods=["GET"])

@@ -5,7 +5,16 @@
 <div class="row">
 <div class="col-md-12">
 
-<h3><span class="hey-look">Placetypes</span> in Who's On First</h3>
+<h3>
+<span class="hey-look">Placetypes</span> in Who's On First
+{% if total_count == 1%}
+<small class="see-also">There is currently <span class="hey-look">only one place</span> in Who's On First which is <span class="hey-look">kind of weird</span> but there you go</small>
+{% elif total_count > 1 %}
+<small class="see-also">There are currently <span class="hey-look">{{ total_count |number_format|e }} different places</span> in Who's On First and this is how they <span class="hey-look">see themselves</span></small>
+{% else %}
+<small class="see-also">There apparently aren't <span class="hey-look">any places</span> in Who's On First right now which is <span class="hey-look">definitely strange</span></small>
+{% endif %}
+</h3>
 
 <ul class="list-inline">
 {% for b in placetypes %}
