@@ -1110,12 +1110,12 @@ def facetify(query):
                 'size': 100
             }
         },
-        # 'region_id': {
-        #     'terms': {
-        #         'field': 'region_id',
-        #         'size': 100
-        #     }
-        # }
+        'region_id': {
+            'terms': {
+                'field': 'region_id',
+                'size': 100
+            }
+        }
     }
     
     body = {
@@ -1219,10 +1219,6 @@ def enfilterify(query):
 
             tag = get_single(tag)
             esc_tag = flask.g.search_idx.escape(tag)
-
-            # filters.append({ 'term': {
-            #     'sg:tags' : esc_tag
-            # }})
 
             # https://stackoverflow.com/questions/16776260/elasticsearch-multi-match-with-filter
 
