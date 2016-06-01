@@ -1163,6 +1163,14 @@ def enfilterify(query):
     locality = get_int('locality_id')
     region = get_int('region_id')
 
+    # sudo make me a switch
+
+    filters.append({ 'bool': {
+        'must_not': { 
+            'regexp': { 'edtf:deprecated' : '.*' }
+        }
+    }})
+
     if placetype:
 
         ids = []
@@ -1286,6 +1294,7 @@ def enfilterify(query):
             filters.append({ 'term': {
                 'region_id' : esc_loc
             }})
+
         else:
 
             esc_locs = region
@@ -1303,7 +1312,7 @@ def enfilterify(query):
             'filtered': {
                 'query': query,
                 'filter': { 'and': filters }
-                }
+            }
         }
 
     return query
