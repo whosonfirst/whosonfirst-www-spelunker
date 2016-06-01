@@ -1167,7 +1167,12 @@ def enfilterify(query):
 
     filters.append({ 'bool': {
         'must_not': { 
-            'regexp': { 'edtf:deprecated' : '.*' }
+            # Y U NO WORK ON PROD??? (20160531/thisisaaronland)
+            # 'regexp': { 'edtf:deprecated' : '.*' }
+
+            # see above - one day this will bite us in the ass...
+            # (20160531/thisisaaronland)
+            'exists': { 'field' : 'edtf:deprecated' }
         }
     }})
 
