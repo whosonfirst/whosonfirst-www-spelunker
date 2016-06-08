@@ -24,6 +24,7 @@ import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
+import mapzen.whosonfirst.uri as uri
 
 # import mapzen.whosonfirst.spatial as spatial
 
@@ -158,6 +159,22 @@ def info(id):
     }
 
     return flask.render_template('id.html', **template_args)
+
+@app.route("/id/<int:id>.geojson", methods=["GET"])
+@app.route("/id/<int:id>/", methods=["GET"])
+def geojson(id):
+
+    doc = get_by_id(id)
+
+    if not doc:
+        logging.warning("no record for ID %s" % id)
+        flask.abort(404)
+
+    # strictly speaking we should make the root URL a config thingy
+    # but not today... (20160607/thisisaaronland)
+
+    location = uri.id2abspath('https://whosonfirst.mapzen.com/data', id)
+    return flask.redirect(location, code=303)
 
 @app.route("/random", methods=["GET"])
 @app.route("/random/", methods=["GET"])
