@@ -161,7 +161,6 @@ def info(id):
     return flask.render_template('id.html', **template_args)
 
 @app.route("/id/<int:id>.geojson", methods=["GET"])
-@app.route("/id/<int:id>/", methods=["GET"])
 def geojson(id):
 
     doc = get_by_id(id)
