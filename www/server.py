@@ -744,6 +744,261 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', **template_args)
 
+@app.route("/mt", methods=["GET"])
+@app.route("/mt/", methods=["GET"])
+def mt():
+
+    kwargs = {
+        'filter': 'predicates',
+        'namespace': 'sg',
+    }
+
+    return machinetag_hierarchies('xx:categories', **kwargs)
+
+def machinetag_hierarchies(field, **kwargs):
+
+    import pprint
+    print pprint.pformat(kwargs)
+    
+    # https://stackoverflow.com/questions/24819234/elasticsearch-using-the-path-hierarchy-tokenizer-to-access-different-level-of
+    # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/search-aggregations-bucket-terms-aggregation.html
+    # https://github.com/whosonfirst/py-mapzen-whosonfirst-machinetag/blob/master/mapzen/whosonfirst/machinetag/__init__.py
+
+    aggrs = {
+        'hierarchies': {
+            'terms': {
+                'field': field,
+                'size': 0,
+            }
+        }
+    }
+
+    def sort_filtered(raw):
+        return raw
+
+    def filter_namespaces(raw):
+
+        filtered = []
+        tmp = {}
+
+        predicates = {}
+        values = {}
+
+        for b in raw:
+            key = b['key']
+            count = b['doc_count']
+
+            key = key.split(".")
+            ns = key[0]
+
+            total = tmp.get(ns, 0)
+            total += count
+
+            tmp[ns] = total
+
+        for pred, count in tmp.items():
+            filtered.append({'doc_count': count, 'key': pred})
+
+        return sort_filtered(filtered)
+
+    def filter_predicates(raw):
+
+        filtered = []
+        tmp = {}
+
+        for b in raw:
+            key = b['key']
+            count = b['doc_count']
+
+            key = key.split(".")
+            pred = key[1]
+
+            total = tmp.get(pred, 0)
+            total += count
+
+            tmp[pred] = total
+
+        for pred, count in tmp.items():
+            filtered.append({'doc_count': count, 'key': pred})
+
+        return filtered
+
+    def filter_values(raw):
+
+        filtered = []
+        tmp = {}
+
+        for b in raw:
+            key = b['key']
+            count = b['doc_count']
+
+            key = key.split(".")
+            value = key[2]
+
+            total = tmp.get(value, 0)
+            total += count
+
+            tmp[value] = total
+
+        for pred, count in tmp.items():
+            filtered.append({'doc_count': count, 'key': pred})
+
+        return filtered
+
+    # this is used to prune the final aggregation 'buckets'
+
+    rsp_filter = None
+
+    # these are appended to aggrs['hierarchies']['terms']
+
+    include_filter = None
+    exclude_filter = None
+
+    if kwargs.get('filter', False) == 'namespaces':
+
+        rsp_filter = filter_namespaces
+
+        # all the namespaces for a predicate and value
+
+        if kwargs.get('predicate', None) and kwargs.get('value', None):
+
+            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
+            esc_value = flask.g.search_idx.escape(kwargs['value'])
+
+            include_filter = '.*\.' + esc_pred + '\.' + esc_value + '$'
+
+        # all the namespaces for a predicate
+
+        elif kwargs.get('predicate', None):
+
+            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
+
+            include_filter = '^.*\.' + esc_pred
+            exclude_filter = '.*\/.*\/.*'
+
+        # all the namespaces for a value 
+            
+        elif kwargs.get('value', None):
+
+            esc_value = flask.g.search_idx.escape(kwargs['value'])
+
+            include_filter = '.*\..*\.' + esc_value + '$'
+
+        # all the namespaces
+        
+        else:
+
+            exclude_filter = '.*\..*'
+
+    elif kwargs.get('filter', None) == 'predicates':
+
+        rsp_filter = filter_predicates
+
+        # all the predicates for a namespace and value
+
+        if kwargs.get('namespace', None) and kwargs.get('value', None):
+
+            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
+            esc_value = flask.g.search_idx.escape(kwargs['value'])
+
+            include_filter = '^' + esc_ns + '\..*\.' + esc_value + '$'
+
+        # all the predicates for a namespace
+
+        elif kwargs.get('namespace', None):
+
+            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
+
+            include_filter = '^' + esc_ns + '\.[^\.]+'
+            exclude_filter = '.*\..*\..*'
+
+        # all the predicates for a value
+
+        elif kwargs.get('value', None):
+
+            esc_value = flask.g.search_idx.escape(kwargs['value'])
+
+            include_filter = '.*\..*\.' + esc_value + '$'
+            
+        # all the predicates
+
+        else:
+
+            include_filter = '.*\..*'
+            exclude_filter = '.*\..*\..*'
+        
+    elif kwargs.get('filter', None) == 'values':
+
+        rsp_filter = filter_values
+
+        # all the values for namespace and predicate
+
+        if kwargs.get('namespace', None) and kwargs.get('predicate', None):
+
+            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
+            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
+
+            include_filter = '^' + esc_ns + '\.' + esc_pred + '\..*'
+
+        # all the values for a namespace
+
+        elif kwargs.get('namespace', None):
+
+            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
+
+            include_filter = '^' + esc_ns + '\..*\..*'
+
+        # all the values for a predicate
+    
+        elif kwargs.get('predicate', None):
+            
+            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
+
+            include_filter = '^.*\.' + esc_pred + '\..*'
+
+        # all the values
+
+        else:
+
+            include_filter = '.*\..*\..*'
+
+    else:
+        pass
+
+    if include_filter:
+        aggrs['hierarchies']['terms']['include'] = include_filter
+
+    if exclude_filter:
+        aggrs['hierarchies']['terms']['exclude'] = exclude_filter
+
+    body = {
+        'aggregations': aggrs,
+    }
+
+    query = { 
+        'search_type': 'count'
+    }
+
+    import pprint
+    print pprint.pformat(body)
+
+    args = { 'body': body, 'query': query }
+    rsp = flask.g.search_idx.search_raw(**args)
+
+    aggregations = rsp.get('aggregations', {})
+    results = aggregations.get('hierarchies', {})
+    buckets = results.get('buckets', [])
+
+    total_count = 0
+
+    for b in buckets:
+        total_count += b['doc_count']
+
+    if rsp_filter:
+        buckets = rsp_filter(buckets)
+
+    return flask.render_template('mt.html', mt=buckets, total_count=total_count)
+
 @app.route("/tags", methods=["GET"])
 @app.route("/tags/", methods=["GET"])
 def tags():
