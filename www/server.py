@@ -1634,11 +1634,12 @@ def enfilterify(query):
 
         ns = 'services'
         pred = 'personal'
+        pred = 'food_and_drink'
         value = 'beauty_salon'
 
-        # ns = None
-        pred = None
-        # value = None
+        ns = None
+        # pred = None
+        value = None
 
         esc_ns = None
         esc_pred = None
@@ -1685,14 +1686,13 @@ def enfilterify(query):
 
         elif ns == None and pred != None and value == None:
 
-            # GOT THIS FAR
             # *:services=
             machinetag_filter = '[^\.]+\.' + esc_pred + '\..*'
 
         elif ns == None and pred == None and value != None:
             # *:*=personal
 
-            machinetag_filter = '[^\.]+\.[^\.+]\.' + esc_value
+            machinetag_filter = '[^\.]+\.[^\.]+\.' + esc_value
 
         else:
             # WTF?
