@@ -828,7 +828,28 @@ def machinetag_hierarchies(field, **kwargs):
     }
 
     def sort_filtered(raw):
-        return raw
+
+        sorted = []
+        tmp = {}
+
+        for b in raw:
+            key = b['key']
+            count = b['doc_count']
+
+            bucket = tmp.get(count, [])
+            bucket.append(key)
+
+            tmp[count] = bucket
+
+        counts = tmp.keys()
+        counts.sort()
+        counts.reverse()
+
+        for count in counts:
+            for key in tmp[count]:
+                sorted.append({'doc_count': count, 'key': key })
+
+        return sorted
 
     def filter_namespaces(raw):
 
