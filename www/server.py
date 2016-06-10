@@ -811,9 +811,6 @@ def mt_ns_pred(ns, pred):
 
 def machinetag_hierarchies(field, **kwargs):
 
-    import pprint
-    print pprint.pformat(kwargs)
-
     # https://stackoverflow.com/questions/24819234/elasticsearch-using-the-path-hierarchy-tokenizer-to-access-different-level-of
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/search-aggregations-bucket-terms-aggregation.html
     # https://github.com/whosonfirst/py-mapzen-whosonfirst-machinetag/blob/master/mapzen/whosonfirst/machinetag/__init__.py
@@ -1379,6 +1376,9 @@ def searchify():
 
     query = enfilterify(query)
 
+    import pprint
+    print pprint.pformat(query)
+
     sort = [
         # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
         # { '_score': { 'order': 'desc' } },
@@ -1616,6 +1616,95 @@ def enfilterify(query):
             filters.append({ 'terms': {
                 'category' : esc_cat
             }})
+
+    mt = get_str('mt')
+
+    if mt:
+
+        """
+        mt = mapzen.whosonfirst.machinetag.machinetag(mt)
+
+        if mt.is_machinetag():
+            pass
+        elif mt.is_wildcard_machinetag():
+            pass
+        else:
+            pass
+        """
+
+        ns = 'services'
+        pred = 'personal'
+        value = 'beauty_salon'
+
+        # ns = None
+        pred = None
+        # value = None
+
+        esc_ns = None
+        esc_pred = None
+        esc_value = None
+
+        if ns:
+            esc_ns = flask.g.search_idx.escape(ns)
+        
+        if pred:
+            esc_pred = flask.g.search_idx.escape(pred)
+
+        if value:
+            esc_value = flask.g.search_idx.escape(value)
+
+        machinetag_field = 'xx:categories'
+        machinetag_filter = None
+
+        # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-regexp-query.html#regexp-syntax
+
+        if ns != None and pred != None and value != None:
+
+            # is machine tag
+            machinetag_filter = esc_ns + '\.' + esc_pred + '\.' + esc_value
+
+        elif ns != None and pred == None and value == None:
+
+            # sg:*=
+            machinetag_filter = esc_ns + '\..*\\.*'
+
+        elif ns != None and pred != None and value == None:
+
+            # sg:services=
+            machinetag_filter = esc_ns + '\.' + esc_pred + '\..*'
+
+        elif ns != None and pred == None and value != None:
+
+            # sg:*=personal
+            machinetag_filter = esc_ns + '\.[^\.]+\.' + esc_value
+
+        elif ns == None and pred != None and value != None:
+
+            # *:services=personal
+            machinetag_filter = '[^\.]+\.' + esc_pred + '\.' + esc_value
+
+        elif ns == None and pred != None and value == None:
+
+            # GOT THIS FAR
+            # *:services=
+            machinetag_filter = '[^\.]+\.' + esc_pred + '\..*'
+
+        elif ns == None and pred == None and value != None:
+            # *:*=personal
+
+            machinetag_filter = '[^\.]+\.[^\.+]\.' + esc_value
+
+        else:
+            # WTF?
+            pass
+
+        if machinetag_filter:
+
+            filters.append({'regexp':{
+                machinetag_field : machinetag_filter
+            }})
+        
+    #
 
     if locality:
 
