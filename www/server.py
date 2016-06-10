@@ -746,20 +746,74 @@ def placetype(placetype):
 
 @app.route("/mt", methods=["GET"])
 @app.route("/mt/", methods=["GET"])
-def mt():
+def mt_hier():
+    buckets = machinetag_hierarchies('xx:categories')
+    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies')
 
-    kwargs = {
-        'filter': 'predicates',
-        'namespace': 'sg',
-    }
+@app.route("/mt/hierarchy/namespaces", methods=["GET"])
+@app.route("/mt/hierarchy/namespaces/", methods=["GET"])
+def mt_hier_ns():
+    buckets = machinetag_hierarchies('xx:categories', filter='namespaces')
+    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces')
 
-    return machinetag_hierarchies('xx:categories', **kwargs)
+@app.route("/mt/hierarchy/namespaces/<string:ns>", methods=["GET"])
+@app.route("/mt/hierarchy/namespaces/<string:ns>/", methods=["GET"])
+def mt_hier_ns_pred(ns):
+    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns)
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
+
+@app.route("/mt/hierarchy/predicates", methods=["GET"])
+@app.route("/mt/hierarchy/predicates/", methods=["GET"])
+def mt_hier_pred():
+    buckets = machinetag_hierarchies('xx:categories', filter='predicates')
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates')
+
+@app.route("/mt/hierarchy/predicates/<string:pred>", methods=["GET"])
+@app.route("/mt/hierarchy/predicates/<string:pred>/", methods=["GET"])
+def mt_hier_pred_value(pred):
+    buckets = machinetag_hierarchies('xx:categories', filter='values', predicate=pred)
+    return flask.render_template('mt.html', mt=buckets, whatami='Values for ...')
+
+@app.route("/mt/hierarchy/values", methods=["GET"])
+@app.route("/mt/hierarchy/values/", methods=["GET"])
+def mt_hier_value():
+    buckets = machinetag_hierarchies('xx:categories', filter='values')
+    return flask.render_template('mt.html', mt=buckets, whatami='Values')
+
+@app.route("/mt/<string:ns>/*/<string:value>", methods=["GET"])
+@app.route("/mt/<string:ns>/*/<string:value>/", methods=["GET"])
+def mt_values(ns, value):
+    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns, value=value)
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
+
+@app.route("/mt/*/<string:pred>/<string:value>", methods=["GET"])
+@app.route("/mt/*/<string:pred>/<string:value>/", methods=["GET"])
+def mt_ns_for_pred_value(pred, value):
+    buckets = machinetag_hierarchies('xx:categories', filter='namespaces', predicate=pred, value=value)
+    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces for ...')
+
+@app.route("/mt/<string:ns>", methods=["GET"])
+@app.route("/mt/<string:ns>/", methods=["GET"])
+def mt_ns(ns):
+    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns)
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
+
+@app.route("/mt/<string:ns>/<string:pred>", methods=["GET"])
+@app.route("/mt/<string:ns>/<string:pred>/", methods=["GET"])
+def mt_ns_pred(ns, pred):
+    buckets = machinetag_hierarchies('xx:categories', filter='values', namespace=ns, predicate=pred)
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
+
+# @app.route("/mt/<string:ns>/<string:pred>/<string:value>", methods=["GET"])
+# @app.route("/mt/<string:ns>/<string:pred>/<string:value>/", methods=["GET"])
+# def mt_ns_pred_value(ns, pred, value):
+#     pass
 
 def machinetag_hierarchies(field, **kwargs):
 
     import pprint
     print pprint.pformat(kwargs)
-    
+
     # https://stackoverflow.com/questions/24819234/elasticsearch-using-the-path-hierarchy-tokenizer-to-access-different-level-of
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/search-aggregations-bucket-terms-aggregation.html
     # https://github.com/whosonfirst/py-mapzen-whosonfirst-machinetag/blob/master/mapzen/whosonfirst/machinetag/__init__.py
@@ -979,8 +1033,8 @@ def machinetag_hierarchies(field, **kwargs):
         'search_type': 'count'
     }
 
-    import pprint
-    print pprint.pformat(body)
+    # import pprint
+    # print pprint.pformat(body)
 
     args = { 'body': body, 'query': query }
     rsp = flask.g.search_idx.search_raw(**args)
@@ -997,7 +1051,7 @@ def machinetag_hierarchies(field, **kwargs):
     if rsp_filter:
         buckets = rsp_filter(buckets)
 
-    return flask.render_template('mt.html', mt=buckets, total_count=total_count)
+    return buckets
 
 @app.route("/tags", methods=["GET"])
 @app.route("/tags/", methods=["GET"])

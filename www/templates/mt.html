@@ -1,19 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{{ Mt |e }}{% endblock %}
+{% block title %}{{ whatami |e }}{% endblock %}
 {% block content %}
 
 <div class="row">
 <div class="col-md-12">
 
 <h3>
-<span class="hey-look">Mt</span> in Who's On First
-{% if total_count == 1%}
-<small class="see-also">There is currently <span class="hey-look">only one place</span> in Who's On First which is <span class="hey-look">kind of weird</span> but there you go</small>
-{% elif total_count > 1 %}
-<small class="see-also">There are currently <span class="hey-look">{{ total_count |number_format|e }} different places</span> in Who's On First and this is how they <span class="hey-look">see themselves</span></small>
-{% else %}
-<small class="see-also">There apparently aren't <span class="hey-look">any places</span> in Who's On First right now which is <span class="hey-look">definitely strange</span></small>
-{% endif %}
+<span class="hey-look">{{ whatami |e }}</span> in Who's On First
 </h3>
 
 <ul class="list-inline">
@@ -24,7 +17,7 @@
   {% else %}
   <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> is a {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> are a {% endif %}</small>
   {% endif %}
-  <a href="{{ url_for('placetype', placetype=b.key) }}" class="hey-look">{{ b.key|e }}</a>
+  <a href="#" class="hey-look">{{ b.key|e }}</a>
 </li>
 {% endfor %}
 </ul>
