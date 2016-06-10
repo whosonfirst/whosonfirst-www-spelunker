@@ -802,7 +802,7 @@ def mt_ns(ns):
 @app.route("/mt/<string:ns>/<string:pred>/", methods=["GET"])
 def mt_ns_pred(ns, pred):
     buckets = machinetag_hierarchies('xx:categories', filter='values', namespace=ns, predicate=pred)
-    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
+    return flask.render_template('mt.html', mt=buckets, whatami='Values for ...')
 
 # @app.route("/mt/<string:ns>/<string:pred>/<string:value>", methods=["GET"])
 # @app.route("/mt/<string:ns>/<string:pred>/<string:value>/", methods=["GET"])
@@ -896,7 +896,7 @@ def machinetag_hierarchies(field, **kwargs):
         for pred, count in tmp.items():
             filtered.append({'doc_count': count, 'key': pred})
 
-        return filtered
+        return sort_filtered(filtered)
 
     def filter_values(raw):
 
@@ -918,7 +918,7 @@ def machinetag_hierarchies(field, **kwargs):
         for pred, count in tmp.items():
             filtered.append({'doc_count': count, 'key': pred})
 
-        return filtered
+        return sort_filtered(filtered)
 
     # this is used to prune the final aggregation 'buckets'
 
