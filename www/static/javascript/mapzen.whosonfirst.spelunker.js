@@ -63,6 +63,29 @@ mapzen.whosonfirst.spelunker = (function(){
 				features.push(feature);		
 			}
 
+			// Just draw Null Island and be done with yeah?
+
+			if (swlat == 0.0 && swlon == 0.0 && nelat == 0.0 && nelon == 0.0){
+
+			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
+
+			    var on_fetch = function(feature){
+				
+				var bbox = mapzen.whosonfirst.geojson.derive_bbox(feature);
+				var sw = [ bbox[0], bbox[1] ]
+				var ne = [ bbox[2], bbox[3] ]
+
+				map.fitBounds([ sw, ne ]);
+
+				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
+			    };
+    
+			    mapzen.whosonfirst.enmapify.render_id(map, 1, on_fetch);
+			    return;
+			}
+
+			// Okay, draw some points
+
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
 			var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);

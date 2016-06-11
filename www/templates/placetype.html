@@ -3,9 +3,49 @@
 {% block content %}
 
 <div class="row">
-<h3>Places that are a <q>{{ placetype |e }}</a></h3>
-</div>
+<div class="col-md-12">
 
+<h3>
+
+{% if placetype == 'ocean' %}
+Places that are an <q>{{ placetype |e }}</q>
+{% else %}
+Places that are a <q>{{ placetype |e }}</q>
+{% endif %}
+
+{% if pagination.total == 1 %}
+
+{% if placetype == 'ocean' %}
+<small class="see-also">There is <span class="hey-look">one place</span> that is an <span class="hey-look">{{ placetype |e }}</span></small>
+{% else %}
+<small class="see-also">There is <span class="hey-look">one place</span> that is a <span class="hey-look">{{ placetype |e }}</span></small>
+{% endif %}
+
+{% elif pagination.total > 1 %}
+
+{% if placetype == 'ocean' %}
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are <span class="hey-look">{{ placetype |e }}s</span> 
+
+{% else %}
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are a <span class="hey-look">{{ placetype |e }}</span> 
+{% endif %}
+
+
+{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+</small>
+
+{% else %}
+
+<small class="see-also"><span class="hey-look">Huh</span>... what is <span class="hey-look">{{ placetype |e }}</span>?</small>
+{% endif %}
+
+</h3>
+
+{% if pagination.total != 0 %}
 {% include "inc_docs.html" %}
+{% endif %}
+
+</div>
+</div>
 
 {% endblock %}

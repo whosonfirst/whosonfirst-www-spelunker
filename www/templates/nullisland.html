@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Places that are visiting Null Island{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3>Places that are visiting <a href="https://whosonfirst.mapzen.com/spelunker/id/1/" class="hey-look">Null Island</a>
+{% if pagination.total == 1 %}
+
+<small class="see-also">There is <span class="hey-look">one place</span> visiting <span class="hey-look">Null Island</span> today</small>
+
+{% elif pagination.total > 1 %}
+
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> visiting <span class="hey-look">Null Island</span> today
+{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+</small>
+
+{% else %}{% endif %}
+</h3>
+
+{% if pagination.total == 0 %}
+<div style="margin:0; padding-top:2em;">It seems no one is visiting <span class="hey-look">Null Island</span> today. Perhaps you would like <a href="https://whosonfirst.mapzen.com/spelunker/id/1/" class="hey-look">to visit Null Island</a> itself?</div>
+{% else %}
+{% include "inc_docs.html" %}
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}
