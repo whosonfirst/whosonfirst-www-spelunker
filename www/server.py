@@ -20,6 +20,8 @@ import math
 import json
 import pycountry
 
+import machinetag	# https://github.com/whosonfirst/py-machinetag 1.4+
+
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
@@ -1618,91 +1620,83 @@ def enfilterify(query):
             }})
 
     mt = get_str('mt')
+    mt = get_single(mt)
 
     if mt:
 
-        """
-        mt = mapzen.whosonfirst.machinetag.machinetag(mt)
+        mt = machinetag.from_string(mt, allow_wildcards=True)
 
         if mt.is_machinetag():
-            pass
-        elif mt.is_wildcard_machinetag():
-            pass
-        else:
-            pass
-        """
 
-        ns = 'services'
-        pred = 'personal'
-        pred = 'food_and_drink'
-        value = 'beauty_salon'
+            # please move all of this in to a blackbox library call somewhere...
+            # (20160610/thisisaaronland)
 
-        ns = None
-        # pred = None
-        value = None
+            ns = mt.namespace()
+            pred = mt.predicate()
+            value = mt.value()
 
-        esc_ns = None
-        esc_pred = None
-        esc_value = None
+            esc_ns = None
+            esc_pred = None
+            esc_value = None
+            
+            if ns:
+                esc_ns = flask.g.search_idx.escape(ns)
+                
+            if pred:
+                esc_pred = flask.g.search_idx.escape(pred)
 
-        if ns:
-            esc_ns = flask.g.search_idx.escape(ns)
-        
-        if pred:
-            esc_pred = flask.g.search_idx.escape(pred)
+            if value:
+                esc_value = flask.g.search_idx.escape(value)
 
-        if value:
-            esc_value = flask.g.search_idx.escape(value)
+            machinetag_field = 'xx:categories'
+            machinetag_filter = None
 
-        machinetag_field = 'xx:categories'
-        machinetag_filter = None
+            # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-regexp-query.html#regexp-syntax
 
-        # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-regexp-query.html#regexp-syntax
+            if ns != None and pred != None and value != None:
 
-        if ns != None and pred != None and value != None:
+                # is machine tag
+                machinetag_filter = esc_ns + '\.' + esc_pred + '\.' + esc_value
 
-            # is machine tag
-            machinetag_filter = esc_ns + '\.' + esc_pred + '\.' + esc_value
+            elif ns != None and pred == None and value == None:
 
-        elif ns != None and pred == None and value == None:
+                # sg:*=
+                machinetag_filter = esc_ns + '\..*\\.*'
 
-            # sg:*=
-            machinetag_filter = esc_ns + '\..*\\.*'
+            elif ns != None and pred != None and value == None:
 
-        elif ns != None and pred != None and value == None:
+                # sg:services=
+                machinetag_filter = esc_ns + '\.' + esc_pred + '\..*'
 
-            # sg:services=
-            machinetag_filter = esc_ns + '\.' + esc_pred + '\..*'
+            elif ns != None and pred == None and value != None:
 
-        elif ns != None and pred == None and value != None:
+                # sg:*=personal
+                machinetag_filter = esc_ns + '\.[^\.]+\.' + esc_value
 
-            # sg:*=personal
-            machinetag_filter = esc_ns + '\.[^\.]+\.' + esc_value
+            elif ns == None and pred != None and value != None:
 
-        elif ns == None and pred != None and value != None:
+                # *:services=personal
+                machinetag_filter = '[^\.]+\.' + esc_pred + '\.' + esc_value
 
-            # *:services=personal
-            machinetag_filter = '[^\.]+\.' + esc_pred + '\.' + esc_value
+            elif ns == None and pred != None and value == None:
+            
+                # *:services=
+                machinetag_filter = '[^\.]+\.' + esc_pred + '\..*'
 
-        elif ns == None and pred != None and value == None:
+            elif ns == None and pred == None and value != None:
+                # *:*=personal
 
-            # *:services=
-            machinetag_filter = '[^\.]+\.' + esc_pred + '\..*'
+                machinetag_filter = '[^\.]+\.[^\.]+\.' + esc_value
 
-        elif ns == None and pred == None and value != None:
-            # *:*=personal
+            else:
+                # WTF?
+                pass
 
-            machinetag_filter = '[^\.]+\.[^\.]+\.' + esc_value
+            if machinetag_filter:
 
-        else:
-            # WTF?
-            pass
-
-        if machinetag_filter:
-
-            filters.append({'regexp':{
-                machinetag_field : machinetag_filter
-            }})
+                filters.append({'regexp':{
+                    machinetag_field : machinetag_filter
+                }})
         
     #
 
