@@ -10,7 +10,7 @@
 
 <small class="see-also">There is <span class="hey-look">one place</span> visiting <q class="hey-look">Null Island</q> today</small>
 
-{% elseif pagination.pages > 1 %}
+{% elif pagination.pages > 1 %}
 
 <small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> visiting <q class="hey-look">Null Island</q> today
 {% ifpagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
