@@ -63,7 +63,7 @@ mapzen.whosonfirst.spelunker = (function(){
 				features.push(feature);		
 			}
 
-			if (swlat == 0.0 && swlon == 0.0. && nelat == 0.0 && nelon == 0.0){
+			if (swlat == 0.0 && swlon == 0.0 && nelat == 0.0 && nelon == 0.0){
 			    console.log("NULL ISLAND!");
 			}
 
