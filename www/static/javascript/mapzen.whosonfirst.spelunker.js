@@ -68,6 +68,13 @@ mapzen.whosonfirst.spelunker = (function(){
 			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
 
 			    var on_fetch = function(feature){
+				
+				var bbox = mapzen.whosonfirst.geojson.derive_bbox(feature);
+				var sw = [ bbox[0], bbox[1] ]
+				var ne = [ bbox[2], bbox[3] ]
+
+				map.fitBounds([ sw, ne ]);
+
 				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
 			    };
     
