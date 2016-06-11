@@ -640,6 +640,51 @@ def megacities():
 
     return flask.render_template('megacities.html', **template_args)
 
+@app.route("/nullisland", methods=["GET"])
+@app.route("/nullisland/", methods=["GET"])
+def nullisland():
+
+    query = {
+        'multi_match': {
+            'query': 0.0,
+            'fields': [ 'geom:latitude', 'geom:longitude']
+        }
+    }
+
+    query = enfilterify(query)
+    
+    body = {
+         'query': query
+    }
+
+    args = {'per_page': 50}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'es_query': body,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('nullisland.html', **template_args)
 
 @app.route("/placetypes", methods=["GET"])
 @app.route("/placetypes/", methods=["GET"])
