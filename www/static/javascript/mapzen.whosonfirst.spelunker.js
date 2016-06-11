@@ -63,6 +63,8 @@ mapzen.whosonfirst.spelunker = (function(){
 				features.push(feature);		
 			}
 
+			// Just draw Null Island and be done with yeah?
+
 			if (swlat == 0.0 && swlon == 0.0 && nelat == 0.0 && nelon == 0.0){
 
 			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
@@ -79,10 +81,10 @@ mapzen.whosonfirst.spelunker = (function(){
 			    };
     
 			    mapzen.whosonfirst.enmapify.render_id(map, 1, on_fetch);
-
-			    console.log("NULL ISLAND!");
 			    return;
 			}
+
+			// Okay, draw some points
 
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
