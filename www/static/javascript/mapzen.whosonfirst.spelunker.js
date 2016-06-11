@@ -63,10 +63,9 @@ mapzen.whosonfirst.spelunker = (function(){
 				features.push(feature);		
 			}
 
-		console.log(swlat);
-		console.log(swlon);
-		console.log(nelat);
-		console.log(nelon);
+			if (swlat == 0.0 and swlon == 0.0. and nelat == 0.0 and nelon == 0.0){
+			    console.log("NULL ISLAND!");
+			}
 
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
