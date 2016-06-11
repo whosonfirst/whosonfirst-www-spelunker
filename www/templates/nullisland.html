@@ -6,6 +6,10 @@
 <h3>Places that are on Null Island</a></h3>
 </div>
 
+{% if pagination.total == 0 %}
+<div style="margin:0; padding-top:2em;">It seems no one is visiting <span class="hey-look">Null Island</span> today. Perhaps you would like <a href="https://whosonfirst.mapzen.com/spelunker/id/1/" class="hey-look">to visit Null Island</a> itself?</div>
+{% else %}
 {% include "inc_docs.html" %}
+{% endif %}
 
 {% endblock %}

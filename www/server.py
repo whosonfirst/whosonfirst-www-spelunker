@@ -796,7 +796,7 @@ def tags():
     # please to make me work with wof:tags - which isn't
     # a problem yet since SG venues are the only things
     # with (not null) wof:tags and those are just being
-    # copied from sg:tags but you know eventually other
+    # copiedfrom sg:tags but you know eventually other
     # things will have tags too...
     # (21050910/thisisaaronland)
 
@@ -1214,6 +1214,7 @@ def facetify(query):
 def enfilterify(query):
 
     filters = []
+    mustnot = []
 
     placetype = get_str('placetype')
     iso = get_str('iso')
@@ -1224,18 +1225,51 @@ def enfilterify(query):
     locality = get_int('locality_id')
     region = get_int('region_id')
 
-    # sudo make me a switch
+    #
 
-    filters.append({ 'bool': {
-        'must_not': { 
+    exclude = get_str('exclude')
+    include = get_str('include')
+
+    nullisland = True
+    deprecated = False
+
+    if exclude:
+
+        for e in exclude:
+
+            if e == 'nullisland':
+                nullisland = False
+
+    if include:
+
+        for i in include:
+            
+            if i == "deprecated":
+                deprecated = True
+
+    if not nullisland:
+
+        mustnot.append({
+            'term': { 'geom:latitude': 0.0 }
+        })
+
+        mustnot.append({
+            'term': { 'geom:longitude': 0.0 }
+        })
+
+    if not deprecated:
+
+        mustnot.append({ 
+            
             # Y U NO WORK ON PROD??? (20160531/thisisaaronland)
             # 'regexp': { 'edtf:deprecated' : '.*' }
-
             # see above - one day this will bite us in the ass...
             # (20160531/thisisaaronland)
+
             'exists': { 'field' : 'edtf:deprecated' }
-        }
-    }})
+        })
+        
+    #
 
     if placetype:
 
@@ -1372,6 +1406,11 @@ def enfilterify(query):
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536
 
+    if len(mustnot):
+        filters.append({ 'bool': {
+            'must_not': mustnot
+        }})
+
     if len(filters):
 
         query = {
@@ -1381,6 +1420,8 @@ def enfilterify(query):
             }
         }
 
+    import pprint
+    print pprint.pformat(query)
     return query
 
 def build_pagination_url():
