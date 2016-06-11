@@ -3,13 +3,13 @@
 {% block content %}
 
 <div class="row">
-<h3>Places that are visiting Null Island</a></h3>
+<h3>Places that are visiting <a href="https://whosonfirst.mapzen.com/spelunker/id/1/" class="hey-look">Null Island</a></h3>
 {% if pagination.total == 1 %}
-There is <span class="hey-look">one place</span> visiting <q class="hey-look">Null Island</q> today
+<small class="see-also">There is <span class="hey-look">one place</span> visiting <q class="hey-look">Null Island</q> today</small>
 {% else %}
-There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are visiting <q class="hey-look">Null Island</q> today
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are visiting <q class="hey-look">Null Island</q> today</small>
 {% if pagination.pages > 1 %}
-and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+<small class="see-also">and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}</small>
 {% endif %}
 {% endif %}
 </div>
