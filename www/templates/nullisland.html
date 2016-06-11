@@ -13,7 +13,7 @@
 {% elif pagination.pages > 1 %}
 
 <small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> visiting <q class="hey-look">Null Island</q> today
-{% ifpagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
 </small>
 
 {% else %}{% endif %}
