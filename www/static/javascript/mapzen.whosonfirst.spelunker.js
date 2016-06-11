@@ -64,7 +64,17 @@ mapzen.whosonfirst.spelunker = (function(){
 			}
 
 			if (swlat == 0.0 && swlon == 0.0 && nelat == 0.0 && nelon == 0.0){
+
+			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
+
+			    var on_fetch = function(feature){
+				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
+			    };
+    
+			    mapzen.whosonfirst.enmapify.render_id(map, 1, on_fetch);
+
 			    console.log("NULL ISLAND!");
+			    return;
 			}
 
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
