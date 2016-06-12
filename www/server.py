@@ -808,7 +808,11 @@ def mt_hierarchies_namespaces():
     buckets = machinetag_hierarchies('machinetags_all', filter='namespaces')
     return flask.render_template('mt.html', mt=buckets, whatami='Namespaces')
 
-# PLEASE WRITE ME # /machinetags/namespaces/<string:ns>
+@app.route("/machinetags/namespaces/<string:ns>", methods=["GET"])
+@app.route("/machinetags/namespaces/<string:ns>/", methods=["GET"])
+def mt_hierarchies_for_namespace(ns):
+    buckets = machinetag_hierarchies('machinetags_all', namespace=ns)
+    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % ns)
 
 @app.route("/machinetags/namespaces/<string:ns>/predicates", methods=["GET"])
 @app.route("/machinetags/namespaces/<string:ns>/predicates/", methods=["GET"])
@@ -830,7 +834,11 @@ def mt_hierarchies_predicates():
     buckets = machinetag_hierarchies('machinetags_all', filter='predicates')
     return flask.render_template('mt.html', mt=buckets, whatami='Predicates')
 
-# PLEASE WRITE ME /machinetags/predicates/<string:pred>
+@app.route("/machinetags/predicates/<string:pred>", methods=["GET"])
+@app.route("/machinetags/predicates/<string:pred>/", methods=["GET"])
+def mt_hierarchies_for_predicate(pred):
+    buckets = machinetag_hierarchies('machinetags_all', predicate=pred)
+    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % pred)
 
 @app.route("/machinetags/predicates/<string:pred>/namespaces", methods=["GET"])
 @app.route("/machinetags/predicates/<string:pred>/namespaces/", methods=["GET"])
@@ -852,7 +860,11 @@ def mt_hierarchies_values():
     buckets = machinetag_hierarchies('machinetags_all', filter='values')
     return flask.render_template('mt.html', mt=buckets, whatami='Values')
 
-# PLEASE WRITE ME /machinetags/values/<string:value>
+@app.route("/machinetags/values/<string:value>", methods=["GET"])
+@app.route("/machinetags/values/<string:value>/", methods=["GET"])
+def mt_hierarchies_for_values(value):
+    buckets = machinetag_hierarchies('machinetags_all', value=value)
+    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % value)
 
 @app.route("/machinetags/values/<string:value>/namespaces", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/namespaces/", methods=["GET"])
