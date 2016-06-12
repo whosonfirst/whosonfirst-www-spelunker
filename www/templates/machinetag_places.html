@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Places in Who's On First that are tagged {{ src |e }}{% endblock %}
+{% block content %}
+{% if pagination.count == 0 %}
+
+<div class="row"><span style="font-size:2em;">😿 </span> can not find any places tagged <q class="hey-look">{{ src|e }}</q></div>
+
+{% else %}
+
+<div class="row"><h3>
+{% if pagination.total == 1 %}
+There is <span class="hey-look">one place</span> that is tagged <q class="hey-look">{{ src |e }}</q>
+{% else %}
+There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are tagged <q class="hey-look">{{ src |e }}</q>
+{% if pagination.pages > 1 %}
+and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+{% endif %}
+{% endif %}
+</h3>
+
+</div>
+
+{% include "inc_docs.html" %}
+
+{% endif %}
+
+{% endblock %}

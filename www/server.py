@@ -868,12 +868,96 @@ def mt_hierarchies_predicates_for_value(value):
 
 # PLEASE MAYBE WRITE ME /machinetags/values/<string:value>/predicates/<string:pred>/namespaces
 
-"""
-@app.route("/machinetags/places/<string:ns>", methods=["GET"])
-@app.route("/machinetags/places/<string:ns>/", methods=["GET"])
-def mt_places_for_namespaces(ns):
-    pass
-"""
+@app.route("/machinetags/places/<string:ns_or_mt>", methods=["GET"])
+@app.route("/machinetags/places/<string:ns_or_mt>/", methods=["GET"])
+def mt_places_for_namespaces(ns_or_mt):
+
+    mt = machinetag.from_string(ns_or_mt, allow_wildcards=True)
+
+    if not mt.is_machinetag():
+        mt  = machinetag.from_triple(ns_or_mt, "*", None, allow_wildcards=True)
+
+    if not mt.is_machinetag():
+        flask.abort(404)
+
+    return machinetag_places('machinetags_all', mt)
+
+@app.route("/machinetags/places/<string:ns>/<string:pred>", methods=["GET"])
+@app.route("/machinetags/places/<string:ns>/<string:pred>/", methods=["GET"])
+def mt_places_for_namespaces_and_predicate(ns, pred):
+
+    mt  = machinetag.from_triple(ns, pred, None, allow_wildcards=True)
+
+    if not mt.is_machinetag():
+        flask.abort(404)
+
+    return machinetag_places('machinetags_all', mt)
+
+@app.route("/machinetags/places/<string:ns>/<string:pred>/<string:value>", methods=["GET"])
+@app.route("/machinetags/places/<string:ns>/<string:pred>/<string:value>/", methods=["GET"])
+def mt_places_for_namespaces_and_predicate_value(ns, pred, value):
+
+    mt  = machinetag.from_triple(ns, pred, value, allow_wildcards=True)
+
+    if not mt.is_machinetag():
+        flask.abort(404)
+
+    return machinetag_places('machinetags_all', mt)
+
+def machinetag_places(field, mt):
+
+    machinetag_filter = machinetag.elasticsearch.wildcard.query_filter_from_machinetag(mt)
+
+    query = {
+        'match_all': {}
+    }
+
+    filter = {'regexp': {
+        field : machinetag_filter
+    }}
+
+    query = {
+        'filtered': {
+            'filter': filter,
+            'query': query
+        }
+    }
+
+    query = enfilterify(query)
+
+    body = {
+         'query': query
+    }
+
+    args = {'per_page': 50}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        args['page'] = page
+
+    rsp = flask.g.search_idx.search(body, **args)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'src': mt.as_string(),
+        'es_query': body,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('machinetag_places.html', **template_args)
 
 def machinetag_hierarchies(field, **kwargs):
 
