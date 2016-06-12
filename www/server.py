@@ -20,15 +20,18 @@ import math
 import json
 import pycountry
 
-import machinetag	# https://github.com/whosonfirst/py-machinetag 1.4+
+# https://github.com/whosonfirst/py-machinetag
+# https://github.com/whosonfirst/py-machinetag-elasticsearch
+
+import machinetag
+import machinetag.elasticsearch.wildcard
+import machinetag.elasticsearch.hierarchy
 
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
 import mapzen.whosonfirst.uri as uri
-
-# import mapzen.whosonfirst.spatial as spatial
 
 # http://flask.pocoo.org/snippets/35/
 
@@ -791,64 +794,110 @@ def placetype(placetype):
 
     return flask.render_template('placetype.html', **template_args)
 
+#
+
+@app.route("/machinetags", methods=["GET"])
+@app.route("/machinetags/", methods=["GET"])
+def mt_hierarchies():
+    buckets = machinetag_hierarchies('machinetags_all')
+    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies')
+
+@app.route("/machinetags/namespaces", methods=["GET"])
+@app.route("/machinetags/namespaces/", methods=["GET"])
+@app.route("/machinetags/namespaces/", methods=["GET"])
+@app.route("/machinetags/namespaces/", methods=["GET"])
+def mt_hierarchies_namespaces():
+    buckets = machinetag_hierarchies('machinetags_all', filter='namespaces')
+    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces')
+
+# /machinetags/namespaces/<string:ns>
+# /machinetags/namespaces/<string:ns>/predicates
+# /machinetags/namespaces/<string:ns>/values
+
+@app.route("/machinetags/predicates", methods=["GET"])
+@app.route("/machinetags/predicates/", methods=["GET"])
+@app.route("/machinetags/predicates/", methods=["GET"])
+@app.route("/machinetags/predicates/", methods=["GET"])
+def mt_hierarchies_predicates():
+    buckets = machinetag_hierarchies('machinetags_all', filter='predicates')
+    return flask.render_template('mt.html', mt=buckets, whatami='Predicates')
+
+# /machinetags/predicates/<string:pred>
+# /machinetags/predicates/<string:pred>/namespaces
+# /machinetags/predicates/<string:pred>/values
+
+@app.route("/machinetags/values", methods=["GET"])
+@app.route("/machinetags/values/", methods=["GET"])
+@app.route("/machinetags/values/", methods=["GET"])
+@app.route("/machinetags/values/", methods=["GET"])
+def mt_hierarchies_values():
+    buckets = machinetag_hierarchies('machinetags_all', filter='values')
+    return flask.render_template('mt.html', mt=buckets, whatami='Values')
+
+# /machinetags/values/<string:value>
+# /machinetags/values/<string:value>/namespaces
+# /machinetags/values/<string:value>/predicates
+
+#
+
 @app.route("/mt", methods=["GET"])
 @app.route("/mt/", methods=["GET"])
 def mt_hier():
-    buckets = machinetag_hierarchies('xx:categories')
+    buckets = machinetag_hierarchies('sg:categories')
     return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies')
 
 @app.route("/mt/hierarchy/namespaces", methods=["GET"])
 @app.route("/mt/hierarchy/namespaces/", methods=["GET"])
 def mt_hier_ns():
-    buckets = machinetag_hierarchies('xx:categories', filter='namespaces')
+    buckets = machinetag_hierarchies('sg:categories', filter='namespaces')
     return flask.render_template('mt.html', mt=buckets, whatami='Namespaces')
 
 @app.route("/mt/hierarchy/namespaces/<string:ns>", methods=["GET"])
 @app.route("/mt/hierarchy/namespaces/<string:ns>/", methods=["GET"])
 def mt_hier_ns_pred(ns):
-    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns)
+    buckets = machinetag_hierarchies('sg:categories', filter='predicates', namespace=ns)
     return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
 
 @app.route("/mt/hierarchy/predicates", methods=["GET"])
 @app.route("/mt/hierarchy/predicates/", methods=["GET"])
 def mt_hier_pred():
-    buckets = machinetag_hierarchies('xx:categories', filter='predicates')
+    buckets = machinetag_hierarchies('sg:categories', filter='predicates')
     return flask.render_template('mt.html', mt=buckets, whatami='Predicates')
 
 @app.route("/mt/hierarchy/predicates/<string:pred>", methods=["GET"])
 @app.route("/mt/hierarchy/predicates/<string:pred>/", methods=["GET"])
 def mt_hier_pred_value(pred):
-    buckets = machinetag_hierarchies('xx:categories', filter='values', predicate=pred)
+    buckets = machinetag_hierarchies('sg:categories', filter='values', predicate=pred)
     return flask.render_template('mt.html', mt=buckets, whatami='Values for ...')
 
 @app.route("/mt/hierarchy/values", methods=["GET"])
 @app.route("/mt/hierarchy/values/", methods=["GET"])
 def mt_hier_value():
-    buckets = machinetag_hierarchies('xx:categories', filter='values')
+    buckets = machinetag_hierarchies('sg:categories', filter='values')
     return flask.render_template('mt.html', mt=buckets, whatami='Values')
 
 @app.route("/mt/<string:ns>/*/<string:value>", methods=["GET"])
 @app.route("/mt/<string:ns>/*/<string:value>/", methods=["GET"])
 def mt_values(ns, value):
-    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns, value=value)
+    buckets = machinetag_hierarchies('sg:categories', filter='predicates', namespace=ns, value=value)
     return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
 
 @app.route("/mt/*/<string:pred>/<string:value>", methods=["GET"])
 @app.route("/mt/*/<string:pred>/<string:value>/", methods=["GET"])
 def mt_ns_for_pred_value(pred, value):
-    buckets = machinetag_hierarchies('xx:categories', filter='namespaces', predicate=pred, value=value)
+    buckets = machinetag_hierarchies('sg:categories', filter='namespaces', predicate=pred, value=value)
     return flask.render_template('mt.html', mt=buckets, whatami='Namespaces for ...')
 
 @app.route("/mt/<string:ns>", methods=["GET"])
 @app.route("/mt/<string:ns>/", methods=["GET"])
 def mt_ns(ns):
-    buckets = machinetag_hierarchies('xx:categories', filter='predicates', namespace=ns)
+    buckets = machinetag_hierarchies('sg:categories', filter='predicates', namespace=ns)
     return flask.render_template('mt.html', mt=buckets, whatami='Predicates for ...')
 
 @app.route("/mt/<string:ns>/<string:pred>", methods=["GET"])
 @app.route("/mt/<string:ns>/<string:pred>/", methods=["GET"])
 def mt_ns_pred(ns, pred):
-    buckets = machinetag_hierarchies('xx:categories', filter='values', namespace=ns, predicate=pred)
+    buckets = machinetag_hierarchies('sg:categories', filter='values', namespace=ns, predicate=pred)
     return flask.render_template('mt.html', mt=buckets, whatami='Values for ...')
 
 # @app.route("/mt/<string:ns>/<string:pred>/<string:value>", methods=["GET"])
@@ -871,218 +920,7 @@ def machinetag_hierarchies(field, **kwargs):
         }
     }
 
-    def sort_filtered(raw):
-
-        sorted = []
-        tmp = {}
-
-        for b in raw:
-            key = b['key']
-            count = b['doc_count']
-
-            bucket = tmp.get(count, [])
-            bucket.append(key)
-
-            tmp[count] = bucket
-
-        counts = tmp.keys()
-        counts.sort()
-        counts.reverse()
-
-        for count in counts:
-            for key in tmp[count]:
-                sorted.append({'doc_count': count, 'key': key })
-
-        return sorted
-
-    def filter_namespaces(raw):
-
-        filtered = []
-        tmp = {}
-
-        predicates = {}
-        values = {}
-
-        for b in raw:
-            key = b['key']
-            count = b['doc_count']
-
-            key = key.split(".")
-            ns = key[0]
-
-            total = tmp.get(ns, 0)
-            total += count
-
-            tmp[ns] = total
-
-        for pred, count in tmp.items():
-            filtered.append({'doc_count': count, 'key': pred})
-
-        return sort_filtered(filtered)
-
-    def filter_predicates(raw):
-
-        filtered = []
-        tmp = {}
-
-        for b in raw:
-            key = b['key']
-            count = b['doc_count']
-
-            key = key.split(".")
-            pred = key[1]
-
-            total = tmp.get(pred, 0)
-            total += count
-
-            tmp[pred] = total
-
-        for pred, count in tmp.items():
-            filtered.append({'doc_count': count, 'key': pred})
-
-        return sort_filtered(filtered)
-
-    def filter_values(raw):
-
-        filtered = []
-        tmp = {}
-
-        for b in raw:
-            key = b['key']
-            count = b['doc_count']
-
-            key = key.split(".")
-            value = key[2]
-
-            total = tmp.get(value, 0)
-            total += count
-
-            tmp[value] = total
-
-        for pred, count in tmp.items():
-            filtered.append({'doc_count': count, 'key': pred})
-
-        return sort_filtered(filtered)
-
-    # this is used to prune the final aggregation 'buckets'
-
-    rsp_filter = None
-
-    # these are appended to aggrs['hierarchies']['terms']
-
-    include_filter = None
-    exclude_filter = None
-
-    if kwargs.get('filter', False) == 'namespaces':
-
-        rsp_filter = filter_namespaces
-
-        # all the namespaces for a predicate and value
-
-        if kwargs.get('predicate', None) and kwargs.get('value', None):
-
-            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
-            esc_value = flask.g.search_idx.escape(kwargs['value'])
-
-            include_filter = '.*\.' + esc_pred + '\.' + esc_value + '$'
-
-        # all the namespaces for a predicate
-
-        elif kwargs.get('predicate', None):
-
-            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
-
-            include_filter = '^.*\.' + esc_pred
-            exclude_filter = '.*\/.*\/.*'
-
-        # all the namespaces for a value 
-            
-        elif kwargs.get('value', None):
-
-            esc_value = flask.g.search_idx.escape(kwargs['value'])
-
-            include_filter = '.*\..*\.' + esc_value + '$'
-
-        # all the namespaces
-        
-        else:
-
-            exclude_filter = '.*\..*'
-
-    elif kwargs.get('filter', None) == 'predicates':
-
-        rsp_filter = filter_predicates
-
-        # all the predicates for a namespace and value
-
-        if kwargs.get('namespace', None) and kwargs.get('value', None):
-
-            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
-            esc_value = flask.g.search_idx.escape(kwargs['value'])
-
-            include_filter = '^' + esc_ns + '\..*\.' + esc_value + '$'
-
-        # all the predicates for a namespace
-
-        elif kwargs.get('namespace', None):
-
-            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
-
-            include_filter = '^' + esc_ns + '\.[^\.]+'
-            exclude_filter = '.*\..*\..*'
-
-        # all the predicates for a value
-
-        elif kwargs.get('value', None):
-
-            esc_value = flask.g.search_idx.escape(kwargs['value'])
-
-            include_filter = '.*\..*\.' + esc_value + '$'
-            
-        # all the predicates
-
-        else:
-
-            include_filter = '.*\..*'
-            exclude_filter = '.*\..*\..*'
-        
-    elif kwargs.get('filter', None) == 'values':
-
-        rsp_filter = filter_values
-
-        # all the values for namespace and predicate
-
-        if kwargs.get('namespace', None) and kwargs.get('predicate', None):
-
-            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
-            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
-
-            include_filter = '^' + esc_ns + '\.' + esc_pred + '\..*'
-
-        # all the values for a namespace
-
-        elif kwargs.get('namespace', None):
-
-            esc_ns = flask.g.search_idx.escape(kwargs['namespace'])
-
-            include_filter = '^' + esc_ns + '\..*\..*'
-
-        # all the values for a predicate
-    
-        elif kwargs.get('predicate', None):
-            
-            esc_pred = flask.g.search_idx.escape(kwargs['predicate'])
-
-            include_filter = '^.*\.' + esc_pred + '\..*'
-
-        # all the values
-
-        else:
-
-            include_filter = '.*\..*\..*'
-
-    else:
-        pass
+    include_filter, exclude_filter, rsp_filter = machinetag.elasticsearch.hierarchy.query_filters(**kwargs)
 
     if include_filter:
         aggrs['hierarchies']['terms']['include'] = include_filter
@@ -1098,8 +936,8 @@ def machinetag_hierarchies(field, **kwargs):
         'search_type': 'count'
     }
 
-    # import pprint
-    # print pprint.pformat(body)
+    import pprint
+    print pprint.pformat(body)
 
     args = { 'body': body, 'query': query }
     rsp = flask.g.search_idx.search_raw(**args)
@@ -1703,79 +1541,14 @@ def enfilterify(query):
 
     if mt:
 
-        mt = machinetag.from_string(mt, allow_wildcards=True)
+        machinetag_filter = machinetag.elasticsearch.wildcard.query_filter_from_string(mt)
+        machinetag_field = 'machinetags_all'
 
-        if mt.is_machinetag():
-
-            # please move all of this in to a blackbox library call somewhere...
-            # (20160610/thisisaaronland)
-
-            ns = mt.namespace()
-            pred = mt.predicate()
-            value = mt.value()
-
-            esc_ns = None
-            esc_pred = None
-            esc_value = None
+        if machinetag_filter:
             
-            if ns:
-                esc_ns = flask.g.search_idx.escape(ns)
-                
-            if pred:
-                esc_pred = flask.g.search_idx.escape(pred)
-
-            if value:
-                esc_value = flask.g.search_idx.escape(value)
-
-            machinetag_field = 'xx:categories'
-            machinetag_filter = None
-
-            # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-regexp-query.html#regexp-syntax
-
-            if ns != None and pred != None and value != None:
-
-                # is machine tag
-                machinetag_filter = esc_ns + '\.' + esc_pred + '\.' + esc_value
-
-            elif ns != None and pred == None and value == None:
-
-                # sg:*=
-                machinetag_filter = esc_ns + '\..*\\.*'
-
-            elif ns != None and pred != None and value == None:
-
-                # sg:services=
-                machinetag_filter = esc_ns + '\.' + esc_pred + '\..*'
-
-            elif ns != None and pred == None and value != None:
-
-                # sg:*=personal
-                machinetag_filter = esc_ns + '\.[^\.]+\.' + esc_value
-
-            elif ns == None and pred != None and value != None:
-
-                # *:services=personal
-                machinetag_filter = '[^\.]+\.' + esc_pred + '\.' + esc_value
-
-            elif ns == None and pred != None and value == None:
-            
-                # *:services=
-                machinetag_filter = '[^\.]+\.' + esc_pred + '\..*'
-
-            elif ns == None and pred == None and value != None:
-                # *:*=personal
-
-                machinetag_filter = '[^\.]+\.[^\.]+\.' + esc_value
-
-            else:
-                # WTF?
-                pass
-
-            if machinetag_filter:
-
-                filters.append({'regexp':{
-                    machinetag_field : machinetag_filter
-                }})
+            filters.append({'regexp':{
+                machinetag_field : machinetag_filter
+            }})
         
     #
 
