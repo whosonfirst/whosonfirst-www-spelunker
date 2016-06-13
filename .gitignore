@@ -8,3 +8,6 @@ www/static/tangram/images/*.old
 certified
 data
 *.bz2
+build
+dist
+*.egg-info
