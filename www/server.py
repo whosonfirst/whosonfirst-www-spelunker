@@ -800,31 +800,31 @@ def placetype(placetype):
 @app.route("/machinetags/", methods=["GET"])
 def mt_hierarchies():
     buckets = machinetag_hierarchies('machinetags_all')
-    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies')
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami='all the things')
 
 @app.route("/machinetags/namespaces", methods=["GET"])
 @app.route("/machinetags/namespaces/", methods=["GET"])
 def mt_hierarchies_namespaces():
     buckets = machinetag_hierarchies('machinetags_all', filter='namespaces')
-    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces')
+    return flask.render_template('machinetag_hierarchies_namespaces.html', mt=buckets)
 
 @app.route("/machinetags/namespaces/<string:ns>", methods=["GET"])
 @app.route("/machinetags/namespaces/<string:ns>/", methods=["GET"])
 def mt_hierarchies_for_namespace(ns):
     buckets = machinetag_hierarchies('machinetags_all', namespace=ns)
-    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % ns)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=ns)
 
 @app.route("/machinetags/namespaces/<string:ns>/predicates", methods=["GET"])
 @app.route("/machinetags/namespaces/<string:ns>/predicates/", methods=["GET"])
 def mt_hierarchies_predicates_for_namespace(ns):
     buckets = machinetag_hierarchies('machinetags_all', filter='predicates', namespace=ns)
-    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces for %s' % ns)
+    return flask.render_template('machinetag_hierarchies_predicates.html', mt=buckets, whatami='namespace', whoami=ns)
 
 @app.route("/machinetags/namespaces/<string:ns>/values", methods=["GET"])
 @app.route("/machinetags/namespaces/<string:ns>/values/", methods=["GET"])
 def mt_hierarchies_values_for_namespace(ns):
     buckets = machinetag_hierarchies('machinetags_all', filter='values', namespace=ns)
-    return flask.render_template('mt.html', mt=buckets, whatami='Values for %s' % ns)
+    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='namespace', whoami=ns)
 
 # PLEASE MAYBE WRITE ME /machinetags/namespaces/<string:ns>/predicates/<string:pred>/values
 
@@ -832,25 +832,25 @@ def mt_hierarchies_values_for_namespace(ns):
 @app.route("/machinetags/predicates/", methods=["GET"])
 def mt_hierarchies_predicates():
     buckets = machinetag_hierarchies('machinetags_all', filter='predicates')
-    return flask.render_template('mt.html', mt=buckets, whatami='Predicates')
+    return flask.render_template('machinetag_hierarchies_predicates.html', mt=buckets)
 
 @app.route("/machinetags/predicates/<string:pred>", methods=["GET"])
 @app.route("/machinetags/predicates/<string:pred>/", methods=["GET"])
 def mt_hierarchies_for_predicate(pred):
     buckets = machinetag_hierarchies('machinetags_all', predicate=pred)
-    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % pred)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=pred)
 
 @app.route("/machinetags/predicates/<string:pred>/namespaces", methods=["GET"])
 @app.route("/machinetags/predicates/<string:pred>/namespaces/", methods=["GET"])
 def mt_hierarchies_namespaces_for_predicate(pred):
     buckets = machinetag_hierarchies('machinetags_all', filter='namespaces', predicate=pred)
-    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces for %s' % pred)
+    return flask.render_template('machinetag_hierarchies_namespaces.html', mt=buckets, whatami='predicate', whoami=pred)
 
 @app.route("/machinetags/predicates/<string:pred>/values", methods=["GET"])
 @app.route("/machinetags/predicates/<string:pred>/values/", methods=["GET"])
 def mt_hierarchies_values_for_predicate(pred):
     buckets = machinetag_hierarchies('machinetags_all', filter='values', predicate=pred)
-    return flask.render_template('mt.html', mt=buckets, whatami='Values for %s' % pred)
+    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='predicate', whoami=pred)
 
 # PLEASE MAYBE WRITE ME /machinetags/predicates/<string:pred>/values/<string:value>/namespaces
 
@@ -858,31 +858,31 @@ def mt_hierarchies_values_for_predicate(pred):
 @app.route("/machinetags/values/", methods=["GET"])
 def mt_hierarchies_values():
     buckets = machinetag_hierarchies('machinetags_all', filter='values')
-    return flask.render_template('mt.html', mt=buckets, whatami='Values')
+    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets)
 
 @app.route("/machinetags/values/<string:value>", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/", methods=["GET"])
-def mt_hierarchies_for_values(value):
+def mt_hierarchies_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', value=value)
-    return flask.render_template('mt.html', mt=buckets, whatami='Hierarchies for %s' % value)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=value)
 
 @app.route("/machinetags/values/<string:value>/namespaces", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/namespaces/", methods=["GET"])
 def mt_hierarchies_namespaces_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', filter='namespaces', value=value)
-    return flask.render_template('mt.html', mt=buckets, whatami='Namespaces for %s' % value)
+    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='value', whoami=value)
 
 @app.route("/machinetags/values/<string:value>/predicates", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/predicates/", methods=["GET"])
 def mt_hierarchies_predicates_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', filter='predicates', value=value)
-    return flask.render_template('mt.html', mt=buckets, whatami='Predicates for %s' % value)
+    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='value', whoami=value)
 
 # PLEASE MAYBE WRITE ME /machinetags/values/<string:value>/predicates/<string:pred>/namespaces
 
 @app.route("/machinetags/places/<string:ns_or_mt>", methods=["GET"])
 @app.route("/machinetags/places/<string:ns_or_mt>/", methods=["GET"])
-def mt_places_for_namespaces(ns_or_mt):
+def mt_places_for_namespace(ns_or_mt):
 
     mt = machinetag.from_string(ns_or_mt, allow_wildcards=True)
 
@@ -896,7 +896,7 @@ def mt_places_for_namespaces(ns_or_mt):
 
 @app.route("/machinetags/places/<string:ns>/<string:pred>", methods=["GET"])
 @app.route("/machinetags/places/<string:ns>/<string:pred>/", methods=["GET"])
-def mt_places_for_namespaces_and_predicate(ns, pred):
+def mt_places_for_namespace_and_predicate(ns, pred):
 
     mt  = machinetag.from_triple(ns, pred, None, allow_wildcards=True)
 
@@ -907,7 +907,7 @@ def mt_places_for_namespaces_and_predicate(ns, pred):
 
 @app.route("/machinetags/places/<string:ns>/<string:pred>/<string:value>", methods=["GET"])
 @app.route("/machinetags/places/<string:ns>/<string:pred>/<string:value>/", methods=["GET"])
-def mt_places_for_namespaces_and_predicate_value(ns, pred, value):
+def mt_places_for_namespace_and_predicate_and_value(ns, pred, value):
 
     mt  = machinetag.from_triple(ns, pred, value, allow_wildcards=True)
 
@@ -1016,14 +1016,47 @@ def machinetag_hierarchies(field, **kwargs):
 
     # print pprint.pformat(buckets)
 
+    if rsp_filter:
+        print rsp_filter
+        buckets = rsp_filter(buckets)
+        # print pprint.pformat(buckets)
+
     for b in buckets:
         total_count += b['doc_count']
 
-    if rsp_filter:
-        buckets = rsp_filter(buckets)
-        # print rsp_filter
-        # print pprint.pformat(buckets)
+        ns = b.get('namespace', None)
+        pred = b.get('predicate', None)
+        value = b.get('value', None)
 
+        mt = None
+
+        if ns == None and pred == None and value == None:
+
+            mt = machinetag.elasticsearch.hierarchy.unpathify_as_machinetag(b['key'])
+
+        else:
+
+            if ns == None:
+                ns = '*'
+            elif pred == None:
+                pred = '*'
+            else:
+                pass
+
+            mt = machinetag.from_triple(ns, pred, value)
+
+        if mt.is_machinetag():
+
+            ns = mt.namespace()
+            pred = mt.predicate()
+            value = mt.value()
+
+            b['namespace'] = ns
+            b['predicate'] = pred
+            b['value'] = value
+            b['machinetag'] = mt.as_string()
+
+    # print buckets
     return buckets
 
 @app.route("/tags", methods=["GET"])

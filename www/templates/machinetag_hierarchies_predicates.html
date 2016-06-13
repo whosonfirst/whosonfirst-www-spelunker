@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{% if whoami %}Predicates for {{ whoami |e }} in Who's On First{% else %}Predicates in Who's On First{% endif %}{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3>
+
+{% if whoami %}
+
+{% if whatami == 'namespace' %}
+
+Predicates for things whose namespace is <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+
+{% else %}
+
+Predicates for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+
+{% endif %}
+
+{% else %}
+<span class="hey-look">Predicates</span> in Who's On First
+{% endif %}
+</h3>
+
+<ul class="list-inline">
+{% for b in mt %}
+<li>
+
+{% if whatami=='namespace' %}
+
+{% if b.doc_count == 1 %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=whoami, pred=b.predicate) }}" class="italic hey-look">once</a> with this namespace 
+{% else %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=whoami, pred=b.predicate) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this namespace 
+{% endif %}
+
+{% else %}
+
+{% if b.doc_count == 1 %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns='*', pred=b.predicate) }}" class="italic hey-look">once</a>
+{% else %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns='*', pred=b.predicate) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a>
+{% endif %}
+
+{% endif %}
+</li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+{% endblock %}

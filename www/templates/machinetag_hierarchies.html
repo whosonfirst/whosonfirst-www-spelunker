@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Hierarchies for {{ whoami |e }}{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3>
+Hierarchies for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+</h3>
+
+<ul class="list-inline">
+{% for b in mt %}
+  <small>
+    {% if b.doc_count == 1 %}
+    <span class="italic">one place</span> is tagged 
+    {% else %}
+    <span class="italic">{{ b.doc_count |number_format|e }} places </span> are tagged 
+    {% endif %}
+  </small>
+  <a href="{{ url_for('mt_places_for_namespace', ns_or_mt=b.machinetag) }}" class="hey-look">{{ b.machinetag|e }}</a>
+</li>
+{% endfor %}
+</ul>
+
+</div>
+</div>
+
+{% endblock %}
