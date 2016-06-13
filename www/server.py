@@ -19,6 +19,7 @@ import types
 import math
 import json
 import pycountry
+import pprint
 
 # https://github.com/whosonfirst/py-machinetag
 # https://github.com/whosonfirst/py-machinetag-elasticsearch
@@ -1002,8 +1003,7 @@ def machinetag_hierarchies(field, **kwargs):
         'search_type': 'count'
     }
 
-    import pprint
-    print pprint.pformat(body)
+    # print pprint.pformat(body)
 
     args = { 'body': body, 'query': query }
     rsp = flask.g.search_idx.search_raw(**args)
@@ -1364,8 +1364,7 @@ def searchify():
 
     query = enfilterify(query)
 
-    import pprint
-    print pprint.pformat(query)
+    # print pprint.pformat(query)
 
     sort = [
         # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
@@ -1709,8 +1708,7 @@ def enfilterify(query):
             }
         }
 
-    import pprint
-    print pprint.pformat(query)
+    # print pprint.pformat(query)
     return query
 
 def build_pagination_url():
@@ -1895,8 +1893,7 @@ def has_language(lang, spoken=False):
          'query': query
     }
 
-    # import pprint
-    # print pprint.pformat(body)
+
 
     args = {'per_page': 50}
 
