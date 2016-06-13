@@ -1,5 +1,21 @@
 {% extends "base.html" %}
-{% block title %}{% if whoami %}Predicates for {{ whoami |e }} in Who's On First{% else %}Predicates in Who's On First{% endif %}{% endblock %}
+{% block title %}
+{% if whoami %}
+
+{% if whatami=='namespace' %}
+Predicates for things whose namespace is {{ whoami |e }} in Who's On First
+{% elif what=='value' %}
+Predicates for things whose value is {{ whoami |e }} in Who's On First
+{% else %}
+Predicates for {{ whoami |e }} Who's On First
+{% endif %}
+
+{% else %}
+
+Predicates in Who's On First
+{% endif %}
+{% endblock %}
+
 {% block content %}
 
 <div class="row">
@@ -10,13 +26,11 @@
 {% if whoami %}
 
 {% if whatami == 'namespace' %}
-
-Predicates for things whose namespace is <span class="hey-look">{{ whoami |e }}</span> in Who's On First
-
+<span class="hey-look">Predicates</span> for things whose namespace is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
+{% elif whatami == 'value' %}
+<span class="hey-look">Predicates</span> for things whose value is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
 {% else %}
-
 Predicates for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
-
 {% endif %}
 
 {% else %}
@@ -34,6 +48,14 @@ Predicates for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
   the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=whoami, pred=b.predicate) }}" class="italic hey-look">once</a> with this namespace 
 {% else %}
   the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.predicate) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=whoami, pred=b.predicate) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this namespace 
+{% endif %}
+
+{% elif whatami=='value' %}
+
+{% if b.doc_count == 1 %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.key) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=b.key, value=whoami) }}" class="italic hey-look">once</a> with this value 
+{% else %}
+  the <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.key) }}" class="hey-look">{{ b.predicate|e }}</a> predicate has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=b.key, value=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this value
 {% endif %}
 
 {% else %}

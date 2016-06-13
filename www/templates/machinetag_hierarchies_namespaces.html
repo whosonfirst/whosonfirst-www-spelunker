@@ -1,5 +1,20 @@
 {% extends "base.html" %}
-{% block title %}{% if whoami %}Namespaces for {{ whoami |e }} in Who's On First{% else %}Namespaces in Who's On First{% endif %}{% endblock %}
+{% block title %}
+{% if whoami %}
+
+{% if whatami == 'predicate' %}
+Namespaces for things whose predicate is {{ whoami |e }} in Who's On First
+{% elif whatami == 'value' %}
+Namespaces for things whose value is {{ whoami |e }} in Who's On First
+{% else %}
+Namespaces for {{ whoami |e }} in Who's On First
+{% endif %}
+
+{% else %}
+Namespaces in Who's On First
+{% endif %}
+
+{% endblock %}
 {% block content %}
 
 <div class="row">
@@ -8,8 +23,10 @@
 <h3>
 {% if whoami %}
 
-{% if whatami == 'namespace' %}
-Namespaces for things whose predicate is <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+{% if whatami == 'predicate' %}
+<span class="hey-look">Namespaces</span> for things whose predicate is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
+{% elif whatami == 'value' %}
+<span class="hey-look">Namespaces</span> for things whose value is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
 {% else %}
 Namespaces for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% endif %}
@@ -23,28 +40,20 @@ Namespaces for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% for b in mt %}
 <li>
 
-{% if whatami == 'namespace' %}
+{% if whatami == 'predicate' %}
 
 {% if b.doc_count == 1 %}
-  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=b.namespace, pred=whoami) }}" class="italic hey-look">once</a> with this predicate
+  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=b.key, pred=whoami) }}" class="italic hey-look">once</a>
 {% else %}
-  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=b.namespace, pred=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this predicate
-{% endif %}
-
-{% elif whatami == 'predicate' %}
-
-{% if b.doc_count == 1 %}
-  the <a href="{{ url_for('mt_hierarchies_namespaces_for_predicate', pred=whoami) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace', ns_or_mt=b.namespace) }}" class="italic hey-look">once</a>
-{% else %}
-  the <a href="{{ url_for('mt_hierarchies_namespaces_for_predicate', pred=whoami) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace', ns_or_mt=b.namespace) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a>
+  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate', ns=b.key, pred=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a>
 {% endif %}
 
 {% elif whatami == 'value' %}
 
 {% if b.doc_count == 1 %}
-  the <a href="{{ url_for('mt_hierarchies_namespaces_for_value', value=whoami) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace', ns_or_mt=b.namespace) }}" class="italic hey-look">once</a>
+  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns=b.key, pred='*', value=whoami) }}" class="italic hey-look">once</a>
 {% else %}
-  the <a href="{{ url_for('mt_hierarchies_namespaces_for_value', value=whoami) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace', ns_or_mt=b.namespace) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a>
+  the <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.namespace|e }}</a> namespace has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns=b.key, pred='*', value=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a>
 {% endif %}
 
 {% else %}

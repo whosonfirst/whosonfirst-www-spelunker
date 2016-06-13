@@ -4,7 +4,7 @@
 {% if whatami == 'namespace' %}
 Values for things whose namespace is {{ whoami |e }} in Who's On First
 {% elif whatami == 'predicate' %}
-Predicates for things whose value is {{ whoami |e }} in Who's On First
+Values for things whose predicate is {{ whoami |e }} in Who's On First
 {% else %}
 Values for {{ whoami |e }} in Who's On First
 {% endif %}
@@ -22,9 +22,9 @@ Values in Who's On First
 {% if whoami %}
 
 {% if whatami == 'namespace' %}
-Values for things whose namespace is <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+<span class="hey-look">Values</span> for things whose namespace is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
 {% elif whatami =='predicate' %}
-Predicates for things whose value is <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+<span class="hey-look">Values</span> for things whose predicate is <q class="hey-look">{{ whoami |e }}</q> in Who's On First
 {% else %}
 Values for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% endif %}
@@ -49,17 +49,9 @@ Values for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% elif whatami=='predicate' %}
 
 {% if b.doc_count == 1 %}
-  the predicate <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=b.key, value=whoami) }}" class="italic hey-look">once</a> with this value
+  the value <a href="{{ url_for('mt_hierarchies_for_value', value=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=whoami, value=b.key) }}" class="italic hey-look">once</a> with this predicate
 {% else %}
-  the predicate <a href="{{ url_for('mt_hierarchies_for_predicate', pred=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=b.key, value=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this value
-{% endif %}
-
-{% elif what == 'value' %}
-
-{% if b.doc_count == 1 %}
-  the value <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns=b.key, pred='*', value=whoami) }}" class="italic hey-look">once</a> with this namespace
-{% else %}
-  the value <a href="{{ url_for('mt_hierarchies_for_namespace', ns=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns=b.key, pred='*', value=whoami) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this namespace
+  the value <a href="{{ url_for('mt_hierarchies_for_value', value=b.key) }}" class="hey-look">{{ b.key|e }}</a> has been used <a href="{{ url_for('mt_places_for_namespace_and_predicate_and_value', ns='*', pred=whoami, value=b.key) }}" class="italic hey-look">{{ b.doc_count |number_format|e }} times</a> with this predicate
 {% endif %}
 
 {% else %}

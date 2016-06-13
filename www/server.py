@@ -870,13 +870,13 @@ def mt_hierarchies_for_value(value):
 @app.route("/machinetags/values/<string:value>/namespaces/", methods=["GET"])
 def mt_hierarchies_namespaces_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', filter='namespaces', value=value)
-    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='value', whoami=value)
+    return flask.render_template('machinetag_hierarchies_namespaces.html', mt=buckets, whatami='value', whoami=value)
 
 @app.route("/machinetags/values/<string:value>/predicates", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/predicates/", methods=["GET"])
 def mt_hierarchies_predicates_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', filter='predicates', value=value)
-    return flask.render_template('machinetag_hierarchies_values.html', mt=buckets, whatami='value', whoami=value)
+    return flask.render_template('machinetag_hierarchies_predicates.html', mt=buckets, whatami='value', whoami=value)
 
 # PLEASE MAYBE WRITE ME /machinetags/values/<string:value>/predicates/<string:pred>/namespaces
 
