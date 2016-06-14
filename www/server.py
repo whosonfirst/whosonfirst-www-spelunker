@@ -1063,17 +1063,10 @@ def machinetag_hierarchies(field, **kwargs):
 @app.route("/tags/", methods=["GET"])
 def tags():
 
-    # please to make me work with wof:tags - which isn't
-    # a problem yet since SG venues are the only things
-    # with (not null) wof:tags and those are just being
-    # copiedfrom sg:tags but you know eventually other
-    # things will have tags too...
-    # (21050910/thisisaaronland)
-
     aggrs = {
         'placetypes': {
             'terms': {
-                'field': 'sg:tags',
+                'field': 'tags_all',
                 'size': 0,
             }
         }
@@ -1138,14 +1131,8 @@ def tag(tag):
     esc_tag = flask.g.search_idx.escape(tag)
 
     query = {
-        'multi_match': {
-            'query': esc_tag,
-            'type': 'best_fields',
-            'fields': [ 'sg:tags', 'wof:tags' ],
-            'operator': 'OR',
-        }
+        'match': { 'tags_all': esc_tag }
     }
-
     query = enfilterify(query)
 
     body = {
@@ -1605,13 +1592,21 @@ def enfilterify(query):
             tag = get_single(tag)
             esc_tag = flask.g.search_idx.escape(tag)
 
+            # leaving this here because I will never remember how to do a multi_match filter
+            # without it... (20160613/thisisaaronland)
             # https://stackoverflow.com/questions/16776260/elasticsearch-multi-match-with-filter
 
+            """
             filters.append({ 'query': { 'multi_match': {
                 'query': esc_tag,
                 'type': 'best_fields',
                 'fields': [ 'sg:tags', 'wof:tags' ],
                 'operator': 'OR',
+            }}})
+            """
+
+            filters.append({ 'query': { 'match': {
+                'tags_all': esc_tag,
             }}})
 
         else:
