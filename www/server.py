@@ -95,6 +95,11 @@ def init():
     search_idx = search.query(host=search_host, port=search_port)
     flask.g.search_idx = search_idx
 
+@app.template_filter()
+def urlencode(value):
+    s = unicode(value)
+    return urllib.quote(s)
+
 # http://flask.pocoo.org/snippets/29/
 
 @app.template_filter()
@@ -764,6 +769,8 @@ def placetype(placetype):
     body = {
         'query': query,
     }
+
+    # print pprint.pformat(query)
 
     args = {'per_page': 50}
 
