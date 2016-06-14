@@ -1426,8 +1426,8 @@ def facetify(query):
         },
         'tag': {
             'terms': {
-                'field': 'sg:tags',
-                'size': 0
+                'field': 'tags_all',
+                'size': 0,
             }
         },
         'category': {
@@ -1620,10 +1620,23 @@ def enfilterify(query):
 
             esc_tags = map(flask.g.search_idx.escape, tag)
 
-            filters.append({ 'terms': {
-                'sg:tags' : esc_tags
-            }})
+            if len(esc_tags) == 1:
 
+                filters.append({ 'term': {
+                    'tags_all' : esc_tags[0],
+                }})
+
+            else:
+
+                must = []
+                
+                for t in esc_tags:
+                    must.append({ 'term': { 'tags_all': t }})
+                    
+                filters.append({ 'bool': {
+                    'must': must
+                }})
+        
     if category:
 
         if len(category) == 1:
@@ -1636,9 +1649,16 @@ def enfilterify(query):
         else:
             esc_cat = map(flask.g.search_idx.escape, category)
 
-            filters.append({ 'terms': {
-                'category' : esc_cat
+            must = []
+                
+            for c in esc_cat:
+                must.append({ 'term': { 'category': c }})
+                    
+            filters.append({ 'bool': {
+                'must': must
             }})
+
+    # PLEASE FIX ME... maybe?
 
     mt = get_str('mt')
     mt = get_single(mt)
