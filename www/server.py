@@ -820,7 +820,7 @@ def mt_hierarchies_namespaces():
 @app.route("/machinetags/namespaces/<string:ns>/", methods=["GET"])
 def mt_hierarchies_for_namespace(ns):
     buckets = machinetag_hierarchies('machinetags_all', namespace=ns)
-    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=ns)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whatami='namespace', whoami=ns)
 
 @app.route("/machinetags/namespaces/<string:ns>/predicates", methods=["GET"])
 @app.route("/machinetags/namespaces/<string:ns>/predicates/", methods=["GET"])
@@ -846,7 +846,7 @@ def mt_hierarchies_predicates():
 @app.route("/machinetags/predicates/<string:pred>/", methods=["GET"])
 def mt_hierarchies_for_predicate(pred):
     buckets = machinetag_hierarchies('machinetags_all', predicate=pred)
-    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=pred)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whatami='predicate', whoami=pred)
 
 @app.route("/machinetags/predicates/<string:pred>/namespaces", methods=["GET"])
 @app.route("/machinetags/predicates/<string:pred>/namespaces/", methods=["GET"])
@@ -872,7 +872,7 @@ def mt_hierarchies_values():
 @app.route("/machinetags/values/<string:value>/", methods=["GET"])
 def mt_hierarchies_for_value(value):
     buckets = machinetag_hierarchies('machinetags_all', value=value)
-    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whoami=value)
+    return flask.render_template('machinetag_hierarchies.html', mt=buckets, whatami='value', whoami=value)
 
 @app.route("/machinetags/values/<string:value>/namespaces", methods=["GET"])
 @app.route("/machinetags/values/<string:value>/namespaces/", methods=["GET"])

@@ -177,6 +177,17 @@ q {
     margin-bottom:1em;
 }
 
+.see-also-mt {
+    font-size: small;
+    margin-left: .25em;
+    color: #999;
+}
+
+.see-also-mt:before {
+    content: "see also";
+    font-weight: 700;
+}
+
 .caveat {
     color:#666;
     background-color: #ffff99;
