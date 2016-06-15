@@ -4883,6 +4883,12 @@ input[type="text"], input[type="email"] {
   border-radius: 0;
   -webkit-appearance: none; }
 
+input[type="text"]:-moz-focusring,
+input[type="email"]:-moz-focusring,
+textarea:-moz-focusring,
+input[type="search"]:-moz-focusring {
+  outline: 1px dotted #212121; }
+
 ::-webkit-input-placeholder {
   font-size: 14px;
   line-height: 24px; }

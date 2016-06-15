@@ -14,19 +14,23 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.supersedes',
 		'wof.superseded_by',
 		// TO DO : please to write js.whosonfirst.placetypes...
-		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.region_id',
-		'wof.hierarchy.county_id', 'wof.hierarchy.locality_id', 'wof.hierarchy.neighbourhood_id',
+		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.macroregion_id', 'wof.hierarchy.region_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.localadmin_id', 'wof.hierarchy.locality_id',
+		'wof.hierarchy.macrohood_id', 'wof.hierarchy.neighbourhood_id', 'wof.hierarchy.microhood_id',
 		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
 
 	    var text_callbacks = {
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
+		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.gn:id': self.render_geonames_id,
-		//'wof.concordances.gp:id': self.render_woedb_id,
-		//'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.gp:id': self.render_woedb_id,
+		'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.oa:id': self.render_ourairport_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
+		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
 		'wof.tags': self.render_wof_tags,
@@ -62,20 +66,30 @@ mapzen.whosonfirst.properties = (function(){
 
 	    var dict_mappings = {
 		'wof.concordances.dbp:id': 'dbpedia',
+		'wof.concordances.faa:code': 'faa',
 		'wof.concordances.fb:id': 'freebase',
 		'wof.concordances.fct:id': 'factual',
 		'wof.concordances.gn:id': 'geonames',
 		'wof.concordances.gp:id': 'geoplanet',
+		'wof.concordances.icao:code': 'icao',
+		'wof.concordances.iata:code': 'iata',
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
+		'wof.concordances.oa:id': 'ourairports',
+		'wof.concordances.qs:id': 'quattroshapes',
+		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
 		'wof.hierarchy.continent_id': 'continent',
 		'wof.hierarchy.country_id': 'country',
+		'wof.hierarchy.macroregion_id': 'macro region',
 		'wof.hierarchy.region_id': 'region',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
+		'wof.hierarchy.macrohood_id': 'macro hood',
 		'wof.hierarchy.neighbourhood_id': 'neighbourhood',
+		'wof.hierarchy.microhood_id': 'micro hood',
 	    };
 
 	    var dict_renderers = function(d, ctx){
@@ -167,6 +181,18 @@ mapzen.whosonfirst.properties = (function(){
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
+	'render_wikipedia_page': function(d, ctx){
+
+	    // decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport")
+	    // "Montréal-Pierre_Elliott_Trudeau_International_Airport"
+	    // encodeURIComponent(decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"))
+	    // "Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"
+
+	    d = decodeURI(d);
+	    var link = "https://www.wikipedia.org/wiki/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
 	'render_wikidata_id': function(d, ctx){
 	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
@@ -174,6 +200,11 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_tgn_id': function(d, ctx){
 	    var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_ourairport_id': function(d, ctx){
+	    var link = "http://ourairports.com/airports/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
