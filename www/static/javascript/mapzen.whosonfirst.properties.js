@@ -14,19 +14,22 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.supersedes',
 		'wof.superseded_by',
 		// TO DO : please to write js.whosonfirst.placetypes...
-		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.region_id',
-		'wof.hierarchy.county_id', 'wof.hierarchy.locality_id', 'wof.hierarchy.neighbourhood_id',
+		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.macroregion_id', 'wof.hierarchy.region_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.localadmin_id', 'wof.hierarchy.locality_id',
+		'wof.hierarchy.macrohood_id', 'wof.hierarchy.neighbourhood_id', 'wof.hierarchy.microhood_id',
 		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
 
 	    var text_callbacks = {
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
+		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.gn:id': self.render_geonames_id,
-		//'wof.concordances.gp:id': self.render_woedb_id,
-		//'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.gp:id': self.render_woedb_id,
+		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
+		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
 		'wof.tags': self.render_wof_tags,
@@ -68,14 +71,20 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.gp:id': 'geoplanet',
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
+		'wof.concordances.qs:id': 'quattroshapes',
+		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
 		'wof.hierarchy.continent_id': 'continent',
 		'wof.hierarchy.country_id': 'country',
+		'wof.hierarchy.macroregion_id': 'macroregion',
 		'wof.hierarchy.region_id': 'region',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
+		'wof.hierarchy.macrohood_id': 'macrohood',
 		'wof.hierarchy.neighbourhood_id': 'neighbourhood',
+		'wof.hierarchy.microhood_id': 'microhood',
 	    };
 
 	    var dict_renderers = function(d, ctx){
@@ -164,6 +173,11 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_woedb_id': function(d, ctx){
 	    var link = "https://woe.spum.org/id/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_wikipedia_page': function(d, ctx){
+	    var link = "https://www.wikipedia.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
