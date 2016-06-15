@@ -21,18 +21,21 @@ Hierarchies for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 
 {% if whatami == 'namespace' %}
 
-<li>only the <a href="{{ url_for('mt_hierarchies_predicates_for_namespace', ns=whoami) }}" class="hey-look">namespaces</a> for <span class="hey-look">{{ whoami |e }}</span></li>
-<li>only the <a href="{{ url_for('mt_hierarchies_values_for_namespace', ns=whoami) }}" class="hey-look">predicates</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>only the <a href="{{ url_for('mt_hierarchies_predicates_for_namespace', ns=whoami) }}" class="hey-look">predicates</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>only the <a href="{{ url_for('mt_hierarchies_values_for_namespace', ns=whoami) }}" class="hey-look">values</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>all the <a href="{{ url_for('mt_hierarchies') }}" class="hey-look">machine tags</a></li>
 
 {% elif whatami == 'predicate' %}
 
 <li>only the <a href="{{ url_for('mt_hierarchies_namespaces_for_predicate', pred=whoami) }}" class="hey-look">namespaces</a> for <span class="hey-look">{{ whoami |e }}</span></li>
-<li>only the <a href="{{ url_for('mt_hierarchies_values_for_predicate', pred=whoami) }}" class="hey-look">predicates</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>only the <a href="{{ url_for('mt_hierarchies_values_for_predicate', pred=whoami) }}" class="hey-look">values</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>all the <a href="{{ url_for('mt_hierarchies') }}" class="hey-look">machine tags</a></li>
 
 {% elif whatami == 'value' %}
 
 <li>only the <a href="{{ url_for('mt_hierarchies_namespaces_for_value', value=whoami) }}" class="hey-look">namespaces</a> for <span class="hey-look">{{ whoami |e }}</span></li>
 <li>only the <a href="{{ url_for('mt_hierarchies_predicates_for_value', value=whoami) }}" class="hey-look">predicates</a> for <span class="hey-look">{{ whoami |e }}</span></li>
+<li>all the <a href="{{ url_for('mt_hierarchies') }}" class="hey-look">machine tags</a></li>
 
 {% else %}
 

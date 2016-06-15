@@ -36,6 +36,28 @@ Namespaces for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% endif %}
 </h3>
 
+<ul class="list-inline see-also see-also-mt">
+
+{% if whatami == 'namespace' %}
+
+{% elif whatami == 'predicate' %}
+
+<li>all the <a href="{{ url_for('mt_hierarchies_values_for_predicate', pred=whoami) }}" class="hey-look">values</a> with the predicate <a href="{{ url_for('mt_hierarchies_for_predicate', pred=whoami) }}" class="hey-look">{{ whoami |e }}</a></li>
+
+{% elif whatami == 'value' %}
+
+<li>all the <a href="{{ url_for('mt_hierarchies_predicates_for_value', value=whoami) }}" class="hey-look">predicates</a> with the value <a href="{{ url_for('mt_hierarchies_for_value', value=whoami) }}" class="hey-look">{{ whoami |e }}</a></li>
+
+{% else %}
+
+<li>all the <a href="{{ url_for('mt_hierarchies_predicates') }}" class="hey-look">predicates</a></li>
+<li>all the <a href="{{ url_for('mt_hierarchies_values') }}" class="hey-look">values</a></li>
+
+{% endif %}
+
+<li>all the <a href="{{ url_for('mt_hierarchies') }}" class="hey-look">machine tags</a></li>
+</ul>
+
 <ul class="list-inline">
 {% for b in mt %}
 <li>
