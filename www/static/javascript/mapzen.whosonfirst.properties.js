@@ -182,7 +182,13 @@ mapzen.whosonfirst.properties = (function(){
 	},
 
 	'render_wikipedia_page': function(d, ctx){
-	    console.log(d);
+
+	    // decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport")
+	    // "Montréal-Pierre_Elliott_Trudeau_International_Airport"
+	    // encodeURIComponent(decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"))
+	    // "Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"
+
+	    d = decodeURI(d);
 	    var link = "https://www.wikipedia.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
