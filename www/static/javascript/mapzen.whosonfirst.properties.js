@@ -182,6 +182,7 @@ mapzen.whosonfirst.properties = (function(){
 	},
 
 	'render_wikipedia_page': function(d, ctx){
+	    console.log(d);
 	    var link = "https://www.wikipedia.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
@@ -197,7 +198,7 @@ mapzen.whosonfirst.properties = (function(){
 	},
 
 	'render_ourairport_id': function(d, ctx){
-	    var link = "http://http://ourairports.com/airports/" + encodeURIComponent(d);
+	    var link = "http://ourairports.com/airports/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
