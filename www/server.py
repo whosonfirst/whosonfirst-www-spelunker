@@ -738,11 +738,8 @@ def placetype(placetype):
 
     placetype = sanitize_str(placetype)
 
-    if not pt.is_valid_placetype(placetype):
+    if not pt.is_valid_placetype(placetype) and placetype != 'airport':
         flask.abort(404)
-
-    # Because this: https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/4
-    # (20151028/thisisaaronland)
 
     query = {
         'term': {
@@ -750,19 +747,12 @@ def placetype(placetype):
         }
     }
 
-    # For good time, see above...
-    # (20151028/thisisaaronland)
+    if placetype == 'airport':
 
-    """
-    placetype = pt.placetype(placetype)
-    placetype_id = placetype.id()
-
-    query = {
-        'term': {
-            'wof:placetype_id': placetype_id
-        }
-    }
-    """
+        query = {'filtered': {
+            'filter': { 'term': { 'wof:category': 'airport' } },
+            'query': { 'term': { 'wof:placetype': 'campus' } }
+        }}
 
     query = enfilterify(query)
     

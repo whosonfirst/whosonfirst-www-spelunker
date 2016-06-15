@@ -9,6 +9,8 @@
 
 {% if placetype == 'ocean' %}
 Places that are an <q>{{ placetype |e }}</q>
+{% elif placetype == 'airport' %}
+Places that are an <q>{{ placetype |e }}</q>
 {% else %}
 Places that are a <q>{{ placetype |e }}</q>
 {% endif %}
@@ -17,6 +19,8 @@ Places that are a <q>{{ placetype |e }}</q>
 
 {% if placetype == 'ocean' %}
 <small class="see-also">There is <span class="hey-look">one place</span> that is an <span class="hey-look">{{ placetype |e }}</span></small>
+{% elif placetype == 'airport' %}
+<small class="see-also">There is <span class="hey-look">one place</span> that is an <span class="hey-look">{{ placetype |e }}</span></small>
 {% else %}
 <small class="see-also">There is <span class="hey-look">one place</span> that is a <span class="hey-look">{{ placetype |e }}</span></small>
 {% endif %}
@@ -24,6 +28,9 @@ Places that are a <q>{{ placetype |e }}</q>
 {% elif pagination.total > 1 %}
 
 {% if placetype == 'ocean' %}
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are <span class="hey-look">{{ placetype |e }}s</span> 
+
+{% elif placetype == 'airport' %}
 <small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that are <span class="hey-look">{{ placetype |e }}s</span> 
 
 {% else %}
