@@ -13,7 +13,7 @@ Hierarchies for the predicate <span class="hey-look">{{ whoami |e }}</span> in W
 {% elif whatami == 'value' %}
 Hierarchies for the value <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% else %}
-Hierarchies for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
+Hierarchies for <span class="hey-look">all the machine tags</span> in Who's On First
 {% endif %}
 </h3>
 
@@ -42,6 +42,7 @@ Hierarchies for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 <li>all the <a href="{{ url_for('mt_hierarchies_namespaces') }}" class="hey-look">namespaces</a></li>
 <li>all the <a href="{{ url_for('mt_hierarchies_predicates') }}" class="hey-look">predicates</a></li>
 <li>all the <a href="{{ url_for('mt_hierarchies_values') }}" class="hey-look">values</a></li>
+<li>oh and <a href="https://github.com/straup/machinetags-readinglist/blob/master/machinetags-readinglist.md#what-are-machine-tags" class="hey-look" target="machinetags">what are machine tags?</a></li>
 
 {% endif %}
 </ul>
