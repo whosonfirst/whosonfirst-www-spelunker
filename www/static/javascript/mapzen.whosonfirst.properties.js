@@ -15,7 +15,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.superseded_by',
 		// TO DO : please to write js.whosonfirst.placetypes...
 		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.macroregion_id', 'wof.hierarchy.region_id',
-		'wof.hierarchy.county_id', 'wof.hierarchy.localadmin_id', 'wof.hierarchy.locality_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.localadmin_id', 'wof.hierarchy.borough_id', 'wof.hierarchy.locality_id',
 		'wof.hierarchy.macrohood_id', 'wof.hierarchy.neighbourhood_id', 'wof.hierarchy.microhood_id',
 		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
@@ -28,6 +28,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.gp:id': self.render_woedb_id,
 		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.oa:id': self.render_ourairport_id,
+		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.tgn:id': self.render_tgn_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
 		'wof.concordances.wk:page': self.render_wikipedia_page,
@@ -80,10 +81,12 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
+		'wof.hierarchy.borough_id': 'borough',
 		'wof.hierarchy.continent_id': 'continent',
 		'wof.hierarchy.country_id': 'country',
 		'wof.hierarchy.macroregion_id': 'macro region',
 		'wof.hierarchy.region_id': 'region',
+		'wof.hierarchy.campus_id': 'campus',
 		'wof.hierarchy.county_id': 'county',
 		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
@@ -205,6 +208,11 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_ourairport_id': function(d, ctx){
 	    var link = "http://ourairports.com/airports/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_faa_code': function(d, ctx){
+	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
