@@ -11,6 +11,7 @@ import flask
 import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
+from flask.ext.cors import cross_origin
 
 import re
 import time
@@ -171,6 +172,7 @@ def info(id):
 
     return flask.render_template('id.html', **template_args)
 
+@cross_origin()
 @app.route("/id/<int:id>.geojson", methods=["GET"])
 def geojson(id):
 

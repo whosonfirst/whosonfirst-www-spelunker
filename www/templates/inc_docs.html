@@ -56,7 +56,7 @@
 <div style="max-height:200px;overflow:scroll;border-bottom:solid thin;margin-bottom:2em;">
 <ul class="list-inline">
 {% for f in facets[ k ] %}
-<li class="facet_{{ k | e }}"  data-value="{{ f.key | e }}"><a href="{{ facet_url}}&{{k|e}}={{ f.key |urlencode|e}}" class="facet_{{ k | e }}_{{ f.key|e}}">{{ f.key | e }}</a> <small>{{ f.doc_count |number_format|e }}</small></li>
+<li class="facet_{{ k | e }}"  data-value="{{ f.key | e }}"><a href="{{ facet_url}}&{{k|e}}={{ f.key |e}}" class="facet_{{ k | e }}_{{ f.key|e}}">{{ f.key | e }}</a> <small>{{ f.doc_count |number_format|e }}</small></li>
 {% endfor %}
 </ul>
 </div>
