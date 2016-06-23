@@ -34,6 +34,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
+		'wof.repo': self.render_wof_repo,
 		'wof.tags': self.render_wof_tags,
 		'wof.name': self.render_wof_name,
 		'sg.city': self.render_simplegeo_city,
@@ -166,6 +167,20 @@ mapzen.whosonfirst.properties = (function(){
 	    
 	    return el;
 	    
+	},
+
+	'render_wof_repo': function(d, ctx){
+
+	    var root = 'https://github.com/whosonfirst-data/';
+
+	    // until we switch the org
+
+	    if (d == 'whosonfirst-data'){
+		var root = 'https://github.com/whosonfirst/';
+	    }
+	    
+	    var link = root + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
 	'render_wof_placetype': function(d, ctx){
