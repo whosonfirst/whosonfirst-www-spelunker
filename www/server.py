@@ -1327,14 +1327,27 @@ def searchify():
     
     esc_q = flask.g.search_idx.escape(q)
 
+    # searching for stuff breaks down in to four distinct parts - which should
+    # be interpreted as "wet paint", "I have no idea what I am dooooing" and so on...
+    #
+    # 1. searching for a string across all fields
+    # 2. filtering by one or more properties (passed in as query args)
+    # 3. scoring the results by sub-properties
+    # 4. sorting
+
+    # 1. searching for a string across all fields
     # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
 
     query = {
-        # 'query_string': { 'query': esc_q }
         'match': { '_all': { 'query': esc_q, 'operator': 'and' } }
     }
 
+    # 2. filtering by one or more properties (passed in as query args)
+
     query = enfilterify(query)
+
+    # 3. scoring the results by sub-properties
+    # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
 
     # TO DO - boost on names_all_preferred
     # https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/17
@@ -1364,8 +1377,10 @@ def searchify():
         }
     }
 
+    # 4. sorting
+    # note that sorting on keys that have not been indexed results in hilarity...
+
     sort = [
-        # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
         # { 'wk:population' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
