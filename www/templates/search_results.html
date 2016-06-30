@@ -6,7 +6,7 @@
 <meta property="twitter:creator" content="@alloftheplaces" />
 <meta property="twitter:url" content="{{ pagination_url |e }}" />
 <meta property="twitter:title" content="Search results for &#8220;{{ query|e }}&#8221;" />
-<meta property="twitter:description" content="{% if pagination.count == 0 %}Nothing. Sad trombone...{% elif pagination.total == 1 %}There is one match for this query{% else %}There are {{ pagination.total |number_format|e }} places that match this query{% endif %}" />
+<meta property="twitter:description" content="{% if pagination.count == 0 %}Nothing matches this query. Sad trombone...{% elif pagination.total == 1 %}There is one match for this query{% else %}There are {{ pagination.total |number_format|e }} places that match this query{% endif %}" />
 <meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
 {% endblock %}
 {% block content %}
