@@ -2,11 +2,18 @@
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
 {% block head %}
 
+<meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+
+<x-meta property="og:image" content="" />
+
+<meta property="og:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:placetype") |e }})" />
+
 <meta name="twitter:site" content="@alloftheplaces">
 <meta name="twitter:creator" content="@alloftheplaces">
 <meta name="twitter:url" content="{{ request.base_url |e }}">
 <meta name="twitter:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:placetype") |e }})">
 <x-meta name="twitter:image" content="" />
+
 {% endblock %}
 {% block content %}
 
