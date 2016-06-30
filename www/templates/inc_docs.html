@@ -1,9 +1,5 @@
 {% if es_query %}
-<div class="row">
-<div id="es-query">
-<pre>{{ es_query|pprint|e }}</pre>
-</div>
-</div>
+{% include "inc_query.html" %}
 {% endif %}
 
 <div class="row">

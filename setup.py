@@ -12,6 +12,7 @@ setup(
     url='https://github.com/whosonfirst/whosonfirst-www-spelunker',
     install_requires=[
         'flask',
+        'flask-cors',
         'pycountry'
         'machinetag>=1.4',
         'machinetag.elasticsearch>=0.3',
