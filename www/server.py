@@ -403,21 +403,7 @@ def concordances():
     results = aggregations.get('concordances', {})
     buckets = results.get('buckets', [])
 
-    for b in buckets:
-
-        prefix, key = b['key'].split(':')
-
-        source = src.get_source_by_prefix(prefix)
-        
-        b['prefix'] = prefix
-
-        if source:
-            b['fullname'] = source.details['fullname']
-            b['name'] = source.details['name']
-        else:
-            b['fullname'] = prefix
-            b['name'] = prefix
-
+    append_source_details_to_buckets(buckets)
     count_concordances = len(buckets)
 
     return flask.render_template('concordances.html', concordances=buckets, count_concordances=count_concordances)
@@ -1467,6 +1453,10 @@ def facetify(query):
     for k, ignore in aggrs.items():
         results = aggregations.get(k, {})
         results = results.get('buckets', [])
+
+        if k == 'concordance':
+            append_source_details_to_buckets(results)
+
         facets[k] = results
 
     return facets
@@ -1999,6 +1989,23 @@ def inflate_hierarchy(doc):
         hiers.append(inflated)
 
     return hiers
+
+def append_source_details_to_buckets(buckets):
+
+    for b in buckets:
+
+        prefix, key = b['key'].split(':')
+
+        source = src.get_source_by_prefix(prefix)
+        
+        b['prefix'] = prefix
+
+        if source:
+            b['fullname'] = source.details['fullname']
+            b['name'] = source.details['name']
+        else:
+            b['fullname'] = prefix
+            b['name'] = prefix
 
 # please put me in a library somewhere...
 # please to be porting this at the same time...
