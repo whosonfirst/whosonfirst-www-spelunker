@@ -12,7 +12,7 @@
 <meta property="twitter:creator" content="@alloftheplaces" />
 <meta property="twitter:url" content="{{ request.base_url |e }}" />
 <meta property="twitter:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:id") |e }})" />
-<meta property="twitter:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }} ({{ doc.properties.get("wof:country") |e }})" />
+<meta property="twitter:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }} :flag_{{ doc.properties.get("wof:country").lower() |e }}:" />
 <meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
 {% endblock %}
 {% block content %}
