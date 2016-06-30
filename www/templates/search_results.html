@@ -3,6 +3,12 @@
 {% block content %}
 {% if pagination.count == 0 %}
 
+<div class="row">
+<div id="es-query">
+<pre>{{ es_query|pprint|e }}</pre>
+</div>
+</div>
+
 <div class="row"><span style="font-size:2em;">😿 </span> can not find anything matching <q class="hey-look">{{ query|e }}</q></div>
 
 {% else %}
