@@ -1336,34 +1336,21 @@ def searchify():
 
     query = enfilterify(query)
 
-    # TO DO: boost wof:name and name fields
+    # TO DO - boost on names_all_preferred
+    # https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/17
 
     filters = [
         {
-            'filter': {
-                # 'match': { 'names_all': { 'operator': 'and', 'query': esc_q } },
-                'term': { 'names_all': esc_q, },
-            }, 'weight': 1.0
+            'filter': { 'term': { 'names_all': esc_q, } }, 'weight': 1.0
         },
         {
-            'filter': {
-                'term': { 'wof:name' : esc_q } 
-            }, 'weight': 1.5
+            'filter': { 'term': { 'wof:name' : esc_q } }, 'weight': 1.5
         },
         {
-            'filter': {
-                'not': { 'term': { 'wof:placetype' : 'venue' } }
-            }, 'weight': 2.0
+            'filter': { 'not': { 'term': { 'wof:placetype' : 'venue' } } }, 'weight': 2.0
         },
         {
-            'filter': {
-                'term': { 'wof:megacity' : 1 } 
-            }, 'weight': 1.0
-        },
-        {
-            'filter': {
-                'exists': { 'field': 'wk:population' }
-            }, 'weight': 1.25
+            'filter': { 'exists': { 'field': 'wk:population' } }, 'weight': 1.25
         }
 
     ]
@@ -1373,18 +1360,18 @@ def searchify():
             'query': query,
             'functions': filters,
             'score_mode': 'multiply',
-        },
-
+            'boost_mode': 'multiply',
+        }
     }
 
     sort = [
         # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
         # { 'wk:population' : {'order': 'desc', 'mode': 'max' } },
-        { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
+        { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
+        { 'names_all' : {'order': 'desc' } },
         { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
         { 'geom:area': {'order': 'desc', 'mode': 'max'} },
-        { 'wof:name' : {'order': 'desc' } },
     ]
 
     body = {
