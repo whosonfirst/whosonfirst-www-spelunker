@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
-{% block head %}{% endblock %}
+{% block head %}
+
+<meta name="twitter:site" content="@alloftheplaces">
+<meta name="twitter:creator" content="@alloftheplaces">
+<meta name="twitter:url" content="{{ request.base_url |e }}">
+<meta name="twitter:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:placetype") |e }})">
+<x-meta name="twitter:image" content="" />
+{% endblock %}
 {% block content %}
 
 <div class="row" id="wof-record" data-wof-id="{{ doc.properties.get('wof:id') |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
