@@ -2,17 +2,19 @@
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
 {% block head %}
 
+<meta property="og:type" content="article" />
 <meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+<meta property="og:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:id") |e }})" />
+<meta property="og:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }}" />
+<meta property="og:image" content="https://whosonfirst.mapzen.com/images/wof.png" />
 
-<x-meta property="og:image" content="" />
-
-<meta property="og:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:placetype") |e }})" />
-
-<meta name="twitter:site" content="@alloftheplaces">
-<meta name="twitter:creator" content="@alloftheplaces">
-<meta name="twitter:url" content="{{ request.base_url |e }}">
-<meta name="twitter:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:placetype") |e }})">
-<x-meta name="twitter:image" content="" />
+<meta name="twitter:card" value="summary" />
+<meta name="twitter:site" content="@alloftheplaces" />
+<meta property="twitter:creator" content="@alloftheplaces" />
+<meta property="twitter:url" content="{{ request.base_url |e }}" />
+<meta property="twitter:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:id") |e }})" />
+<meta property="twitter:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }}" />
+<meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof.png" />
 
 {% endblock %}
 {% block content %}
