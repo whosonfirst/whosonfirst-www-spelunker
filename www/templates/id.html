@@ -4,7 +4,7 @@
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
 <meta property="og:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:id") |e }})" />
-<meta property="og:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }} ({{ doc.properties.get("wof:country") |e }})" />
+<meta property="og:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }} :flag_{{ doc.properties.get("wof:country").lower() |e }}:" />
 <meta property="og:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
 
 <meta property="twitter:card" value="summary" />
