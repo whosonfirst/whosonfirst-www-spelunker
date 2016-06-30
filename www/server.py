@@ -1439,6 +1439,12 @@ def facetify(query):
                 'field': 'region_id',
                 'size': 100
             }
+        },
+        'concordance': {
+            'terms': {
+                'field': 'wof:concordances_sources',
+                'size': 0
+            }
         }
     }
     
@@ -1666,6 +1672,28 @@ def enfilterify(query):
                 machinetag_field : machinetag_filter
             }})
         
+    #
+
+    concordance = get_str('concordance')
+
+    if concordance:
+
+        if len(concordance) == 1:
+
+            concordance = get_single(concordance)
+            esc_conc = concordance
+
+            filters.append({ 'term': {
+                'wof:concordances_sources' : esc_conc
+            }})
+        else:
+
+            esc_concs = concordance
+
+            filters.append({ 'terms': {
+                'wof:concordances_sources' : esc_concs
+            }})
+
     #
 
     if locality:
