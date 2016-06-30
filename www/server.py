@@ -1336,24 +1336,63 @@ def searchify():
 
     query = enfilterify(query)
 
-    # print pprint.pformat(query)
+    # TO DO: boost wof:name and name fields
+
+    filters = [
+        {
+            'filter': {
+                # 'match': { 'names_all': { 'operator': 'and', 'query': esc_q } },
+                'term': { 'names_all': esc_q, },
+            }, 'weight': 1.0
+        },
+        {
+            'filter': {
+                'term': { 'wof:name' : esc_q } 
+            }, 'weight': 1.5
+        },
+        {
+            'filter': {
+                'not': { 'term': { 'wof:placetype' : 'venue' } }
+            }, 'weight': 2.0
+        },
+        {
+            'filter': {
+                'term': { 'wof:megacity' : 1 } 
+            }, 'weight': 1.0
+        },
+        {
+            'filter': {
+                'exists': { 'field': 'wk:population' }
+            }, 'weight': 1.25
+        }
+
+    ]
+
+    query_scored = {
+        'function_score': {
+            'query': query,
+            'functions': filters,
+            'score_mode': 'multiply',
+        },
+
+    }
 
     sort = [
         # https://github.com/whosonfirst/whosonfirst-www-spelunker/pull/9
-        # { '_score': { 'order': 'desc' } },
-        { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
+        # { 'wk:population' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
-        { 'wof:name' : {'order': 'desc' } },
+        { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
         { 'geom:area': {'order': 'desc', 'mode': 'max'} },
+        { 'wof:name' : {'order': 'desc' } },
     ]
 
-    # TO DO: boost wof:name and name fields
-
     body = {
-        'query': query,
+        'query': query_scored,
         'sort': sort,
     }
+
+    # print pprint.pformat(body)
 
     args = {'per_page': 50}
 

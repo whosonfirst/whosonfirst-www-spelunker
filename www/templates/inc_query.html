@@ -1,6 +1,6 @@
 <div class="row">
 <div id="es-query">
-<pre>{{ es_query|pprint|e }}</pre>
+<pre style="font-size:.9em;max-height:200px;y-overslow:scroll;">{{ es_query|pprint|e }}</pre>
 
 {% if request.args.get('include', '') != "deprecated" %}
 <div style="text-align:right;margin-bottom:.5em; font-size:small;">Would you like try this query again to <a href="{{ pagination_url|e }}&include=deprecated">include records that have been deprecated</a> ?</div>
