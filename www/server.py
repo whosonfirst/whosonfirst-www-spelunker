@@ -1322,10 +1322,25 @@ def searchify():
     q = get_str('q')
     q = get_single(q)
 
+    # see what's going on here? this is a thing we're going to try without
+    # telling anyone yet - we ensure that there is at least one filter below
+    # (20160701/thisisaaronland)
+
     if not q or q == '':
-        return flask.render_template('search_form.html')
-    
-    esc_q = flask.g.search_idx.escape(q)
+
+        q = 'ALL THE THINGS'
+        esc_q = '*'
+
+        query = {
+            'match_all': {}
+        }
+
+    else:
+        esc_q = flask.g.search_idx.escape(q)
+
+        query = {
+            'match': { '_all': { 'query': esc_q, 'operator': 'and' } }
+        }
 
     # searching for stuff breaks down in to four distinct parts - which should
     # be interpreted as "wet paint", "I have no idea what I am dooooing" and so on...
@@ -1338,13 +1353,18 @@ def searchify():
     # 1. searching for a string across all fields
     # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
 
-    query = {
-        'match': { '_all': { 'query': esc_q, 'operator': 'and' } }
-    }
 
     # 2. filtering by one or more properties (passed in as query args)
 
     query = enfilterify(query)
+
+    # okay, let's stop and make sure we're not just blindly querying the entire
+    # index - specifically we should have at least one filter whether it is user
+    # supplied or the default 'exclude deprecated records' filter.
+    # (20160701/thisisaaronland)
+
+    if esc_q == '*' and len(query['filtered']['filter']['and']) < 2:
+        return flask.render_template('search_form.html')
 
     # 3. scoring the results by sub-properties
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
@@ -1376,6 +1396,8 @@ def searchify():
             'boost_mode': 'multiply',
         }
     }
+
+    print pprint.pformat(query_scored)
 
     # 4. sorting
     # note that sorting on keys that have not been indexed results in hilarity...
@@ -1410,6 +1432,8 @@ def searchify():
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    print pprint.pformat(pagination)
 
     facets = facetify(query)
 
