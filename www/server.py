@@ -1342,6 +1342,23 @@ def searchify():
 
     return flask.render_template('search_results.html', **template_args)
 
+@app.route("/api/search", methods=["GET"])
+@app.route("/api/search/", methods=["GET"])
+def api_searchify():
+
+    try:
+        query, rsp = do_search()
+    except Exception, e:
+        return flask.render_template('search_form.html')
+
+    feature_col = {
+        'type': 'FeatureCollection',
+        'features': rsp['rows'],
+        'pagination': rsp['pagination'],
+    }
+
+    return flask.jsonify(feature_col)
+
 def do_search():
 
     q = get_str('q')
@@ -1652,19 +1669,6 @@ def enfilterify(query):
             tag = get_single(tag)
             esc_tag = flask.g.search_idx.escape(tag)
 
-            # leaving this here because I will never remember how to do a multi_match filter
-            # without it... (20160613/thisisaaronland)
-            # https://stackoverflow.com/questions/16776260/elasticsearch-multi-match-with-filter
-
-            """
-            filters.append({ 'query': { 'multi_match': {
-                'query': esc_tag,
-                'type': 'best_fields',
-                'fields': [ 'sg:tags', 'wof:tags' ],
-                'operator': 'OR',
-            }}})
-            """
-
             filters.append({ 'query': { 'match': {
                 'tags_all': esc_tag,
             }}})
@@ -1727,6 +1731,50 @@ def enfilterify(query):
                 machinetag_field : machinetag_filter
             }})
         
+    #
+
+    names = get_str('names')
+
+    if names:
+
+        if len(names) == 1:
+
+            names = get_single(names)
+            esc_names = names
+
+            filters.append({ 'term': {
+                'names_all' : esc_names
+            }})
+        else:
+
+            esc_names = names
+
+            filters.append({ 'terms': {
+                'names_all' : esc_names
+            }})
+
+    #
+
+    name = get_str('name')
+
+    if name:
+
+        if len(name) == 1:
+
+            names = get_single(name)
+            esc_name = name
+
+            filters.append({ 'term': {
+                'wof:name' : esc_name
+            }})
+        else:
+
+            esc_name = name
+
+            filters.append({ 'terms': {
+                'wof:name' : esc_name
+            }})
+
     #
 
     concordance = get_str('concordance')
