@@ -748,8 +748,6 @@ def placetype(placetype):
         'query': query,
     }
 
-    # print pprint.pformat(query)
-
     args = {'per_page': 50}
 
     page = get_int('page')
@@ -988,8 +986,6 @@ def machinetag_hierarchies(field, **kwargs):
         'search_type': 'count'
     }
 
-    # print pprint.pformat(body)
-
     args = { 'body': body, 'query': query }
     rsp = flask.g.search_idx.search_raw(**args)
 
@@ -999,12 +995,9 @@ def machinetag_hierarchies(field, **kwargs):
 
     total_count = 0
 
-    # print pprint.pformat(buckets)
-
     if rsp_filter:
         print rsp_filter
         buckets = rsp_filter(buckets)
-        # print pprint.pformat(buckets)
 
     for b in buckets:
         total_count += b['doc_count']
@@ -1319,6 +1312,38 @@ def reverse_geocode():
 @app.route("/search/", methods=["GET"])
 def searchify():
 
+    try:
+        query, rsp = do_search()
+    except Exception, e:
+        return flask.render_template('search_form.html')
+
+    # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/6
+
+    q = get_str('q')
+    q = get_single(q)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    facets = facetify(query['query'])
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'query': q,
+        'es_query': query,
+        'facets': facets,
+        'facet_url': facet_url,
+    }
+
+    return flask.render_template('search_results.html', **template_args)
+
+def do_search():
+
     q = get_str('q')
     q = get_single(q)
 
@@ -1364,7 +1389,7 @@ def searchify():
     # (20160701/thisisaaronland)
 
     if esc_q == '*' and len(query['filtered']['filter']['and']) < 2:
-        return flask.render_template('search_form.html')
+        raise Exception, "E_INSUFFICIENT_SEARCH"
 
     # 3. scoring the results by sub-properties
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
@@ -1397,7 +1422,7 @@ def searchify():
         }
     }
 
-    print pprint.pformat(query_scored)
+    # print pprint.pformat(query_scored)
 
     # 4. sorting
     # note that sorting on keys that have not been indexed results in hilarity...
@@ -1416,8 +1441,6 @@ def searchify():
         'sort': sort,
     }
 
-    # print pprint.pformat(body)
-
     args = {'per_page': 50}
 
     page = get_int('page')
@@ -1427,30 +1450,7 @@ def searchify():
         args['page'] = page
 
     rsp = flask.g.search_idx.search(body, **args)
-
-    # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/6
-
-    pagination = rsp['pagination']
-    docs = rsp['rows']
-
-    print pprint.pformat(pagination)
-
-    facets = facetify(query)
-
-    pagination_url = build_pagination_url()
-    facet_url = pagination_url
-
-    template_args = {
-        'docs': docs,
-        'pagination': pagination,
-        'pagination_url': pagination_url,
-        'query': q,
-        'es_query': body,
-        'facets': facets,
-        'facet_url': facet_url,
-    }
-
-    return flask.render_template('search_results.html', **template_args)
+    return body, rsp
 
 def facetify(query):
 
@@ -1805,7 +1805,6 @@ def enfilterify(query):
             }
         }
 
-    # print pprint.pformat(query)
     return query
 
 def build_pagination_url():
