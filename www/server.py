@@ -1414,21 +1414,30 @@ def do_search():
     # TO DO - boost on names_all_preferred
     # https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/17
 
-    filters = [
-        {
-            'filter': { 'term': { 'names_all': esc_q, } }, 'weight': 1.0
-        },
-        {
-            'filter': { 'term': { 'wof:name' : esc_q } }, 'weight': 1.5
-        },
+    filters = []
+
+    if q != '*':
+
+        filters.extend([
+            {
+            'filter': { 'term': { 'names_preferred': esc_q, } }, 'weight': 3.0
+            },
+            {
+                'filter': { 'term': { 'names_all': esc_q, } }, 'weight': 1.0
+            },
+            {
+                'filter': { 'term': { 'wof:name' : esc_q } }, 'weight': 1.5
+            }
+        ])
+        
+    filters.extend([
         {
             'filter': { 'not': { 'term': { 'wof:placetype' : 'venue' } } }, 'weight': 2.0
         },
         {
             'filter': { 'exists': { 'field': 'wk:population' } }, 'weight': 1.25
         }
-
-    ]
+    ])
 
     query_scored = {
         'function_score': {
@@ -1442,15 +1451,12 @@ def do_search():
     # print pprint.pformat(query_scored)
 
     # 4. sorting
-    # note that sorting on keys that have not been indexed results in hilarity...
 
     sort = [
-        # { 'wk:population' : {'order': 'desc', 'mode': 'max' } },
+        { 'geom:area': {'order': 'desc', 'mode': 'max'} },
+        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
         { 'wof:megacity' : {'order': 'desc', 'mode': 'max' } },
         { 'gn:population' : {'order': 'desc', 'mode': 'max' } },
-        { 'names_all' : {'order': 'desc' } },
-        { 'wof:scale' : {'order': 'desc', 'mode': 'max' } },
-        { 'geom:area': {'order': 'desc', 'mode': 'max'} },
     ]
 
     body = {
@@ -1640,27 +1646,10 @@ def enfilterify(query):
 
     if iso:
 
-        if len(iso) == 1:
+        for idx,value in enumerate(iso):
+            iso[idx] = value.lower()
 
-            iso = get_single(iso)
-            iso = iso.lower()
-            esc_iso = flask.g.search_idx.escape(iso)
-            
-            filters.append({ 'term': {
-                'iso:country' : esc_iso
-            }})
-
-        else:
-
-            esc_iso = []
-
-            for i in iso:
-                i = i.lower()
-                esc_iso.append(flask.g.search_idx.escape(i))
-
-            filters.append({ 'terms': {
-                'iso:country' : esc_iso
-            }})
+        filters.append(simple_enfilter('iso:country', iso))
                 
     if tag:
 
@@ -1697,12 +1686,9 @@ def enfilterify(query):
     if category:
 
         if len(category) == 1:
-            category = get_single(category)
-            esc_cat = flask.g.search_idx.escape(category)
-            
-            filters.append({ 'term': {
-                'category' : esc_cat
-            }})
+
+            filters.append(simple_enfilter('category', category))
+
         else:
             esc_cat = map(flask.g.search_idx.escape, category)
 
@@ -1714,8 +1700,6 @@ def enfilterify(query):
             filters.append({ 'bool': {
                 'must': must
             }})
-
-    # PLEASE FIX ME... maybe?
 
     mt = get_str('mt')
     mt = get_single(mt)
@@ -1734,107 +1718,24 @@ def enfilterify(query):
     #
 
     names = get_str('names')
-
-    if names:
-
-        if len(names) == 1:
-
-            names = get_single(names)
-            esc_names = names
-
-            filters.append({ 'term': {
-                'names_all' : esc_names
-            }})
-        else:
-
-            esc_names = names
-
-            filters.append({ 'terms': {
-                'names_all' : esc_names
-            }})
-
-    #
-
     name = get_str('name')
 
+    if names:
+        filters.append(simple_enfilter('names_all', names))
+
     if name:
-
-        if len(name) == 1:
-
-            names = get_single(name)
-            esc_name = name
-
-            filters.append({ 'term': {
-                'wof:name' : esc_name
-            }})
-        else:
-
-            esc_name = name
-
-            filters.append({ 'terms': {
-                'wof:name' : esc_name
-            }})
-
-    #
+        filters.append(simple_enfilter('wof:name', name))
 
     concordance = get_str('concordance')
 
     if concordance:
-
-        if len(concordance) == 1:
-
-            concordance = get_single(concordance)
-            esc_conc = concordance
-
-            filters.append({ 'term': {
-                'wof:concordances_sources' : esc_conc
-            }})
-        else:
-
-            esc_concs = concordance
-
-            filters.append({ 'terms': {
-                'wof:concordances_sources' : esc_concs
-            }})
-
-    #
+        filters.append(simple_enfilter('wof:concordances_sources', concordance))
 
     if locality:
-
-        if len(locality) == 1:
-
-            locality = get_single(locality)
-            esc_loc = locality
-
-            filters.append({ 'term': {
-                'locality_id' : esc_loc
-            }})
-        else:
-
-            esc_locs = locality
-
-            filters.append({ 'terms': {
-                'locality_id' : esc_locs
-            }})
+        filters.append(simple_enfilter('locality_id', locality))
 
     if region:
-
-        if len(region) == 1:
-
-            region = get_single(region)
-            esc_loc = region
-
-            filters.append({ 'term': {
-                'region_id' : esc_loc
-            }})
-
-        else:
-
-            esc_locs = region
-
-            filters.append({ 'terms': {
-                'region_id' : esc_locs
-            }})
+        filters.append(simple_enfilter('region_id', region))
 
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536
@@ -1854,6 +1755,24 @@ def enfilterify(query):
         }
 
     return query
+
+def simple_enfilter(field, terms):
+
+    if len(terms) == 1:
+
+        term = get_single(terms)
+        esc_term = flask.g.search_idx.escape(term)
+            
+        return { 'term': { field: esc_term }}
+
+    else:
+
+        esc_terms = []
+            
+        for t in terms:
+            esc_terms.append(flask.g.search_idx.escape(t))
+
+        return { 'terms': { field : esc_terms }}
 
 def build_pagination_url():
 
