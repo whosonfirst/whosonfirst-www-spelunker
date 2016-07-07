@@ -996,7 +996,6 @@ def machinetag_hierarchies(field, **kwargs):
     total_count = 0
 
     if rsp_filter:
-        print rsp_filter
         buckets = rsp_filter(buckets)
 
     for b in buckets:
@@ -1315,7 +1314,8 @@ def searchify():
     try:
         query, rsp = do_search()
     except Exception, e:
-        return flask.render_template('search_form.html')
+        logging.error("query failed because %s" % e)
+        return flask.render_template('search_form.html', error=True)
 
     # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/6
 
@@ -1447,7 +1447,7 @@ def do_search():
         }
     }
 
-    print pprint.pformat(query_scored)
+    # print pprint.pformat(query_scored)
 
     # 4. sorting
 
@@ -1563,7 +1563,22 @@ def enfilterify(query):
     tag = get_str('tag')
     category = get_str('category')
 
-    #
+    mt = get_str('mt')
+    mt = get_single(mt)
+
+    name = get_str('name')		# wof:name
+    names = get_str('names')		# names_all
+
+    preferred = get_str('preferred')	# names_preferred
+    alt = get_str('alt')		# names_colloquial; names_variant
+
+    colloquial = get_str('colloquial')	# names_colloquial
+    variant = get_str('variant')	# names_variant
+
+    country = get_int('country_id')
+    region = get_int('region_id')
+    locality = get_int('locality_id')
+    neighbourhood = get_int('neighbourhood_id')
 
     exclude = get_str('exclude')
     include = get_str('include')
@@ -1697,9 +1712,6 @@ def enfilterify(query):
                 'must': must
             }})
 
-    mt = get_str('mt')
-    mt = get_single(mt)
-
     if mt:
 
         machinetag_filter = machinetag.elasticsearch.wildcard.query_filter_from_string(mt)
@@ -1711,15 +1723,6 @@ def enfilterify(query):
                 machinetag_field : machinetag_filter
             }})
         
-    name = get_str('name')
-    names = get_str('names')
-
-    preferred = get_str('preferred')
-    alt = get_str('alt')
-
-    colloquial = get_str('colloquial')
-    variant = get_str('variant')
-
     if names:
         filters.append(simple_enfilter('names_all', names))
 
@@ -1737,11 +1740,6 @@ def enfilterify(query):
 
     if name:
         filters.append(simple_enfilter('wof:name', name))
-
-    country = get_int('country_id')
-    region = get_int('region_id')
-    locality = get_int('locality_id')
-    neighbourhood = get_int('neighbourhood_id')
 
     if country:
         filters.append(simple_enfilter('country_id', country))
@@ -1785,8 +1783,11 @@ def simple_enfilter(field, terms):
 
         term = get_single(terms)
         esc_term = flask.g.search_idx.escape(term)
-            
-        return { 'term': { field: esc_term }}
+
+        # the old way (20160707/thisisaaronland)
+        # return { 'term': { field: esc_term }}
+
+        return { 'query': { 'match': { field: { 'query': esc_term, 'operator': 'and' }}} }
 
     else:
 
@@ -1795,7 +1796,23 @@ def simple_enfilter(field, terms):
         for t in terms:
             esc_terms.append(flask.g.search_idx.escape(t))
 
-        return { 'terms': { field : esc_terms }}
+        # the old way (20160707/thisisaaronland)
+        # return { 'terms': { field : esc_terms } }
+
+        min = len(terms)
+
+        must = []
+
+        for t in esc_terms:
+
+            # the old way (20160707/thisisaaronland)
+            # must.append({ 'term': { field: t }})
+
+            must.append({ 'query': { 'match': { field: { 'query': t, 'operator': 'and' }}}})
+            
+        return {
+            'bool': { 'must': must }
+        }
 
 def build_pagination_url():
 
@@ -1839,7 +1856,7 @@ def get_by_id(id):
     try:
         return docs[-1]
     except Exception, e:
-        print "failed to retrieve %s" % id
+        logging.warning("failed to retrieve %s" % id)
         return None
 
 def has_concordance(src, label):
@@ -1916,7 +1933,7 @@ def get_by_concordance(id, src):
     try:
         return docs[0]
     except Exception, e:
-        print "failed to retrieve %s" % id
+        logging.warning("failed to retrieve %s" % id)
         return None
 
 def has_language(lang, spoken=False):
