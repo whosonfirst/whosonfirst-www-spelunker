@@ -32,7 +32,7 @@ There is <span class="hey-look">one place</span> matching <q class="hey-look">{{
 {% else %}
 {% if query %}
 There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q>
-% else %}
+{% else %}
 There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> matching your query
 {% endif %}
 {% if pagination.pages > 1 %}
