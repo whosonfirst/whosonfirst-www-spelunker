@@ -1416,7 +1416,7 @@ def do_search():
 
     filters = []
 
-    if q != '*':
+    if esc_q != '*':
 
         filters.extend([
             {
@@ -1448,7 +1448,7 @@ def do_search():
         }
     }
 
-    # print pprint.pformat(query_scored)
+    print pprint.pformat(query_scored)
 
     # 4. sorting
 
@@ -1719,6 +1719,19 @@ def enfilterify(query):
 
     names = get_str('names')
     name = get_str('name')
+
+    preferred = get_str('preferred')
+    variant = get_str('variant')
+    alt = get_str('alt')
+
+    if preferred:
+        filters.append(simple_enfilter('names_preferred', preferred))
+
+    if variant:
+        filters.append(simple_enfilter('names_variant', variant))
+
+    if alt:
+        filters.append(simple_enfilter('names_colloquial', alt))
 
     if names:
         filters.append(simple_enfilter('names_all', names))
