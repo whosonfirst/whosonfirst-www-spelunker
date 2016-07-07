@@ -1411,9 +1411,6 @@ def do_search():
     # 3. scoring the results by sub-properties
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
 
-    # TO DO - boost on names_all_preferred
-    # https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/17
-
     filters = []
 
     if esc_q != '*':
@@ -1429,7 +1426,9 @@ def do_search():
                 'filter': { 'term': { 'wof:name' : esc_q } }, 'weight': 1.5
             }
         ])
-        
+
+    # TO DO: check to see if we have any names_* related parameters...
+
     filters.extend([
         {
             'filter': { 'not': { 'term': { 'wof:placetype' : 'venue' } } }, 'weight': 2.0
@@ -1563,9 +1562,6 @@ def enfilterify(query):
 
     tag = get_str('tag')
     category = get_str('category')
-
-    locality = get_int('locality_id')
-    region = get_int('region_id')
 
     #
 
@@ -1715,40 +1711,54 @@ def enfilterify(query):
                 machinetag_field : machinetag_filter
             }})
         
-    #
-
-    names = get_str('names')
     name = get_str('name')
+    names = get_str('names')
 
     preferred = get_str('preferred')
-    variant = get_str('variant')
     alt = get_str('alt')
 
-    if preferred:
-        filters.append(simple_enfilter('names_preferred', preferred))
-
-    if variant:
-        filters.append(simple_enfilter('names_variant', variant))
-
-    if alt:
-        filters.append(simple_enfilter('names_colloquial', alt))
+    colloquial = get_str('colloquial')
+    variant = get_str('variant')
 
     if names:
         filters.append(simple_enfilter('names_all', names))
 
+    if preferred:
+        filters.append(simple_enfilter('names_preferred', preferred))
+
+    if alt:
+        filters.append(simple_enfilter('names_alt', alt))
+
+    if colloquial:
+        filters.append(simple_enfilter('names_colloquial', colloquial))
+
+    if variant:
+        filters.append(simple_enfilter('names_variant', variant))
+
     if name:
         filters.append(simple_enfilter('wof:name', name))
+
+    country = get_int('country_id')
+    region = get_int('region_id')
+    locality = get_int('locality_id')
+    neighbourhood = get_int('neighbourhood_id')
+
+    if country:
+        filters.append(simple_enfilter('country_id', country))
+
+    if region:
+        filters.append(simple_enfilter('region_id', region))
+
+    if locality:
+        filters.append(simple_enfilter('locality_id', locality))
+
+    if neighbourhood:
+        filters.append(simple_enfilter('neighbourhood_id', neighbourhood))
 
     concordance = get_str('concordance')
 
     if concordance:
         filters.append(simple_enfilter('wof:concordances_sources', concordance))
-
-    if locality:
-        filters.append(simple_enfilter('locality_id', locality))
-
-    if region:
-        filters.append(simple_enfilter('region_id', region))
 
     # oh elasticsearch... Y U MOON LANGUAGE?
     # https://github.com/elastic/elasticsearch/issues/1688#issuecomment-5415536

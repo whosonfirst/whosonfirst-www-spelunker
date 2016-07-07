@@ -14,6 +14,7 @@
 {% for doc in docs %}
 <li class="loc" data-latitude="{% if doc.properties.get('lbl:latitude') %}{{ doc.properties.get("lbl:latitude") |e }}{% else %}{{ doc['properties']['geom:latitude'] | e}}{% endif %}" data-longitude="{% if doc.properties.get('lbl:longitude') %}{{ doc.properties.get("lbl:longitude") |e }}{% else %}{{ doc['properties']['geom:longitude'] | e}}" data-id="{{ doc['properties']['wof:id'] | e}}{% endif %}">
   <code>{{ doc['properties']['wof:id'] |e }}</code>
+  <span class="flag" data-country="{{ doc['properties'].get('wof:country') | lower |e }}"></span>
   <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] |e }}</a>
   <small>
     &#8212;
@@ -78,8 +79,8 @@
 {% include "inc_pagination.html" %}
 </div>
 
-  {% if docs %}
+{% if docs %}
   <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.docs.js') }}"></script>
   {% else %}
   <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.doc.js') }}"></script>
-  {% endif %}
+{% endif %}
