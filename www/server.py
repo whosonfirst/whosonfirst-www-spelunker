@@ -1447,7 +1447,7 @@ def do_search():
         }
     }
 
-    # print pprint.pformat(query_scored)
+    print pprint.pformat(query_scored)
 
     # 4. sorting
 
@@ -1782,7 +1782,11 @@ def simple_enfilter(field, terms):
     if len(terms) == 1:
 
         term = get_single(terms)
-        esc_term = flask.g.search_idx.escape(term)
+
+        if type(term) == types.IntType:
+            esc_term = term
+        else:
+            esc_term = flask.g.search_idx.escape(term)
 
         # the old way (20160707/thisisaaronland)
         # return { 'term': { field: esc_term }}
@@ -1794,7 +1798,11 @@ def simple_enfilter(field, terms):
         esc_terms = []
             
         for t in terms:
-            esc_terms.append(flask.g.search_idx.escape(t))
+
+            if type(t) == types.IntType:
+                esc_terms.append(t)
+            else:
+                esc_terms.append(flask.g.search_idx.escape(t))
 
         # the old way (20160707/thisisaaronland)
         # return { 'terms': { field : esc_terms } }
