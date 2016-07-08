@@ -12,7 +12,7 @@
 
 <ol class="list">
 {% for doc in docs %}
-<li class="loc" data-latitude="{% if doc.properties.get('lbl:latitude') %}{{ doc.properties.get("lbl:latitude") |e }}{% else %}{{ doc['properties']['geom:latitude'] | e}}{% endif %}" data-longitude="{% if doc.properties.get('lbl:longitude') %}{{ doc.properties.get("lbl:longitude") |e }}{% else %}{{ doc['properties']['geom:longitude'] | e}}" data-id="{{ doc['properties']['wof:id'] | e}}{% endif %}">
+<li class="loc" data-id="{{ doc.properties.get('wof:id') | e}}" data-latitude="{% if doc.properties.get('lbl:latitude') %}{{ doc.properties.get("lbl:latitude") |e }}{% else %}{{ doc['properties']['geom:latitude'] | e}}{% endif %}" data-longitude="{% if doc.properties.get('lbl:longitude') %}{{ doc.properties.get("lbl:longitude") |e }}{% else %}{{ doc['properties']['geom:longitude'] | e}}" data-id="{{ doc['properties']['wof:id'] | e}}{% endif %}">
   <code>{{ doc['properties']['wof:id'] |e }}</code>
   <span class="flag" data-country="{{ doc['properties'].get('wof:country') | lower |e }}"></span>
   <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] |e }}</a>

@@ -12,7 +12,7 @@ window.addEventListener("load", function load(event){
 	var el = flags[i];
 	var code = el.getAttribute("data-country");
 	var alpha = ":" + code + ":";
-	console.log(alpha);
+	// console.log(alpha);
 
 	// gggggrrnnnnggnnngnhhhhhhh...
 	// el.innerHTML = String.fromCodePoint();
