@@ -3,7 +3,10 @@
 {% block content %}
 
 <div class="row">
-<h3>Descendants of <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] | e }}</a></h3>
+<h3>
+Descendants of <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] | e }}</a>
+{% if request.args.get('exclude', '') == "nullisland" %}<small>filtering out any place that is visiting <a href="{{ url_for('nullisland') }}" class="hey-look">Null Island</a> right now</small>{% endif %}
+</h3>
 </div>
 
 {% include "inc_docs.html" %}
