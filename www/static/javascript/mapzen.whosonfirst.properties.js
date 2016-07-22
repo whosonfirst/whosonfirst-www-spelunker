@@ -24,6 +24,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
 		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
+		'wof.concordances.4sq:id': self.render_foursquare_id,
 		'wof.concordances.gn:id': self.render_geonames_id,
 		'wof.concordances.gp:id': self.render_woedb_id,
 		'wof.concordances.woe:id': self.render_woedb_id,
@@ -67,6 +68,7 @@ mapzen.whosonfirst.properties = (function(){
 	    };
 
 	    var dict_mappings = {
+		'wof.concordances.4sq:id': 'foursquare',
 		'wof.concordances.dbp:id': 'dbpedia',
 		'wof.concordances.faa:code': 'faa',
 		'wof.concordances.fb:id': 'freebase',
@@ -186,6 +188,11 @@ mapzen.whosonfirst.properties = (function(){
 	'render_wof_placetype': function(d, ctx){
 	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
 	    var link = root + "placetypes/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_foursquare_id': function(d, ctx){
+	    var link = "https://www.foursquare.com/v/" + encodeURIComponent(d) + "/";
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
