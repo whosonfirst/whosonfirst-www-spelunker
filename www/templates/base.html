@@ -23,6 +23,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.spelunker.mobile.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.yesnofix.css') }}" />
 
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-3.1.0.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/bootstrap.min.js') }}"></script>
+
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.hash.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.label.js') }}"></script>
@@ -65,15 +68,39 @@
     <div id="search" class="pull-right">
       <form method="GET" action="{{ url_for('searchify') }}" class="form-inline pull-right" role="form">
 
+	{% if 0 %}
+
 	<div class="form-group">
 	  <label class="sr-only" for="q">Search for a place</label>
 	  <input type="text" name="q" id="q" placeholder="Search for a place" class="form-control"/>
 	</div>
 	<button type="submit" class="btn">Search</button>
+
+	{% else %}
+
+	<div class="input-group">
+	  <input type="text" class="form-control" aria-label="..." name="q" id="q" placeholder="Search for a place">
+	  <div class="input-group-btn">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?q='+encodeURIComponent(q);return false;" />all the things</a></li>
+	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?name='+encodeURIComponent(q);return false;" />default name</a></li>
+	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?preferred='+encodeURIComponent(q);return false;" />preferred names</a></li>
+	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?alt='+encodeURIComponent(q);return false;" />variant names</a></li>
+            </ul>
+	  </div><!-- /btn-group -->
+	</div><!-- /input-group -->
+
+	{% endif %}
+
       </form>
       <br clear="all" />
+      <br/>
 
+      {% if 0 %}
       <small class="italic pull-right not-a-geocoder">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> a <a href="https://mapzen.com/pelias">proper geocoder</a></small>
+      {% endif %}
+
     </div>
 
     </div>
