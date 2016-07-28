@@ -199,3 +199,19 @@ q {
 .caveat:before {
     /* content: " – "; */
 }
+
+input {
+    border-radius: 0px !important;
+}
+
+button {
+    border-radius: 0px !important;
+}
+
+pre {
+    border-radius: 0px !important;
+}
+
+.dropdown-menu {
+    border-radius: 0px !important;
+}
