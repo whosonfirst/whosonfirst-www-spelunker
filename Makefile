@@ -59,7 +59,7 @@ refill:
 js: js-dependencies js-app
 
 js-dependencies:
-	cat www/static/javascript/localforage.min.js www/static/javascript/leaflet.min.js www/static/javascript/leaflet.label.min.js www/static/javascript/FileSaver.min.js www/static/javascript/tangram.min.js > www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
+	cat www/static/javascript/jquery-3.1.0.min.js www/static/javascript/bootstrap.min.js www/static/javascript/localforage.min.js www/static/javascript/leaflet.min.js www/static/javascript/leaflet.label.min.js www/static/javascript/FileSaver.min.js www/static/javascript/tangram.min.js > www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 	echo "" >> www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 

@@ -438,7 +438,7 @@ mapzen.whosonfirst.data = (function(){
 	var _endpoint = "https://whosonfirst.mapzen.com/data/";
 
     	// this should only be necessary if the mapzen servers are poorly configured
-	// _endpoint = "https://s3.amazonaws.com/whosonfirst.mapzen.com/data/";
+	_endpoint = "https://s3.amazonaws.com/whosonfirst.mapzen.com/data/";
 
 	var self = {
 
@@ -1424,21 +1424,28 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.supersedes',
 		'wof.superseded_by',
 		// TO DO : please to write js.whosonfirst.placetypes...
-		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.region_id',
-		'wof.hierarchy.county_id', 'wof.hierarchy.locality_id', 'wof.hierarchy.neighbourhood_id',
+		'wof.hierarchy.continent_id', 'wof.hierarchy.country_id', 'wof.hierarchy.macroregion_id', 'wof.hierarchy.region_id',
+		'wof.hierarchy.county_id', 'wof.hierarchy.localadmin_id', 'wof.hierarchy.borough_id', 'wof.hierarchy.locality_id',
+		'wof.hierarchy.macrohood_id', 'wof.hierarchy.neighbourhood_id', 'wof.hierarchy.microhood_id',
 		'wof.hierarchy.campus_id', 'wof.hierarchy.venue_id'
 	    ];
 
 	    var text_callbacks = {
 		'wof.id': mapzen.whosonfirst.yesnofix.render_code,
+		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
+		'wof.concordances.4sq:id': self.render_foursquare_id,
 		'wof.concordances.gn:id': self.render_geonames_id,
-		//'wof.concordances.gp:id': self.render_woedb_id,
-		//'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.gp:id': self.render_woedb_id,
+		'wof.concordances.woe:id': self.render_woedb_id,
+		'wof.concordances.oa:id': self.render_ourairport_id,
+		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.tgn:id': self.render_tgn_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
+		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
 		'wof.megacity': self.render_megacity,
+		'wof.repo': self.render_wof_repo,
 		'wof.tags': self.render_wof_tags,
 		'wof.name': self.render_wof_name,
 		'sg.city': self.render_simplegeo_city,
@@ -1471,21 +1478,34 @@ mapzen.whosonfirst.properties = (function(){
 	    };
 
 	    var dict_mappings = {
+		'wof.concordances.4sq:id': 'foursquare',
 		'wof.concordances.dbp:id': 'dbpedia',
+		'wof.concordances.faa:code': 'faa',
 		'wof.concordances.fb:id': 'freebase',
 		'wof.concordances.fct:id': 'factual',
 		'wof.concordances.gn:id': 'geonames',
 		'wof.concordances.gp:id': 'geoplanet',
+		'wof.concordances.icao:code': 'icao',
+		'wof.concordances.iata:code': 'iata',
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
+		'wof.concordances.oa:id': 'ourairports',
+		'wof.concordances.qs:id': 'quattroshapes',
+		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
+		'wof.hierarchy.borough_id': 'borough',
 		'wof.hierarchy.continent_id': 'continent',
 		'wof.hierarchy.country_id': 'country',
+		'wof.hierarchy.macroregion_id': 'macro region',
 		'wof.hierarchy.region_id': 'region',
+		'wof.hierarchy.campus_id': 'campus',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
+		'wof.hierarchy.macrohood_id': 'macro hood',
 		'wof.hierarchy.neighbourhood_id': 'neighbourhood',
+		'wof.hierarchy.microhood_id': 'micro hood',
 	    };
 
 	    var dict_renderers = function(d, ctx){
@@ -1561,9 +1581,28 @@ mapzen.whosonfirst.properties = (function(){
 	    
 	},
 
+	'render_wof_repo': function(d, ctx){
+
+	    var root = 'https://github.com/whosonfirst-data/';
+
+	    // until we switch the org
+
+	    if (d == 'whosonfirst-data'){
+		var root = 'https://github.com/whosonfirst/';
+	    }
+	    
+	    var link = root + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
 	'render_wof_placetype': function(d, ctx){
 	    var root = mapzen.whosonfirst.spelunker.abs_root_url();
 	    var link = root + "placetypes/" + encodeURIComponent(d) + "/";
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_foursquare_id': function(d, ctx){
+	    var link = "https://www.foursquare.com/v/" + encodeURIComponent(d) + "/";
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
@@ -1577,6 +1616,18 @@ mapzen.whosonfirst.properties = (function(){
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
+	'render_wikipedia_page': function(d, ctx){
+
+	    // decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport")
+	    // "Montréal-Pierre_Elliott_Trudeau_International_Airport"
+	    // encodeURIComponent(decodeURI("Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"))
+	    // "Montr%C3%A9al-Pierre_Elliott_Trudeau_International_Airport"
+
+	    d = decodeURI(d);
+	    var link = "https://www.wikipedia.org/wiki/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
 	'render_wikidata_id': function(d, ctx){
 	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
@@ -1584,6 +1635,16 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_tgn_id': function(d, ctx){
 	    var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_ourairport_id': function(d, ctx){
+	    var link = "http://ourairports.com/airports/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_faa_code': function(d, ctx){
+	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
@@ -2665,6 +2726,29 @@ mapzen.whosonfirst.spelunker = (function(){
 				features.push(feature);		
 			}
 
+			// Just draw Null Island and be done with yeah?
+
+			if (swlat == 0.0 && swlon == 0.0 && nelat == 0.0 && nelon == 0.0){
+
+			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
+
+			    var on_fetch = function(feature){
+				
+				var bbox = mapzen.whosonfirst.geojson.derive_bbox(feature);
+				var sw = [ bbox[0], bbox[1] ]
+				var ne = [ bbox[2], bbox[3] ]
+
+				map.fitBounds([ sw, ne ]);
+
+				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
+			    };
+    
+			    mapzen.whosonfirst.enmapify.render_id(map, 1, on_fetch);
+			    return;
+			}
+
+			// Okay, draw some points
+
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
 			var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
@@ -2735,4 +2819,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2016-05-18T01:16:42 UTC
+// last bundled at 2016-07-28T23:22:44 UTC
