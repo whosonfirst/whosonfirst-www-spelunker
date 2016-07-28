@@ -79,7 +79,7 @@
 	{% else %}
 
 	<div class="input-group">
-	  <input type="text" class="form-control" aria-label="..." name="q" id="q" placeholder="Search for a place">
+	  <input type="text" class="form-control" aria-label="..." name="q" id="q" placeholder="Search for a place" value="{% if query_string %}{{ query_string|escape }}{% endif %}" />
 	  <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search <span class="caret"></span></button>
             <ul class="dropdown-menu">
@@ -87,6 +87,7 @@
 	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?name='+encodeURIComponent(q);return false;" />default name</a></li>
 	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?preferred='+encodeURIComponent(q);return false;" />preferred names</a></li>
 	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?alt='+encodeURIComponent(q);return false;" />variant names</a></li>
+	      <li><a href="#" onclick="var q=document.getElementById('q');q=q.value;location.href='{{ url_for('searchify') }}?names='+encodeURIComponent(q);return false;" />all the names</a></li>
             </ul>
 	  </div><!-- /btn-group -->
 	</div><!-- /input-group -->

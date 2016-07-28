@@ -1319,8 +1319,28 @@ def searchify():
 
     # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/6
 
+    query_string = None
+
     q = get_str('q')
     q = get_single(q)
+
+    name = get_str('name')
+    name = get_single(name)
+
+    names = get_str('names')
+    names = get_single(names)
+
+    preferred = get_str('preferred')
+    preferred = get_single(preferred)
+
+    alt = get_str('alt')
+    alt = get_single(alt)
+
+    for possible in (q, name, names, preferred, alt):
+
+        if possible != None and possible != "":
+            query_string = possible
+            break
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1335,6 +1355,7 @@ def searchify():
         'pagination': pagination,
         'pagination_url': pagination_url,
         'query': q,
+        'query_string': query_string,
         'es_query': query,
         'facets': facets,
         'facet_url': facet_url,
