@@ -92,6 +92,8 @@ def init():
 
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
+    
+    # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
 
     search_idx = search.query(host=search_host, port=search_port)
     flask.g.search_idx = search_idx

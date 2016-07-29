@@ -3,7 +3,7 @@
 {% block head %}
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
-<meta property="og:title" content="{% if query==None %}Search results for a thing someone asked Who's On First about{% else %}Search results for &#8220;{{ query.decode('utf-8') |e }}&#8221;{% endif %}" />
+<meta property="og:title" content="{% if query_string==None %}Search results for a thing someone asked Who's On First about{% else %}Search results for &#8220;{{ query_string.decode('utf-8') |e }}&#8221;{% endif %}" />
 <meta property="og:description" content="{% if pagination.count == 0 %}Nothing matches this query. Sad trombone...{% elif pagination.total == 1 %}There is one match for this query{% else %}There are {{ pagination.total |number_format|e }} places that match this query{% endif %}" />
 <meta property="og:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
 
@@ -11,7 +11,7 @@
 <meta property="twitter:site" content="@alloftheplaces" />
 <meta property="twitter:creator" content="@alloftheplaces" />
 <meta property="twitter:url" content="{{ pagination_url |e }}" />
-<meta property="twitter:title" content="{% if query==None %}Search results for a thing someone asked Who's On First about{% else %}Search results for &#8220;{{ query.decode('utf-8') |e }}&#8221;{% endif %}" />
+<meta property="twitter:title" content="{% if query_string==None %}Search results for a thing someone asked Who's On First about{% else %}Search results for &#8220;{{ query_string.decode('utf-8') |e }}&#8221;{% endif %}" />
 <meta property="twitter:description" content="{% if pagination.count == 0 %}Nothing matches this query. Sad trombone...{% elif pagination.total == 1 %}There is one match for this query{% else %}There are {{ pagination.total |number_format|e }} places that match this query{% endif %}" />
 <meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
 {% endblock %}
@@ -19,7 +19,7 @@
 {% if pagination.count == 0 %}
 
 <div class="row">
-<h2>😿  <small>can not find anything matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q></small></h2>
+<h2>😿  <small>can not find anything matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q></small></h2>
 </div>
 
 {% include "inc_query.html" %}
@@ -27,12 +27,12 @@
 {% else %}
 
 <div class="row"><h3>
-{% if query %}
+{% if query_string %}
 
 {% if pagination.total == 1 %}
-There is <span class="hey-look">one place</span> matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q>
+There is <span class="hey-look">one place</span> matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q>
 {% else %}
-There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> matching <q class="hey-look">{{ query.decode('utf-8') |e }}</q>
+There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q>
 {% endif %}
 
 {% else %}

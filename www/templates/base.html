@@ -66,7 +66,7 @@
     </ul>
 
     <div id="search" class="pull-right">
-      <form method="GET" action="{{ url_for('searchify') }}" class="form-inline pull-right" role="form">
+      <form method="GET" action="{{ url_for('searchify') }}" class="form-inline pull-right" role="form" style="margin-bottom:.75em;">
 
 	{% if 0 %}
 
@@ -96,11 +96,8 @@
 
       </form>
       <br clear="all" />
-      <br/>
 
-      {% if 0 %}
-      <small class="italic pull-right not-a-geocoder">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> a <a href="https://mapzen.com/pelias">proper geocoder</a></small>
-      {% endif %}
+      <small class="italic pull-right not-a-geocoder">remember &#8212; this is a simple full-text search tool and <span class="hey-look">not</span> an <a href="https://mapzen.com/pelias">actual geocoder</a></small>
 
     </div>
 
