@@ -38,6 +38,10 @@ Predicates for <span class="hey-look">{{ whoami |e }}</span> in Who's On First
 {% endif %}
 </h3>
 
+{% if es_query %}
+{% include "inc_query_machinetags.html" %}
+{% endif %}
+
 <ul class="list-inline see-also see-also-mt">
 
 {% if whatami == 'namespace' %}

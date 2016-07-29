@@ -47,6 +47,10 @@ Hierarchies for <span class="hey-look">all the machine tags</span> in Who's On F
 {% endif %}
 </ul>
 
+{% if es_query %}
+{% include "inc_query_machinetags.html" %}
+{% endif %}
+
 <ul class="list-inline">
 {% for b in mt %}
   <small>
