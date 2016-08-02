@@ -140,6 +140,16 @@ def number_format(value, tsep=',', dsep='.'):
 
     return lhs + splt[:-1] + rhs
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return flask.render_template('404.html'), 404
+
+"""
+@app.errorhandler(500)
+def server_error(e):
+    return flask.render_template('500.html'), 404
+"""
+
 @app.route("/", methods=["GET"])
 def index():
 

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Here be dragons{% endblock %}
+{% block head %}
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+<meta property="og:title" content="Here be dragons" />
+<meta property="og:description" content="" />
+<meta property="og:image" content="{{ url_for('static', filename='images/here_be_dragons.jpg') }}" />
+
+<meta property="twitter:card" value="summary" />
+<meta property="twitter:site" content="@alloftheplaces" />
+<meta property="twitter:creator" content="@alloftheplaces" />
+<meta property="twitter:url" content="{{ request.base_url |e }}" />
+<meta property="twitter:title" content="Here be dragons" />
+<meta property="twitter:description" content="" />
+<meta property="twitter:image" content="{{ url_for('static', filename='images/here_be_dragons.jpg') }}" />
+{% endblock %}
+{% block content %}
+
+<div class="row">
+
+<h3>404 Here Be Dragons</h3>
+
+<img src="{{ url_for('static', filename='images/here_be_dragons.jpg') }}" style="float:left; border:4px solid #000;margin-right:5em;" />
+
+<blockquote style="padding-top:0px;">
+<p><q style="font-weight:200;">Reports that say that something hasn't happened are always interesting to me, because as we know, there are known knowns; there are things we know we know. We also know there are known unknowns; that is to say we know there are some things we do not know. But there are also unknown unknowns – the ones we don't know we don't know. And if one looks throughout history ... it is the latter category that tend to be the difficult ones.</q></p>
+</blockquote>
+
+</div>
+
+{% endblock %}
