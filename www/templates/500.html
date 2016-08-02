@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}500 My bad...{% endblock %}
+{% block head %}
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+<meta property="og:title" content="My bad..." />
+<meta property="og:description" content="" />
+<meta property="og:image" content="{{ url_for('static', filename='images/surprise_kittens.jpg') }}" />
+
+<meta property="twitter:card" value="summary" />
+<meta property="twitter:site" content="@alloftheplaces" />
+<meta property="twitter:creator" content="@alloftheplaces" />
+<meta property="twitter:url" content="{{ request.base_url |e }}" />
+<meta property="twitter:title" content="My bad..." />
+<meta property="twitter:description" content="" />
+<meta property="twitter:image" content="{{ url_for('static', filename='images/surprise_kittens.jpg') }}" />
+{% endblock %}
+{% block content %}
+
+<div class="row">
+
+<h3>500 <span class="hey-look">My bad...</span></h3>
+
+<img src="{{ url_for('static', filename='images/surprise_kittens.jpg') }}" style="float:left; border:4px solid #000;margin-right:5em;" />
+
+<p>The computer-robots are misbehaving. It's not immediately clear why at the moment. <span class="hey-look">It's not you, it's us.</span> We apologize for the inconvience and hope to have the problem sorted out, shortly.</p>
+
+<p>Good times.</p>
+
+</div>
+
+{% endblock %}
