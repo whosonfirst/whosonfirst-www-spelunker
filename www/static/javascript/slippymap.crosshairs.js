@@ -16,16 +16,17 @@ slippymap.crosshairs = (function(){
 	    };
 	
 	    window.onresize = draw;
-	    draw();
+
+	    map.on('load', draw);
 
 	    var coords = function(){
 		self.draw_coords(map);
 	    };
 
+	    map.on('load', coords);
+	    map.on('move', coords);
 	    map.on('dragend', coords);
 	    map.on('zoomend', coords);
-
-	    coords();
 	},
 
 	'draw_coords': function(map){
