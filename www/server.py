@@ -148,6 +148,11 @@ def page_not_found(e):
 def server_error(e):
     return flask.render_template('500.html'), 404
 
+@app.route("/500", methods=["GET"])
+@app.route("/500/", methods=["GET"])
+def server_error():
+    flask.abort(500)
+
 @app.route("/", methods=["GET"])
 def index():
 
