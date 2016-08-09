@@ -27,7 +27,7 @@ index:
 	ubuntu/setup-postgis-index.sh $(data)
 	ubuntu/setup-elasticsearch-index.sh $(data)
 
-mapzen: styleguide tangram refill yesnofix
+mapzen: styleguide tangram refill yesnofix crosshairs
 
 pyzen:
 	./ubuntu/setup-py-mapzen.sh
@@ -82,3 +82,6 @@ es-index:
 localforage:
 	curl -s -o www/static/javascript/localforage.js https://raw.githubusercontent.com/mozilla/localForage/master/dist/localforage.js
 	curl -s -o www/static/javascript/localforage.min.js https://raw.githubusercontent.com/mozilla/localForage/master/dist/localforage.min.js
+
+crosshairs:
+	curl -s -o www/static/javascript/slippymap.crosshairs.js https://raw.githubusercontent.com/whosonfirst/js-slippymap-crosshairs/master/src/slippymap.crosshairs.js
