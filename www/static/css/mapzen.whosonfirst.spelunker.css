@@ -105,7 +105,7 @@ q {
     height: 400px;
     width:100%;
     border: solid thin;
-    margin-bottom:1.5em;
+    margin-bottom:.75em;
 }
 
 .facetbox {
@@ -214,4 +214,19 @@ pre {
 
 .dropdown-menu {
     border-radius: 0px !important;
+}
+
+#slippymap-coords:before {
+    content:"the map is currently centered at ";
+}
+
+#slippymap-coords {
+    text-align:right;
+    font-size:.8em;
+    color:#666;
+    margin-bottom:1em;
+}
+
+#slippymap-coords:hover {
+    color: #000;
 }
