@@ -12,6 +12,7 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 from flask.ext.cors import cross_origin
+# from flask_cors import cross_origin
 
 import re
 import time
@@ -34,6 +35,9 @@ import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
 import mapzen.whosonfirst.uri as uri
+
+# helpful for figuring out headers aren't being set...
+# logging.getLogger('flask_cors').level = logging.DEBUG
 
 # http://flask.pocoo.org/snippets/35/
 
@@ -187,8 +191,11 @@ def info(id):
 
     return flask.render_template('id.html', **template_args)
 
-@cross_origin()
+# https://www.w3.org/TR/cors/#resource-requests
+# https://github.com/CoryDolphin/flask-cors#route-specific-cors-via-decorator
+
 @app.route("/id/<int:id>.geojson", methods=["GET"])
+@cross_origin()
 def geojson(id):
 
     doc = get_by_id(id)
@@ -1482,8 +1489,6 @@ def do_search():
             'boost_mode': 'multiply',
         }
     }
-
-    print pprint.pformat(query_scored)
 
     # 4. sorting
 
