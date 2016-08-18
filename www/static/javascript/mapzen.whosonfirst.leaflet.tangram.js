@@ -42,6 +42,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			    	    var hash = new L.Hash(map);
 				}
 
+			        var scale = L.control.scale();
+				scale.addTo(map);
+
 				var tangram = self.tangram();
 				tangram.addTo(map);
 
