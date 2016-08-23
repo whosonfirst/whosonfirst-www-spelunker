@@ -14,19 +14,22 @@ slippymap.crosshairs = (function(){
 	    var draw = function(){
 		self.draw_crosshairs(id);
 	    };
-	
-	    window.onresize = draw;
 
-	    map.on('load', draw);
+	    window.onresize = draw;
 
 	    var coords = function(){
 		self.draw_coords(map);
 	    };
 
-	    map.on('load', coords);
 	    map.on('move', coords);
 	    map.on('dragend', coords);
 	    map.on('zoomend', coords);
+	
+	    // because for SOME REASON these don't both work reliably in map.on('load')
+	    // because... COMPUTERS? (20160809/thisisaaronland)
+
+	    draw();
+	    coords();
 	},
 
 	'draw_coords': function(map){
@@ -54,23 +57,25 @@ slippymap.crosshairs = (function(){
 	    var lat = pos['lat'];
 	    var lon = pos['lng'];	  
 	    
+	    var zoom = map.getZoom();
+
 	    var ll = undefined;
 	    var title = undefined;
 
 	    if (latlon){
 
-		ll = lat.toFixed(6) + ", " + lon.toFixed(6);
-		title = "coordinates are display as latitude,longitude – click to toggle";
+		ll = lat.toFixed(6) + ", " + lon.toFixed(6) + " #" + zoom;
+		title = "coordinates are displayed as latitude,longitude – click to toggle";
 	    }
 	    
 	    else {
 
-		ll = lon.toFixed(6) + ", " + lat.toFixed(6);
+		ll = lon.toFixed(6) + ", " + lat.toFixed(6) + " #" + zoom;
 		title = "coordinates are displayed as longitude,latitude – click to toggle";
 	    }
 
 	    coords.setAttribute("title", title);
-	    coords.innerHTML = ll;	    
+	    coords.innerText = ll;	    
 	},
 	
 	'draw_crosshairs': function(id){
