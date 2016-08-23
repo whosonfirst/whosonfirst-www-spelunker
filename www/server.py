@@ -1314,6 +1314,15 @@ def opensearch_scoped(scope):
 @app.route("/search/", methods=["GET"])
 def searchify():
 
+    q = get_str('q')
+    q = get_single(q)
+
+    if re.match(r'^\d+$', q):
+
+        id = int(q)
+        location = flask.url_for('info', id=id, _external=True)
+        return flask.redirect(location, code=303)        
+
     try:
         query, rsp = do_search()
     except Exception, e:
