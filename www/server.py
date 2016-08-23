@@ -1282,12 +1282,33 @@ def code(code):
 @app.route("/opensearch/", methods=["GET"])
 def opensearch():
 
+    # valid = [ 'alt', 'name', 'names', 'preferred' ]
+
     headers = Headers()
     headers.add("Content-type", "application/opensearchdescription+xml")
 
     body = flask.render_template('opensearch.xml')
     return flask.Response(body, headers=headers)
 
+@app.route("/opensearch/<scope>", methods=["GET"])
+@app.route("/opensearch/<scope>/", methods=["GET"])
+def opensearch_scoped(scope):
+
+    valid = {
+        'alt': 'alternate names',
+        'name': 'default names',
+        'names': 'names',
+        'preferred': 'preferred names',
+    }
+
+    if not valid.get(scope, None):
+        flask.abort(404)
+
+    headers = Headers()
+    headers.add("Content-type", "application/opensearchdescription+xml")
+
+    body = flask.render_template('opensearch.xml', scope=scope, label=valid[scope])
+    return flask.Response(body, headers=headers)
 
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])

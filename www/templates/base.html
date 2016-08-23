@@ -10,7 +10,10 @@
     <meta name="HandheldFriendly" content="true" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
 
-    <link rel="search" type="application/opensearchdescription+xml" href="{{ url_for('opensearch') }}" title="Who&quot;s On First - search all the things" />
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ url_for('opensearch') }}" title="Search all the things in Who&quot;s On First" />
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ url_for('opensearch') }}names/" title="Search all the names in Who&quot;s On First" />
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ url_for('opensearch') }}preferred/" title="Search all the preferred names in Who&quot;s On First" />
+    <link rel="search" type="application/opensearchdescription+xml" href="{{ url_for('opensearch') }}alt/" title="Search all the alternate names in Who&quot;s On First" />
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/leaflet.css') }}" />
