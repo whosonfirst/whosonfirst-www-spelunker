@@ -11,6 +11,7 @@ import flask
 import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.datastructures import Headers
 from flask.ext.cors import cross_origin
 # from flask_cors import cross_origin
 
@@ -1274,60 +1275,19 @@ def code(code):
 
     return flask.render_template('postcode.html', **template_args)
 
-"""
-@app.route("/reverse", methods=["GET"])
-@app.route("/reverse/", methods=["GET"])
-def reverse_geocode():
+# https://developer.mozilla.org/en-US/Add-ons/Creating_OpenSearch_plugins_for_Firefox
+# http://www.opensearch.org/Specifications/OpenSearch/Extensions/Parameter/1.0
 
-    lat = get_float('latitude')
-    lat = get_single(lat)
+@app.route("/opensearch", methods=["GET"])
+@app.route("/opensearch/", methods=["GET"])
+def opensearch():
 
-    lon = get_float('longitude')
-    lon = get_single(lon)
+    headers = Headers()
+    headers.add("Content-type", "application/opensearchdescription+xml")
 
-    ll = get_str('ll')
-    ll = get_single(ll)
+    body = flask.render_template('opensearch.xml')
+    return flask.Response(body, headers=headers)
 
-    if not lat and not lon and ll:
-
-        ll = ll.split(',')
-
-        if len(ll) == 2:
-
-            lat = ll[0].strip()
-            lon = ll[1].strip()
-
-            lat = sanitize_float(lat)
-            lon = sanitize_float(lon)
-        
-    if not lat and not lon:
-        logging.warning("missing latitude and longitude")
-        flask.abort(400)
-
-    if not utils.is_valid_latitude(lat) or not utils.is_valid_longitude(lon):
-        logging.warning("invalid latitude or longitude")
-        flask.abort(400)
-
-    placetypes = get_str("placetypes")
-    placetypes = get_single(placetypes)
-
-    if not placetypes:
-        logging.warning("missing placetypes")
-        flask.abort(400)
-
-    placetypes = placetypes.split(',')
-
-    for p in placetypes:
-        if not pt.is_valid_placetype(p):
-            logging.warning("invalid placetype")
-            flask.abort(400)
-
-    features = flask.g.spatial_db.get_by_latlon_recursive(lat, lon, placetypes=placetypes) 
-    features = list(features)
-
-    collection = { 'type': 'FeatureCollection', 'features': [ features ] }
-    return flask.jsonify(collection)
-"""
 
 @app.route("/search", methods=["GET"])
 @app.route("/search/", methods=["GET"])
