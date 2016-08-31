@@ -86,7 +86,7 @@
 	{% else %}
 
 	<div class="input-group">
-	  <input type="text" class="form-control" aria-label="..." name="q" id="q" placeholder="Search for a place" value="{% if query_string %}{{ query_string|escape }}{% endif %}" />
+	  <input type="text" class="form-control" aria-label="..." name="q" id="q" placeholder="Search for a place" value="{% if query_string %}{{ query_string.decode('utf-8')|escape }}{% endif %}" />
 	  <div class="input-group-btn">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Search <span class="caret"></span></button>
             <ul class="dropdown-menu">
