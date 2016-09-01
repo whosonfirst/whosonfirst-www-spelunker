@@ -27,6 +27,7 @@ cfg.read(spelunker_cfg)
 
 os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
 os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
+os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
 
 bind = '127.0.0.1:%s' % spelunker_port
 chdir = spelunker_root

@@ -4,6 +4,7 @@ endpoint=
 [search]
 host=localhost
 port=9200
+index=whosonfirst
 
 [spatial]
 db_host=localhost
