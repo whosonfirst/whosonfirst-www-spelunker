@@ -19,7 +19,11 @@
 {% if pagination.count == 0 %}
 
 <div class="row">
+{% if query_string %}
 <h2>😿  <small>can not find anything matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q></small></h2>
+{% else %}
+<h2>😿  <small>can not find anything matching <span class="hey-look">your query</span></small></h2>
+{% endif %}
 </div>
 
 {% include "inc_query.html" %}
