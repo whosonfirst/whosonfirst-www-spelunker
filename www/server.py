@@ -97,10 +97,11 @@ def init():
 
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
+    search_index = os.environ.get('WOF_SEARCH_INDEX', 'whosonfirst')
     
     # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
 
-    search_idx = search.query(host=search_host, port=search_port)
+    search_idx = search.query(host=search_host, port=search_port, index=search_index)
     flask.g.search_idx = search_idx
 
 @app.template_filter()
@@ -2206,6 +2207,7 @@ if __name__ == '__main__':
     os.environ['WOF_SPATIAL_DSN'] = dsn
     """
 
+    os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
     os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
     os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
 
