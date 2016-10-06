@@ -2,8 +2,8 @@
 endpoint=
 
 [search]
-host=localhost
-port=9200
+host=YOUR-SPELUNKER-SEARCH-HOST-GOES-HERE
+port=YOUR-SPELUNKER-SEARCH-PORT-GOES-HERE
 
 [spatial]
 db_host=localhost
