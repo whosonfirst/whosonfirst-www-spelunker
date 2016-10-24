@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+ 
+<head>
+  <title>WOF descender</title>
+  <script type="text/javascript" src="FileSaver.js"></script>
+<!--   <script type="text/javascript" src="gistlink.js"></script> -->
+  <script type="text/javascript" src="descender.js"></script>
+  <link rel="stylesheet" href="https://mapzen.com/js/mapzen.css">
+  <script src="https://mapzen.com/js/mapzen.min.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>WOF Descender · Mapzen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://mapzen.com/common/styleguide/styles/styleguide.css">
+  <style>
+  #map {
+    height: 400px;
+    width: 100%;
+    position: relative;
+  }
+  html,body{margin: 0; padding: 0}
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>WOF Descender!</h1>
+<hr>Enter a <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First ID</a> and get a blob of GeoJSON of its <a href="https://github.com/whosonfirst/whosonfirst-placetypes">descendants</a>!</h2>
+<!-- 
+<h6>continent > empire > country > macroregion > region > macrocounty > "county" > "metro area"> locality > macrohood > neighbourhood > microhood > campus > building > address > venue </h6>
+<h6>continent > country > region > "county" > locality > neighbourhood</h6>
+ -->
+<br>Search all of the
+<select name="wof_parent_level" value='country' id="wof_parent_level">
+        <option value="continent">continents</option>
+        <option value="country" selected="selected">countries</option>
+        <option value="region">regions</option>
+        <option value="county">counties*</option>
+        <option value="localadmin">localadmins*</option>
+        <option value="locality">localities*</option>
+        <option value="macrohood">macrohoods*</option>
+        <option value="neighbourhood">neighbourhoods*</option>
+        <option value="microhood">microhoods*</option>
+        <option value="postalcode">postalcodes*</option>
+        <option value="campus">campuses*</option>
+        <option value="venue">venues*</option>
+        <option value="address">addresses*</option>
+        <option value="">--less common--</option>
+        <option value="planet">planets</option>
+        <option value="continent">continents</option>
+        <option value="ocean">oceans</option>
+        <option value="empire">empires</option>
+        <option value="timezone">timezones</option>
+        <option value="marinearea">marine areas</option>
+        <option value="dependency">dependencies</option>
+        <option value="macroregion">macroregions</option>
+        <option value="metroarea">metro areas</option>
+        <option value="borough">boroughs</option>
+        <option value="disputed">disputed areas</option>
+    </select>
+for
+  <input type="text" name="wof_search" id="wof_search" value="Canada">
+   
+  <button class="btn btn-mapzen" type="submit" id="wof_search_button">GET WOF*</button>
+<br>
+<!-- experiments in a UI for entering a WOF ID and level -->
+<form name="wof_data">  <!--  action="start()" -->
+
+  WOF ID:
+  <input type="text" name="wof_id" value="85633041" placeholder="85633041" id="wof_id"> 
+   Descendant type: 
+    <select name="wof_level" value='region' id="wof_level">
+        <option value="country">country (C)</option>
+        <option value="region" selected="selected">region (C)</option>
+        <option value="county">county (CO)</option>
+        <option value="localadmin">localadmin (CO)</option>
+        <option value="locality">locality (C)</option>
+        <option value="macrohood">macrohood (O)</option>
+        <option value="neighbourhood">neighbourhood (C)</option>
+        <option value="microhood">microhood (O)</option>
+        <option value="postalcode">postalcode (CO)</option>
+        <option value="campus">campus (CO)</option>
+        <option value="venue">venue (CO)</option>
+        <option value="address">address (CO)</option>
+        <option value="">--less common--</option>
+        <option value="planet">planet (CO)</option>
+        <option value="continent">continent (C)</option>
+        <option value="ocean">ocean (CO)</option>
+        <option value="empire">empire </option>
+        <option value="timezone">timezone (CO)</option>
+        <option value="marinearea">marinearea (CO)</option>
+        <option value="dependency">dependency (CO)</option>
+        <option value="macroregion">macroregion (O)</option>
+        <option value="metroarea">metro area (O)</option>
+        <option value="borough">borough (CO)</option>
+        <option value="disputed">disputed area (CO)</option>
+    </select>
+  <button class="btn btn-mapzen" type="submit" id="wof_button">DESCEND</button>
+<!-- disabled="disabled" -->
+<br>
+
+
+<!-- 
+<form>
+  <div class="form-group">
+    <input type="checkbox" id="includeParent" name="includeParent">
+    <label for="check-1">include parent in GeoJSON</label>
+  </div>
+</form>
+ -->
+
+<div id="parent_name">
+<h2 id="h2_parent"><p id="p0"></h2>
+</div>
+<div id="map"></div>
+<br>
+<button class="btn btn-mapzen" type="submit" id="save" disabled="disabled">ENTER A WOF ID ABOVE</button>
+<div id="descendant_name">
+<br>
+<p id="p1">
+</div>
+
+
+<br>
+* Note: only the first search result is returned right now. It finds countries pretty well, regions are ok, but for lower levels like localities you may not get what you want, but if you try the <a href="https://whosonfirst.mapzen.com/spelunker">Who's on First Spelunker</a> you just might find you get what you need.
+<br><br>
+Some interesting descents:
+<ul> 
+<li><a href="?wof_id=102191577&wof_level=region">regions in South America</a></li>
+<li><a href="?wof_id=85922583&wof_level=postalcode">ZIP codes in San Francisco</a></li>
+<li><a href="?wof_id=85632685&wof_level=timezone">timezones in Russia</a></li>
+<li><a href="?wof_id=85632469&wof_level=disputed">disputed areas of India</a></li>
+</ul>
+
+While you can skip levels (a.k.a. <a href="https://github.com/whosonfirst/whosonfirst-placetypes">placetypes</a>), only the first 500 results will be returned for now.
+
+<script type="text/javascript">
+
+var map = L.Mapzen.map('map');
+map.setView([40, -112.4], 3);
+// includeParent = false;
+
+// search for country wof id
+
+
+var api_key = 'mapzen-vhKiPwF';
+var search = document.getElementById("wof_search_button");
+var wof_search = document.getElementById("wof_search");
+var wof_parent_level = document.getElementById("wof_parent_level");
+
+search.addEventListener("click", function(){
+
+    var wof_search_value = wof_search.value;
+    var wof_parent_level_value = wof_parent_level.value;
+    console.log("passing " + wof_search_value + " to WOF search");
+//     search.onclick = function(){
+        var xhr_search_wof = new XMLHttpRequest();
+        var search_url = "https://whosonfirst-api.dev.mapzen.com/?method=whosonfirst.places.search&names=" +  wof_search_value + "&placetype=" + wof_parent_level_value + "&extras=geom:bbox&api_key=" + api_key;
+//         console.log("wof search url: " + search_url);
+        xhr_search_wof.open('GET', search_url, true);
+        xhr_search_wof.send();
+        xhr_search_wof.addEventListener("readystatechange", search_wof_countries, false);   
+
+            function search_wof_countries(e) {
+            if (xhr_search_wof.readyState == 4 && xhr_search_wof.status == 200) {
+                response = JSON.parse(xhr_search_wof.responseText);
+                var wof_search_top_result = response.results[0]['wof:id'];
+                console.log(response);
+                console.log("top result is " + wof_search_top_result);
+                var wof_id = document.getElementById("wof_id");
+                var wof_search_top_name = response.results[0]['wof:name'];
+                wof_id.value = wof_search_top_result;
+                wof_search.value = wof_search_top_name.toUpperCase() + "!";
+                wof_search.style.backgroundColor = "lightgreen";
+                wof_id.style.backgroundColor = "lightgreen";
+                wof_parent_bbox = response.results[0]['geom:bbox'];
+                var latlon = wof_parent_bbox.split(',');
+                sw = [latlon[1],latlon[0]];
+                ne = [latlon[3],latlon[2]];
+                map.fitBounds([sw,ne]);
+                var bounds = [sw,ne];
+                var boundingBox = L.rectangle(bounds, {color: "#90EE90", weight: 1});
+                map.addLayer(boundingBox);
+            }
+        } // wof_search 
+        return false; 
+//     }; // s.onclick  
+});
+
+window.addEventListener("load", function () {
+    
+
+    var qs = window.location.search;
+	qs = qs.substring(1);
+	
+	var params = {};
+	var queries = qs.split("&");
+	var count = queries.length;
+	
+	for ( var i = 0; i < count; i++ ) {
+		temp = queries[i].split('=');
+		params[temp[0]] = temp[1];
+	}   
+	
+// 	console.log(params);
+	
+	if ((params['wof_id']) && (params['wof_level'])){
+
+        start(params['wof_id'], params['wof_level']);
+        return;
+	}
+	
+	// what would user do?
+	
+
+	
+	
+	
+	
+    var b = document.getElementById("wof_button");
+    b.removeAttribute("disabled");
+    
+    b.onclick = function(){
+        wof_search.style.backgroundColor = "white";
+        wof_id.style.backgroundColor = "white";
+        var wof_id = document.getElementById("wof_id");
+        wof_id = wof_id.value;
+        
+        var wof_level = document.getElementById("wof_level");
+        wof_level = wof_level.value;
+        
+        // console.log("wof id is " + wof_id);
+        // console.log("wof level is " + wof_level);
+//         wof_search.value = wof_search_value;
+
+        try {
+           start(wof_id, wof_level);
+        } catch (e) {
+            console.log(e);
+        }
+        
+        return false;
+    };
+    
+    
+    
+});
+</script>
+</div>
+</body>
+</html>
