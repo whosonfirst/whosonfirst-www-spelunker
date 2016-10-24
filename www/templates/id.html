@@ -111,6 +111,8 @@
 <li><a href="{{ url_for('info', id=doc.properties.get("wof:id")) }}descendants/?exclude=nullisland">See all the descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
 {% endif %}
 
+<li><a href="/descender/?wof_id={{ doc.properties.get("wof:id") | e }}&wof_level=region">Download descendants of {{ doc.properties.get("wof:name") | e }}</a></li>
+
 <li><a href="/data/{{ doc.properties.get("wof:path") |e }}" target="data">Raw data (GeoJSON)</a></li>
 
 </ul>
