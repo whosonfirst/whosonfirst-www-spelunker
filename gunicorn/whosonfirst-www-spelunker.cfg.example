@@ -7,9 +7,10 @@ import ConfigParser
 
 # import mapzen.whosonfirst.spatial as spatial
 
-spelunker_port = 'YOUR-SPELUNKER-PORT-GOES-HERE'
-spelunker_root = 'YOUR-SPELUNKER-WWW-GOES-HERE'
-spelunker_cfg = 'YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE'
+spelunker_host = 'YOUR-SPELUNKER-WWW-HOST-GOES-HERE'
+spelunker_port = 'YOUR-SPELUNKER-WWW-PORT-GOES-HERE'
+spelunker_root = 'YOUR-SPELUNKER-WWW-ROOT-GOES-HERE'
+spelunker_cfg = 'YOUR-SPELUNKER-FLASK-CONFIG-GOES-HERE'
 
 spelunker_cfg = os.path.join(spelunker_root, spelunker_cfg)
 
@@ -25,9 +26,13 @@ cfg.read(spelunker_cfg)
 # dsn = spatial.cfg2dsn(cfg, 'spatial')
 # os.environ['WOF_SPATIAL_DSN'] = dsn
 
+# https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/46
+# os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
+# os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
+
 os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
 os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
 os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
 
-bind = '127.0.0.1:%s' % spelunker_port
+bind = '%s:%s' % (spelunker_host, spelunker_port)
 chdir = spelunker_root
