@@ -333,10 +333,19 @@ def brand(id):
 def descender():
     return flask.render_template('descender.html')
 
-@app.route("/bundler", methods=["GET"])
-@app.route("/bundler/", methods=["GET"])
-def bundler():
-    return flask.render_template('bundler.html')
+@app.route("/bundler/<int:id>/<string:placetype>", methods=["GET"])
+@app.route("/bundler/<int:id>/<string:placetype>/", methods=["GET"])
+def bundler(id, placetype):
+
+    parent_id = sanitize_int(id)
+    placetype = sanitize_str(placetype)
+
+    template_args = {
+        'parent_id': parent_id,
+        'placetype': placetype
+    }
+
+    return flask.render_template('bundler.html', **template_args)
 
 @app.route("/languages", methods=["GET"])
 @app.route("/languages/", methods=["GET"])
