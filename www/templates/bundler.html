@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Who's On First Bundler{% endblock %}
+{% block content %}
+<div class="row" id="wof-bundler">
+	<h2>Bundler</h2>
+</div>
+
+<div class="row">
+	<div class="col-md-12" id="map"></div>
+</div>
+
+<script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.bundler.js') }}"></script>
+{% endblock %}
