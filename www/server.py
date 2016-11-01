@@ -1775,16 +1775,16 @@ def enfilterify(query):
         filters.append(simple_enfilter('wof:name', name))
 
     if country:
-        filters.append(simple_enfilter('country_id', country))
+        filters.append(simple_enfilter('wof:hierarchy.country_id', country))
 
     if region:
-        filters.append(simple_enfilter('region_id', region))
+        filters.append(simple_enfilter('wof:hierarchy.region_id', region))
 
     if locality:
-        filters.append(simple_enfilter('locality_id', locality))
+        filters.append(simple_enfilter('wof:hierarchy.locality_id', locality))
 
     if neighbourhood:
-        filters.append(simple_enfilter('neighbourhood_id', neighbourhood))
+        filters.append(simple_enfilter('wof:hierarchy.neighbourhood_id', neighbourhood))
 
     concordance = get_str('concordance')
 
@@ -1821,11 +1821,12 @@ def simple_enfilter(field, terms):
         elif field == 'wof:concordances_sources':
 
             # do not escape the ':' - if you do then ES will
-            # be very confused (20161101/thisisaaronland)
+            # be very confused (20161101/thisisaaronland)  
 
             parts = term.split(':', 2)
             ns = flask.g.search_idx.escape(parts[0])
             pred = flask.g.search_idx.escape(parts[1])
+
             esc_term = ':'.join((ns, pred))
 
         else:
@@ -1844,6 +1845,18 @@ def simple_enfilter(field, terms):
 
             if type(t) == types.IntType:
                 esc_terms.append(t)
+
+            elif field == 'wof:concordances_sources':
+
+                # do not escape the ':' - if you do then ES will
+                # be very confused (20161101/thisisaaronland)  
+
+                parts = term.split(':', 2)
+                ns = flask.g.search_idx.escape(parts[0])
+                pred = flask.g.search_idx.escape(parts[1])
+
+                esc_terms.append(':'.join((ns, pred)))
+
             else:
                 esc_terms.append(flask.g.search_idx.escape(t))
 
