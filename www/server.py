@@ -1818,6 +1818,16 @@ def simple_enfilter(field, terms):
 
         if type(term) == types.IntType:
             esc_term = term
+        elif field == 'wof:concordances_sources':
+
+            # do not escape the ':' - if you do then ES will
+            # be very confused (20161101/thisisaaronland)
+
+            parts = term.split(':', 2)
+            ns = flask.g.search_idx.escape(parts[0])
+            pred = flask.g.search_idx.escape(parts[1])
+            esc_term = ':'.join((ns, pred))
+
         else:
             esc_term = flask.g.search_idx.escape(term)
 
@@ -1886,9 +1896,6 @@ def get_by_id(id):
 
     rsp = flask.g.search_idx.search(body)
     docs = rsp['rows']
-
-    # import pprint
-    # print pprint.pformat(docs)
 
     # WTF... why do I need to do this? it would appear that updates are not being
     # applied but rather being indexed as new records even though they have the
