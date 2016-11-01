@@ -1536,13 +1536,13 @@ def facetify(query):
         },
         'locality_id': {
             'terms': {
-                'field': 'locality_id',
+                'field': 'wof:hierarchy.locality_id',
                 'size': 100
             }
         },
         'region_id': {
             'terms': {
-                'field': 'region_id',
+                'field': 'wof:hierarchy.region_id',
                 'size': 100
             }
         },
@@ -1886,7 +1886,6 @@ def get_by_id(id):
 
     rsp = flask.g.search_idx.search(body)
     docs = rsp['rows']
-
 
     # WTF... why do I need to do this? it would appear that updates are not being
     # applied but rather being indexed as new records even though they have the
