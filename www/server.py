@@ -1731,7 +1731,7 @@ def enfilterify(query):
 
         if len(category) == 1:
 
-            filters.append(simple_enfilter('category', category))
+            filters.append(simple_enfilter('sg:classifiers.category', category))
 
         else:
             esc_cat = map(flask.g.search_idx.escape, category)
