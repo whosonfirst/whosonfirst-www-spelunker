@@ -1,77 +1,134 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-// for the time being this assumes jQuery is present
-// that decision may change some day but not today
-// (20161101/dphiffer)
+mapzen.whosonfirst.api = (function(){
 
-mapzen.whosonfirst.api = (function() {
-
-	var _endpoint = 'https://whosonfirst.mapzen.com/api/rest/';
-	var _token = null;
+	var _endpoint = 'https://whosonfirst-api.mapzen.com/';
+	var _api_key = null;
 
 	var self = {
 
-		api_call: function(method, data, on_success, on_error) {
+		call: function(method, data, on_success, on_error){
 
-			if (! data['access_token']) {
-				if (! _token) {
-					on_error({
-						ok: false,
-						error: 'Please set_token first.'
-					});
-					return;
-				} else {
-					data['access_token'] = _token;
+			var dothis_onsuccess = function(rsp){
+
+				if (on_success){
+					on_success(rsp);
 				}
-			}
-
-			data['method'] = method;
-
+			};
 			var dothis_onerror = function(rsp){
 
-				var parse_rsp = function(rsp){
-					if (! rsp['responseText']){
-						console.log("Missing response text");
-						return;
-					}
-
-					try {
-						rsp = JSON.parse(rsp['responseText']);
-						return rsp;
-					} catch (e) {
-						console.log("Failed to parse response text");
-						return;
-					}
-				};
-
-				rsp = parse_rsp(rsp);
+				console.log(rsp);
 
 				if (on_error){
 					on_error(rsp);
 				}
 			};
 
-			var args = {
-				'url': _endpoint,
-				'type': 'POST',
-				'data': data,
-				'dataType': 'json',
-				'success': on_success,
-				'error': dothis_onerror
+			var form_data = data;
+
+			if (! form_data.append){
+
+				form_data = new FormData();
+
+				for (key in data){
+					form_data.append(key, data[key]);
+				}
+			}
+
+			form_data.append('method', method);
+			if (_api_key &&
+			    ! form_data.api_key) {
+				form_data.append('api_key', _api_key);
+			}
+
+			var onload = function(rsp){
+
+				var target = rsp.target;
+
+				if (target.readyState != 4){
+					return;
+				}
+
+				var status_code = target['status'];
+				var status_text = target['statusText'];
+
+				var raw = target['responseText'];
+				var data = null;
+
+				try {
+					data = JSON.parse(raw);
+				}
+
+				catch (e){
+
+					dothis_onerror(self.destruct("failed to parse JSON " + e));
+					return false;
+				}
+
+				if (data['stat'] != 'ok'){
+
+					dothis_onerror(data);
+					return false;
+				}
+
+				dothis_onsuccess(data);
+				return true;
 			};
 
-			$.ajax(args);
+			var onprogress = function(rsp){
+				// console.log("progress");
+			};
+
+			var onfailed = function(rsp){
+				dothis_onerror(self.destruct("connection failed " + rsp));
+			};
+
+			var onabort = function(rsp){
+				dothis_onerror(self.destruct("connection aborted " + rsp));
+			};
+
+			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
+
+			try {
+				var req = new XMLHttpRequest();
+
+				req.addEventListener("load", onload);
+				req.addEventListener("progress", onprogress);
+				req.addEventListener("error", onfailed);
+				req.addEventListener("abort", onabort);
+
+				req.open("POST", _endpoint, true);
+				req.send(form_data);
+
+			} catch (e) {
+
+				dothis_onerror(self.destruct("failed to send request, because " + e));
+				return false;
+			}
+
+			return false;
 		},
 
 		set_endpoint: function(endpoint) {
 			_endpoint = endpoint;
 		},
 
-		set_token: function(token) {
-			_token = token;
-		}
+		set_key: function(key) {
+			_api_key = key;
+		},
 
+		destruct: function(msg){
+
+			return {
+				'stat': 'error',
+				'error': {
+					'code': 999,
+					'message': msg
+				}
+			};
+
+		}
 	};
 
 	return self;
