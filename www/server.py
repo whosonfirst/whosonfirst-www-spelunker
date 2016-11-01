@@ -1530,7 +1530,7 @@ def facetify(query):
         },
         'category': {
             'terms': {
-                'field': 'category',	# as in sg:classfiers.category
+                'field': 'sg:classifiers.category',	# as in sg:classfiers.category
                 'size': 0
             }
         },
@@ -1886,6 +1886,9 @@ def get_by_id(id):
 
     rsp = flask.g.search_idx.search(body)
     docs = rsp['rows']
+
+    # import pprint
+    # print pprint.pformat(docs)
 
     # WTF... why do I need to do this? it would appear that updates are not being
     # applied but rather being indexed as new records even though they have the
