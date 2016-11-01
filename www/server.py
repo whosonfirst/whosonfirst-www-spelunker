@@ -1818,6 +1818,15 @@ def simple_enfilter(field, terms):
 
         if type(term) == types.IntType:
             esc_term = term
+        elif field == 'wof:concordances_sources':
+
+            # do not escape the ':' - if you do then ES will
+            # be very confused (20161101/thisisaaronland)  
+            parts = term.split(':', 2)
+            ns = flask.g.search_idx.escape(parts[0])
+            pred = flask.g.search_idx.escape(parts[1])
+            esc_term = ':'.join((ns, pred))
+
         else:
             esc_term = flask.g.search_idx.escape(term)
 
