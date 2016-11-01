@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Who's On First Bundler{% endblock %}
 {% block content %}
-<div class="row" id="wof-bundler" data-parent-id="{{ parent_id |e }}" data-placetype="{{ placetype |e }}">
+<div class="row" id="wof-bundler" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
 	<h2>Bundler</h2>
+	<a id="btn-bundle" class="btn btn-default" data-parent-id="{{ parent_id |e }}" data-placetype="{{ placetype |e }}" data-map-bundle="1">Bundle</a>
 </div>
 
 <div class="row">
 	<div class="col-md-12" id="map"></div>
 </div>
 
+<div class="row">
+	<div class="col-md-12">
+		{% include "inc_log.html" %}
+	</div>
+</div>
+
+<script src="{{ url_for('static', filename='javascript/FileSaver.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.api.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.bundler.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.bundler.js') }}"></script>
 {% endblock %}

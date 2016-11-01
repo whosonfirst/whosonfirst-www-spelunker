@@ -339,8 +339,14 @@ def bundler(id, placetype):
 
     parent_id = sanitize_int(id)
     placetype = sanitize_str(placetype)
+    doc = get_by_id(parent_id)
+
+    if not doc:
+        logging.warning("no record for ID %s" % id)
+        flask.abort(404)
 
     template_args = {
+        'doc': doc,
         'parent_id': parent_id,
         'placetype': placetype
     }

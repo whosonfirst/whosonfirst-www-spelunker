@@ -49,7 +49,7 @@ mapzen.whosonfirst.bundler = (function() {
 				}
 			};
 
-			mapzen.whosonfirst.api.api_call(method, data, callback, on_error);
+			mapzen.whosonfirst.api.call(method, data, callback, on_error);
 		},
 
 		download_feature: function(args, query, bundled, callback) {
@@ -57,9 +57,10 @@ mapzen.whosonfirst.bundler = (function() {
 			var wof_id = result['wof:id'];
 			var wof_url = mapzen.whosonfirst.data.id2abspath(wof_id);
 			$.getJSON(wof_url, function(feature) {
+				var index = bundled.length;
 				bundled.push(feature);
 				if (args.on_wof) {
-					args.on_wof(feature);
+					args.on_wof(feature, index, query.total);
 				}
 				callback(query);
 			}).fail(function(rsp) {
@@ -67,6 +68,43 @@ mapzen.whosonfirst.bundler = (function() {
 					args.on_error(rsp);
 				}
 			});
+		},
+
+		render_feature: function(feature) {
+			var props = feature['properties'];
+			var geom = feature['geometry'];
+
+			var lat = props['geom:latitude'];
+			var lon = props['geom:longitude'];
+
+			var label_text = 'math centroid (shapely) is ';
+			label_text += lat + ", " + lon;
+
+			var pt = {
+				'type': 'Feature',
+				'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
+				'properties': { 'lflt:label_text': label_text }
+			};
+
+			if (geom['type'] == 'Point'){
+
+				var name = props['wof:name'];
+
+				var label_text = name;
+				label_text += ', whose centroid is ';
+				label_text += lat + ", " + lon;
+
+				pt['properties']['lflt:label_text'] = label_text;
+
+				var style = mapzen.whosonfirst.leaflet.styles.geom_centroid();
+				var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
+
+				mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
+			} else {
+
+				feature['properties']['lflt:label_text'] = feature['properties']['wof:name'];
+				mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+			}
 		}
 	};
 
