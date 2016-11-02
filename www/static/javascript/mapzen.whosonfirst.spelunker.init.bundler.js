@@ -15,18 +15,18 @@ window.addEventListener("load", function load(event){
 		btn.setAttribute('disabled', 'disabled');
 		if (update.type == 'query') {
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
-		} else if (update.type == 'download') {
+		} else if (update.type == 'feature') {
 			status.innerHTML = 'Downloaded ' + update.count + ' of ' + total + ': ' + update.feature.properties['wof:name'] + ' (' + update.feature.properties['wof:placetype'] + ')';
 		}
 	});
 
-	mapzen.whosonfirst.bundler.set_handler('success', function(details) {
-		if (details.count == 0) {
+	mapzen.whosonfirst.bundler.set_handler('success', function(geojson) {
+		if (geojson.features.length == 0) {
 			btn.setAttribute('disabled', 'disabled');
 			status.innerHTML = '<i>No places selected</i>';
 		} else {
 			btn.removeAttribute('disabled');
-			status.innerHTML = 'Ready to download ' + details.count + ' places';
+			status.innerHTML = 'Ready to download ' + geojson.features.length + ' places';
 		}
 	});
 

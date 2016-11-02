@@ -63,10 +63,17 @@ mapzen.whosonfirst.bundler = (function() {
 			}
 			_features = new_features;
 			if (! _query && _queue.length == 0 && _handlers.on_success) {
-				_handlers.on_success({
-					count: _features.length
-				});
+				var bundle = self.bundle_features();
+				_handlers.on_success(bundle);
 			}
+		},
+
+		bundle_features: function() {
+			var feature_collection = {
+				'type': 'FeatureCollection',
+				'features': _features,
+			};
+			return feature_collection;
 		},
 
 		process_queue: function() {
@@ -94,9 +101,8 @@ mapzen.whosonfirst.bundler = (function() {
 				self.query_wof_api();
 			} else if (_handlers.on_success) {
 				_query = null;
-				_handlers.on_success({
-					count: _features.length
-				});
+				var bundle = self.bundle_features();
+				_handlers.on_success(bundle);
 			} else {
 				_query = null;
 				// Done! (But no on_success handler set.)
@@ -148,12 +154,13 @@ mapzen.whosonfirst.bundler = (function() {
 
 			var on_success = function(feature) {
 				if (_discard_next == feature.properties['wof:placetype']) {
+					_discard_next = null;
 					return;
 				}
 				_features.push(feature);
 				if (_handlers.on_progress) {
 					_handlers.on_progress({
-						type: 'download',
+						type: 'feature',
 						feature: feature,
 						count: _features.length
 					});
@@ -171,11 +178,8 @@ mapzen.whosonfirst.bundler = (function() {
 		},
 
 		save_bundle: function(filename) {
-			var feature_collection = {
-				'type': 'FeatureCollection',
-				'features': _features,
-			};
-			var json = JSON.stringify(feature_collection);
+			var bundle = self.bundle_features();
+			var json = JSON.stringify(bundle);
 			var args = {
 				type: "application/json"
 			};
