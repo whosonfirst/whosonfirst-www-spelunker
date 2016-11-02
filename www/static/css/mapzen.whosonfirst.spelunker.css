@@ -230,3 +230,11 @@ pre {
 #slippymap-coords:hover {
     color: #000;
 }
+
+#wof-bundler {
+    padding-bottom: 1.5em;
+}
+
+#bundle-status {
+    padding-top: 0.5em;
+}

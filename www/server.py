@@ -333,22 +333,30 @@ def brand(id):
 def descender():
     return flask.render_template('descender.html')
 
-@app.route("/bundler/<int:id>/<string:placetype>", methods=["GET"])
-@app.route("/bundler/<int:id>/<string:placetype>/", methods=["GET"])
-def bundler(id, placetype):
+@app.route("/bundler/<int:id>", methods=["GET"])
+@app.route("/bundler/<int:id>/", methods=["GET"])
+def bundler(id):
 
     parent_id = sanitize_int(id)
-    placetype = sanitize_str(placetype)
     doc = get_by_id(parent_id)
 
     if not doc:
         logging.warning("no record for ID %s" % id)
         flask.abort(404)
 
+    query = {
+        'term': {
+            'wof:belongsto': doc.get('id')
+        }
+    }
+
+    query = enfilterify(query)
+    facets = facetify(query)
+
     template_args = {
         'doc': doc,
-        'parent_id': parent_id,
-        'placetype': placetype
+        'facets': facets,
+        'parent_id': parent_id
     }
 
     return flask.render_template('bundler.html', **template_args)

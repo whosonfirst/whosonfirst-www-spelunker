@@ -3,108 +3,184 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.bundler = (function() {
 
+	var _queue = [];
+	var _handlers = {
+		on_success: null,
+		on_error: null,
+		on_progress: null
+	};
+	var _query = null;
+	var _features = [];
+	var _discard_next = null;
+
 	var self = {
 
-		bundle: function(parent_id, placetype, on_success, on_error, on_wof) {
-
-			// Here we bundle things, so to begin we will bundle up
-			// all the arguments so we can pass them around easier.
-			var args = {
-				parent_id: parent_id,
-				placetype: placetype,
-				on_success: on_success,
-				on_error: on_error,
-				on_wof: on_wof
-			};
-			var bundled = [];
-			var page = 1;
-
-			var callback = function(query, feature) {
-				if (query.results && query.results.length > 0) {
-					self.download_feature(args, query, bundled, callback);
-				} else if (query.page < query.pages) {
-					page++;
-					self.query_wof_api(args, page, callback);
-				} else if (args.on_success) {
-					args.on_success(bundled);
-				}
-			};
-
-			self.query_wof_api(args, page, callback);
+		set_handler: function(handler, callback) {
+			_handlers['on_' + handler] = callback;
 		},
 
-		query_wof_api: function(args, page, callback) {
+		enqueue_feature: function(id) {
+			_queue.push({
+				wof_id: id
+			});
+			if (! _query) {
+				self.process_queue();
+			}
+		},
+
+		enqueue_placetype: function(placetype, parent_id) {
+			_queue.push({
+				placetype: placetype,
+				parent_id: parent_id
+			});
+			if (! _query) {
+				self.process_queue();
+			}
+		},
+
+		dequeue_placetype: function(placetype) {
+			var new_queue = [];
+			for (var i in _queue) {
+				if (_queue[i].placetype != placetype) {
+					new_queue.push(_queue[i]);
+				}
+			}
+			_queue = new_queue;
+			self.filter_features(placetype);
+			if (_query && _query.args.placetype == placetype) {
+				_query = null;
+				_discard_next = placetype;
+				self.process_queue();
+			}
+		},
+
+		filter_features: function(placetype) {
+			var new_features = [];
+			for (var i in _features) {
+				if (_features[i].properties['wof:placetype'] != placetype) {
+					new_features.push(_features[i]);
+				}
+			}
+			_features = new_features;
+			if (! _query && _queue.length == 0 && _handlers.on_success) {
+				_handlers.on_success({
+					count: _features.length
+				});
+			}
+		},
+
+		process_queue: function() {
+			if (! _query && _queue.length > 0) {
+				_query = {
+					args: _queue.shift(),
+					page: 1
+				};
+				if (_query.args.wof_id) {
+					_query.results = [{
+						'wof:id': _query.args.wof_id
+					}];
+					_query.pages = 1;
+					self.download_feature();
+				} else {
+					self.query_wof_api();
+				}
+			} else if (_query &&
+			           _query.results &&
+			           _query.results.length > 0) {
+				self.download_feature();
+			} else if (_query &&
+			           _query.page < _query.pages) {
+				_query.page++;
+				self.query_wof_api();
+			} else if (_handlers.on_success) {
+				_query = null;
+				_handlers.on_success({
+					count: _features.length
+				});
+			} else {
+				_query = null;
+				// Done! (But no on_success handler set.)
+			}
+		},
+
+		query_wof_api: function() {
+
 			var method = 'whosonfirst.places.getDescendants';
 			var data = {
-				id: args.parent_id,
-				placetype: args.placetype,
-				page: page,
+				id: _query.args.parent_id,
+				placetype: _query.args.placetype,
+				page: _query.page,
 				per_page: 500,
 				exclude: 'nullisland'
 			};
 
+			var on_success = function(rsp) {
+				_query.results = rsp.results;
+				_query.page = rsp.page;
+				_query.pages = rsp.pages;
+
+				if (_handlers.on_progress) {
+					_handlers.on_progress({
+						type: 'query',
+						placetype: _query.args.placetype,
+						page: _query.page,
+						pages: _query.pages
+					});
+				}
+
+				self.process_queue();
+			};
+
 			var on_error = function(rsp) {
-				if (args.on_error) {
-					args.on_error(rsp);
+				if (_handlers.on_error) {
+					_handlers.on_error(rsp);
 				}
 			};
 
-			mapzen.whosonfirst.api.call(method, data, callback, on_error);
+			mapzen.whosonfirst.api.call(method, data, on_success, on_error);
 		},
 
-		download_feature: function(args, query, bundled, callback) {
-			var result = query.results.shift();
+		download_feature: function() {
+
+			var result = _query.results.shift();
 			var wof_id = result['wof:id'];
 			var wof_url = mapzen.whosonfirst.data.id2abspath(wof_id);
-			$.getJSON(wof_url, function(feature) {
-				var index = bundled.length;
-				bundled.push(feature);
-				if (args.on_wof) {
-					args.on_wof(feature, index, query.total);
+
+			var on_success = function(feature) {
+				if (_discard_next == feature.properties['wof:placetype']) {
+					return;
 				}
-				callback(query);
-			}).fail(function(rsp) {
-				if (args.on_error) {
-					args.on_error(rsp);
+				_features.push(feature);
+				if (_handlers.on_progress) {
+					_handlers.on_progress({
+						type: 'download',
+						feature: feature,
+						count: _features.length
+					});
 				}
-			});
-		},
-
-		render_feature: function(feature) {
-			var props = feature['properties'];
-			var geom = feature['geometry'];
-
-			var lat = props['geom:latitude'];
-			var lon = props['geom:longitude'];
-
-			var label_text = 'math centroid (shapely) is ';
-			label_text += lat + ", " + lon;
-
-			var pt = {
-				'type': 'Feature',
-				'geometry': { 'type': 'Point', 'coordinates': [ lon, lat ] },
-				'properties': { 'lflt:label_text': label_text }
+				self.process_queue();
 			};
 
-			if (geom['type'] == 'Point'){
+			var on_error = function(rsp) {
+				if (_handlers.on_error) {
+					_handlers.on_error(rsp);
+				}
+			};
 
-				var name = props['wof:name'];
+			mapzen.whosonfirst.net.fetch(wof_url, on_success, on_error);
+		},
 
-				var label_text = name;
-				label_text += ', whose centroid is ';
-				label_text += lat + ", " + lon;
-
-				pt['properties']['lflt:label_text'] = label_text;
-
-				var style = mapzen.whosonfirst.leaflet.styles.geom_centroid();
-				var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
-
-				mapzen.whosonfirst.leaflet.draw_point(map, pt, style, handler);
-			} else {
-
-				feature['properties']['lflt:label_text'] = feature['properties']['wof:name'];
-				mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-			}
+		save_bundle: function(filename) {
+			var feature_collection = {
+				'type': 'FeatureCollection',
+				'features': _features,
+			};
+			var json = JSON.stringify(feature_collection);
+			var args = {
+				type: "application/json"
+			};
+			var blob = new Blob([json], args);
+			saveAs(blob, filename);
 		}
 	};
 
