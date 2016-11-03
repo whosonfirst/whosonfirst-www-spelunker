@@ -18,18 +18,15 @@ setup-nginx:
 
 setup-local: setup-app setup-nginx
 	ubuntu/setup-elasticsearch.sh
+	ubuntu/setup-elasticsearch-mappings.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
 
 index:
-	ubuntu/setup-postgis-index.sh $(data)
-	ubuntu/setup-elasticsearch-index.sh $(data)
+	ubuntu/setup-index-elasticsearch.sh $(data)
 
 mapzen: styleguide tangram refill yesnofix crosshairs
-
-pyzen:
-	./ubuntu/setup-py-mapzen.sh
 
 yesnofix:
 	curl -s -o www/static/javascript/mapzen.whosonfirst.yesnofix.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst-yesnofix/master/src/mapzen.whosonfirst.yesnofix.js
