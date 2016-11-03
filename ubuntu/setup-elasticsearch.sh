@@ -27,15 +27,31 @@ sudo add-apt-repository ppa:webupd8team/java -y
 sudo apt-get update
 sudo apt-get install oracle-java8-installer -y
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-repositories.html
+curl -o /tmp/elasticsearch-2.4.0.deb https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb
+curl -o /tmp/elasticsearch-2.4.0.deb.sha1 https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb.sha1
 
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.7.list
+remote_sha1=`cat /tmp/elasticsearch-2.4.0.deb.sha1`
+local_sha1=`sha1sum /tmp/elasticsearch-2.4.0.deb | cut -c1-40`
+
+if [ "$remote_sha1" != "$local_sha1" ]
+then
+    echo "Uh oh, elasticsearch SHA1 checksum is invalid."
+    exit 1
+fi
+
+sudo dpkg -i /tmp/elasticsearch-2.4.0.deb
+sudo update-rc.d elasticsearch defaults 95 10
+
+rm /tmp/elasticsearch-2.4.0.deb
+rm /tmp/elasticsearch-2.4.0.deb.sha1
 
 sudo apt-get update
 sudo apt-get install elasticsearch
 
 sudo update-rc.d elasticsearch defaults 95 10
+
+# STILL NEED TO ADD -Dmapper.allow_dots_in_name=true HERE
+# https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/54
 
 if [ ! -f /var/run/elasticsearch/elasticsearch.pid ]
 then
