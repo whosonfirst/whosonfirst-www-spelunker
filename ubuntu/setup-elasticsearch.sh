@@ -59,6 +59,18 @@ then
     sudo ln -s ${ELASTICSEARCH_CONFIG_PATH} /etc/default/elasticsearch
 fi
 
+if [ ! -d /etc/elasticsearch/synonyms ]
+then
+    sudo mkdir /etc/elasticsearch/synonyms
+fi
+
+if [ -L /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
+then
+    sudo rm /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
+fi
+
+sudo ln -s ${PROJECT}/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
+
 # sudo update-rc.d elasticsearch defaults 95 10
 
 if [ ! -f /var/run/elasticsearch/elasticsearch.pid ]
