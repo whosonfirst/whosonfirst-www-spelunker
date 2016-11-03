@@ -6,19 +6,12 @@ PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
 
 DATA=$1
+INDEX=$2
 
 if [ "${DATA}" = "" ]
 then
     DATA="${PROJECT}/data"
 fi
-
-# This seems like a good idea... until it's not
-# (20160202/thisisaaronland)
-
-# if [ ! -d ${DATA} ]
-# then
-#     ${PARENT}/setup-data.sh
-# fi
 
 if [ ! -d ${DATA} ]
 then
@@ -26,6 +19,11 @@ then
     exit 1
 fi
 
-/usr/local/bin/wof-es-index -s ${DATA} -b
+if [ "${INDEX}" = "" ]
+then
+    INDEX="spelunker"
+fi
+
+/usr/local/bin/wof-es-index -s ${DATA} --index ${INDEX} -b
 
 exit 0
