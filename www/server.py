@@ -222,9 +222,9 @@ def random_place():
     }
 
     body = { 'query': query }
-    args = { 'per_page': 1 }
+    params = { 'per_page': 1 }
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
     docs = rsp['rows']
 
     try:
@@ -256,12 +256,13 @@ def brands():
         'aggregations': aggrs,
     }
 
+    # FIX ME: where does this go?
+
     query = { 
         'search_type': 'count'
     }
 
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.search(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('brands', {})
@@ -287,18 +288,18 @@ def brand(id):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
 
-    pagination = rsp['pagination']
-    docs = rsp['rows']
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
     
@@ -349,12 +350,13 @@ def languages(spoken=False):
         'aggregations': aggrs,
     }
 
+    # FIX ME: where does this go?
+
     query = { 
         'search_type': 'count'
     }
 
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.search(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('languages', {})
@@ -405,12 +407,12 @@ def concordances():
         'aggregations': aggrs,
     }
 
+    # FIX ME: where does this go?
     query = { 
         'search_type': 'count'
     }
 
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.search(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('concordances', {})
@@ -572,18 +574,18 @@ def descendants(id):
         'query': query
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
 
-    docs = rsp['rows']
-    pagination = rsp['pagination']
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
 
@@ -624,17 +626,18 @@ def megacities():
         'sort': sort
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
-    pagination = rsp['pagination']
-    docs = rsp['rows']
+    rsp = flask.g.search_idx.search(body=body, params=params)
+
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
 
@@ -669,18 +672,18 @@ def nullisland():
          'query': query
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
 
-    pagination = rsp['pagination']
-    docs = rsp['rows']
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
 
@@ -715,12 +718,13 @@ def placetypes():
         'aggregations': aggrs,
     }
 
+    # FIX ME: where does this go
+
     query = { 
         'search_type': 'count'
     }
 
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.search(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('placetypes', {})
@@ -761,18 +765,18 @@ def placetype(placetype):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
 
-    pagination = rsp['pagination']
-    docs = rsp['rows']
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
     
@@ -938,18 +942,18 @@ def machinetag_places(field, mt):
          'query': query
     }
 
-    args = {'per_page': 50}
+    params = {'per_page': 50}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.search(body=body, params=params)
 
-    pagination = rsp['pagination']
-    docs = rsp['rows']
+    docs = flask.g.search_idx.rows(rsp)
+    pagination = flask.g.search_idx.search(rsp)
 
     facets = facetify(query)
 
@@ -994,6 +998,8 @@ def machinetag_hierarchies(field, **kwargs):
     body = {
         'aggregations': aggrs,
     }
+
+    # GOT THIS FAR
 
     query = { 
         'search_type': 'count'
