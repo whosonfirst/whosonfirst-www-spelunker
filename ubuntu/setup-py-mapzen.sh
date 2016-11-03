@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-search/tarball/master
+sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-elasticsearch/tarball/master
 sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-utils/tarball/master
 sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes/tarball/master
 sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-sources/tarball/master

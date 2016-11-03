@@ -32,7 +32,7 @@ import machinetag.elasticsearch.wildcard
 import machinetag.elasticsearch.hierarchy
 
 import mapzen.whosonfirst.utils as utils
-import mapzen.whosonfirst.search as search
+import mapzen.whosonfirst.elasticsearch as search
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
 import mapzen.whosonfirst.uri as uri
