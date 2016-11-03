@@ -84,9 +84,9 @@ logging.basicConfig(level=logging.INFO)
 @app.before_request
 def init():
 
-    search_host = os.environ.get('WOF_SEARCH_HOST', None)
-    search_port = os.environ.get('WOF_SEARCH_PORT', None)
-    search_index = os.environ.get('WOF_SEARCH_INDEX', 'whosonfirst')
+    search_host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
+    search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
+    search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
     
     # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
 

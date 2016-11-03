@@ -18,7 +18,6 @@ setup-nginx:
 
 setup-local: setup-app setup-nginx
 	ubuntu/setup-elasticsearch.sh
-	# ubuntu/setup-postgis.sh
 
 data:
 	ubuntu/setup-data.sh $(data)

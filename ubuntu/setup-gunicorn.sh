@@ -6,41 +6,46 @@ PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
 PROJECT_NAME=`basename ${PROJECT}`
 
-# echo "project ${PROJECT}"
-# echo "project name ${PROJECT_NAME}"
-
 PERL=`which perl`
 
-if [ ! -f ${PROJECT}/spelunker/spelunker.cfg ]
+FLASK_CONFIG_NAME="${PROJECT_NAME}-flask.cfg"
+FLASK_CONFIG_PATH="${PROJECT}/config/${FLASK_CONFIG_NAME}"
+
+GUNICORN_CONFIG_NAME="${PROJECT_NAME}-gunicorn.cfg"
+GUNICORN_CONFIG_PATH="${PROJECT}/config/${GUNICORN_CONFIG_NAME}"
+
+INITD_PATH="${PROJECT}/init.d/${PROJECT_NAME}.sh"
+
+if [ ! -f ${FLASK_CONFIG_PATH} ]
 then
-    cp ${PROJECT}/spelunker/spelunker.cfg.example ${PROJECT}/spelunker/spelunker.cfg
+    cp ${FLASK_CONFIG_PATH}.example ${FLASK_CONFIG_PATH}
 fi
 
-if [ ! -f ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg ]
+if [ ! -f ${GUNICORN_CONFIG_PATH} ]
 then
-    cp ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg.example ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
+    cp ${GUNICORN_CONFIG_PATH}.example ${GUNICORN_CONFIG_PATH}
 
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-PORT-GOES-HERE!7777!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-GOES-HERE!${PROJECT}/www!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-CONFIG-NAME-GOES-HERE!${PROJECT}/spelunker/spelunker.cfg!" ${PROJECT}/gunicorn/${PROJECT_NAME}.cfg
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-HOST-GOES-HERE!localhost!" ${GUNICORN_CONFIG_PATH}
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-PORT-GOES-HERE!7777!" ${GUNICORN_CONFIG_PATH}
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-ROOT-GOES-HERE!${PROJECT}/www!" ${GUNICORN_CONFIG_PATH}
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-FLASK-CONFIG-GOES-HERE!${FLASK_CONFIG_PATH}!" ${GUNICORN_CONFIG_PATH}
 fi
 
 if [ ! -f ${PROJECT}/init.d/${PROJECT_NAME}.sh ]
 then
 
-    cp ${PROJECT}/init.d/${PROJECT_NAME}.sh.example ${PROJECT}/init.d/${PROJECT_NAME}.sh
+    cp ${INITD_PATH}.example ${INITD_PATH}
 
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-NAME!${PROJECT_NAME}!g" ${PROJECT}/init.d/${PROJECT_NAME}.sh
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-ROOT-GOES-HERE!${PROJECT}/www!" ${PROJECT}/init.d/${PROJECT_NAME}.sh
-    ${PERL} -p -i -e "s!YOUR-SPELUNKER-GUNICORN-CONFIG-GOES-HERE!${PROJECT}/gunicorn/${PROJECT_NAME}.cfg!" ${PROJECT}/init.d/${PROJECT_NAME}.sh
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-NAME!${PROJECT_NAME}!g" ${INITD_PATH}
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-WWW-ROOT-GOES-HERE!${PROJECT}/www!" ${INITD_PATH}
+    ${PERL} -p -i -e "s!YOUR-SPELUNKER-GUNICORN-CONFIG-GOES-HERE!${GUNICORN_CONFIG_PATH}!" ${INITD_PATH}
 
 fi
 
-if [ ! -f /etc/init.d/${PROJECT_NAME}.sh ]
+if [ ! -f ${INITD_PATH} ]
 then
-    sudo ln -s ${PROJECT}/init.d/${PROJECT_NAME}.sh /etc/init.d/${PROJECT_NAME}.sh
+    sudo ln -s ${INITD_PATH} /etc/init.d/${PROJECT_NAME}.sh
     sudo update-rc.d ${PROJECT_NAME}.sh defaults
-
     sudo /etc/init.d/${PROJECT_NAME}.sh start
 fi
 
