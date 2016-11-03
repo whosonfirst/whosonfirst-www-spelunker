@@ -67,7 +67,7 @@ fi
 # Why do I need to copy this... symlinks result in all kinds of (Java) file
 # permission errors because... computers? (20161103/thisisaaronland)
 
-if [ ! -F /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
+if [ ! -f /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
 then
     sudo cp ${PROJECT}/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
 fi

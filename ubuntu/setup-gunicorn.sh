@@ -47,7 +47,7 @@ then
 
 fi
 
-if [ ! -f ${INITD_PATH} ]
+if [ ! -f /etc/init.d/${PROJECT_NAME}.sh ]
 then
     sudo ln -s ${INITD_PATH} /etc/init.d/${PROJECT_NAME}.sh
     sudo update-rc.d ${PROJECT_NAME}.sh defaults
