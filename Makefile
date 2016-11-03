@@ -32,27 +32,18 @@ pyzen:
 	./ubuntu/setup-py-mapzen.sh
 
 yesnofix:
-	if test -e www/static/javascript/mapzen.whosonfirst.yesnofix.js; then cp www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.yesnofix.js.bak; fi
 	curl -s -o www/static/javascript/mapzen.whosonfirst.yesnofix.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst-yesnofix/master/src/mapzen.whosonfirst.yesnofix.js
 
 styleguide:
-	if test -e www/static/css/mapzen.styleguide.css; then cp www/static/css/mapzen.styleguide.css www/static/css/mapzen.styleguide.css.bak; fi
 	curl -s -o www/static/css/mapzen.styleguide.css https://mapzen.com/common/styleguide/styles/styleguide.css
 
 tangram:
-	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi
 	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
-	if test -e www/static/javascript/tangram.min.js; then cp www/static/javascript/tangram.min.js www/static/javascript/tangram.min.js.bak; fi
 	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
 
 refill:
-	if test -e www/static/tangram/refill.yaml; then cp www/static/tangram/refill.yaml www/static/tangram/refill.yaml.bak; fi
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
-
-	if test -e www/static/tangram/images/poi_icons_18@2x.png; then cp www/static/tangram/images/poi_icons_18@2x.png www/static/tangram/images/poi_icons_18@2x.png.bak; fi
 	curl -s -o www/static/tangram/images/poi_icons_18@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/poi_icons_18%402x.png
-
-	if test -e www/static/tangram/images/building-grid.gif; then cp www/static/tangram/images/building-grid.gif www/static/tangram/images/building-grid.gif.bak; fi
 	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
 
 js: js-dependencies js-app
@@ -68,12 +59,12 @@ js-app:
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 
 es-schema:
-	if test -e schema/elasticsearch/mappings.spelunker.json; then cp schema/elasticsearch/mappings.spelunker.json schema/elasticsearch/mappings.spelunker.json.bak; fi
-	curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
+	curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/schema/mappings.spelunker.json
+	# curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
 
 es-reload:
-	curl -s -XDELETE 'http://$(host):9200/whosonfirst' | python -mjson.tool
-	cat "schema/elasticsearch/mappings.spelunker.json" | curl -s -XPUT 'http://$(host):9200/whosonfirst' -d @- | python -mjson.tool
+	curl -s -XDELETE 'http://$(host):9200/spelunker' | python -mjson.tool
+	cat "schema/elasticsearch/mappings.spelunker.json" | curl -s -XPUT http://$(host):9200/spelunker -d @- | python -mjson.tool
 
 es-index:
 	sudo -u www-data ./ubuntu/setup-elasticsearch-index.sh $(data)
