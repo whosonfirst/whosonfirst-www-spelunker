@@ -17,6 +17,9 @@ WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
 
 PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
+PROJECT_NAME=`basename ${PROJECT}`
+
+ELASTICSEARCH_CONFIG_PATH="${PROJECT}/config/${PROJECT_NAME}-elasticsearch.conf"
 
 # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/18
 
@@ -48,10 +51,15 @@ rm /tmp/elasticsearch-2.4.0.deb.sha1
 sudo apt-get update
 sudo apt-get install elasticsearch
 
-sudo update-rc.d elasticsearch defaults 95 10
+if [ ! -f ${ELASTICSEARCH_CONFIG_PATH} ]
+then
+    cp ${ELASTICSEARCH_CONFIG_PATH}.example ${ELASTICSEARCH_CONFIG_PATH}
 
-# STILL NEED TO ADD -Dmapper.allow_dots_in_name=true HERE
-# https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/54
+    sudo mv /etc/default/elasticsearch /etc/default/.elasticsearch.dist
+    sudo ln -s ${ELASTICSEARCH_CONFIG_PATH} /etc/default/elasticsearch
+fi
+
+# sudo update-rc.d elasticsearch defaults 95 10
 
 if [ ! -f /var/run/elasticsearch/elasticsearch.pid ]
 then
@@ -67,6 +75,8 @@ else
 
 	    echo "Elasticsearch isn't running BECAUSE COMPUTERS so trying to restart"
 	    sudo /etc/init.d/elasticsearch start
-	    sleep 10	
+	    sleep 10
+	else
+	    sudo /etc/init.d/elasticsearch restart
 	fi
 fi
