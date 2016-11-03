@@ -15,3 +15,4 @@ sudo apt-get install -y gdal-bin
 sudo apt-get install -y make nginx gunicorn python-gevent python-flask
 
 sudo easy_install pycountry
+sudo easy_install flask-cors
