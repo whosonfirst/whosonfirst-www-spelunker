@@ -55,9 +55,11 @@ js-app:
 	echo "" >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 
-es-schema:
-	curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/schema/mappings.spelunker.json
+es:
+	curl -s -o elasticsearch/schema/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/schema/mappings.spelunker.json
+	curl -s -o elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/synonyms/cldr-emoji-annotation-synonyms-en.txt
 	# curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
+	# curl -s -o elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/synonyms/cldr-emoji-annotation-synonyms-en.txt
 
 es-reload:
 	curl -s -XDELETE 'http://$(host):9200/spelunker' | python -mjson.tool
