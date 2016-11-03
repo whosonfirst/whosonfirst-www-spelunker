@@ -64,12 +64,13 @@ then
     sudo mkdir /etc/elasticsearch/synonyms
 fi
 
-if [ -L /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
-then
-    sudo rm /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
-fi
+# Why do I need to copy this... symlinks result in all kinds of (Java) file
+# permission errors because... computers? (20161103/thisisaaronland)
 
-sudo ln -s ${PROJECT}/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
+if [ ! -F /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
+then
+    sudo cp ${PROJECT}/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
+fi
 
 # sudo update-rc.d elasticsearch defaults 95 10
 
