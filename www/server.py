@@ -53,7 +53,7 @@ class ReverseProxied(object):
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Script-Name /myprefix;
+        proxy_set_header X-Proxy-Path /myprefix;
         }
 
     :param app: the WSGI application
@@ -62,19 +62,19 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
+        proxy_path = environ.get('HTTP_X_PROXY_PATH', '')
+        if proxy_path:
+            environ['SCRIPT_NAME'] = proxy_path
             path_info = environ['PATH_INFO']
-            if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
+            if path_info.startswith(proxy_path):
+                environ['PATH_INFO'] = path_info[len(proxy_path):]
 
         scheme = environ.get('HTTP_X_SCHEME', '')
         if scheme:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
 
-app = flask.Flask('SPELUNKER')
+app = flask.Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
@@ -87,9 +87,15 @@ def init():
     search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
     search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
     
-    # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
+    search_args = {
+        'host': search_host,
+        'port': search_port,
+        'index': search_index,
+        'per_page': 50,
+        'slow_queries': 0.5
+    }
 
-    search_idx = mapzen.whosonfirst.elasticsearch.search(host=search_host, port=search_port, index=search_index, per_page=50)
+    search_idx = mapzen.whosonfirst.elasticsearch.search(**search_args)
     flask.g.search_idx = search_idx
 
 @app.template_filter()
@@ -209,10 +215,23 @@ def random_place():
 
     seed = random.randint(0, now)
 
+    countries = list(pycountry.countries)
+    count_countries = len(countries)
+    country = countries[ random.randint(0, count_countries) ]
+
+    iso = country.alpha2.lower()
+    iso = flask.g.search_idx.escape(iso)
+
     query = {
         'function_score': {
-            'query': {
-                'match_all' : { }
+
+            # https://github.com/whosonfirst/es-whosonfirst-schema/issues/16
+            #'query': {
+            #    'match_all' : { }
+            #},
+
+            'filter': {
+                'term': { 'wof:country': iso }
             },
             'functions': [
                 { 'random_score': { 'seed': seed } }
@@ -224,17 +243,15 @@ def random_place():
     params = { 'per_page': 1 }
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    doc = flask.g.search_idx.single(rsp)
 
-    docs = rsp['rows']
-
-    try:
-        doc = docs[0]
-    except Exception, e:
+    if doc == None:
         logging.error("failed to get random document")
         flask.abort(404)        
 
-    id = doc['id']
+    # FIX ME: convert to geojson
+
+    id = doc['_id']
     url = flask.url_for('info', id=id)
 
     logging.debug("redirect random to %s" % url)
@@ -1883,21 +1900,10 @@ def get_by_id(id):
     }
 
     rsp = flask.g.search_idx.query(body=body)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    doc = flask.g.search_idx.single(rsp)
 
-    docs = rsp['rows']
-
-    # WTF... why do I need to do this? it would appear that updates are not being
-    # applied but rather being indexed as new records even though they have the
-    # same ID because... ??? (20160329/thisisaaronland)
-    #
-    # see also: https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/12
-
-    try:
-        return docs[-1]
-    except Exception, e:
-        logging.warning("failed to retrieve %s" % id)
-        return None
+    print doc
+    return doc
 
 def has_concordance(src, label):
 
