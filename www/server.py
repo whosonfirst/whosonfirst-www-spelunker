@@ -12,8 +12,7 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.datastructures import Headers
-from flask.ext.cors import cross_origin
-# from flask_cors import cross_origin
+from flask_cors import cross_origin
 
 import re
 import time
@@ -32,7 +31,7 @@ import machinetag.elasticsearch.wildcard
 import machinetag.elasticsearch.hierarchy
 
 import mapzen.whosonfirst.utils as utils
-import mapzen.whosonfirst.elasticsearch as search
+import mapzen.whosonfirst.elasticsearch
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
 import mapzen.whosonfirst.uri as uri
@@ -90,7 +89,7 @@ def init():
     
     # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
 
-    search_idx = search.query(host=search_host, port=search_port, index=search_index, per_page=50)
+    search_idx = mapzen.whosonfirst.elasticsearch.search(host=search_host, port=search_port, index=search_index, per_page=50)
     flask.g.search_idx = search_idx
 
 @app.template_filter()
@@ -224,7 +223,7 @@ def random_place():
     body = { 'query': query }
     params = { 'per_page': 1 }
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     docs = rsp['rows']
@@ -259,7 +258,7 @@ def brands():
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('brands', {})
@@ -293,7 +292,7 @@ def brand(id):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -349,7 +348,7 @@ def languages(spoken=False):
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('languages', {})
@@ -401,7 +400,7 @@ def concordances():
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('concordances', {})
@@ -571,14 +570,14 @@ def descendants(id):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
 
     docs = flask.g.search_idx.rows(rsp)
-    pagination = flask.g.search_idx.search(rsp)
+    pagination = flask.g.search_idx.query(rsp)
 
     facets = facetify(query)
 
@@ -627,7 +626,7 @@ def megacities():
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -674,7 +673,7 @@ def nullisland():
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -714,7 +713,7 @@ def placetypes():
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('placetypes', {})
@@ -763,7 +762,7 @@ def placetype(placetype):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -941,7 +940,7 @@ def machinetag_places(field, mt):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -992,7 +991,7 @@ def machinetag_hierarchies(field, **kwargs):
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('hierarchies', {})
@@ -1059,7 +1058,7 @@ def tags():
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     # please paginate me (20150910/thisisaaronland)
 
@@ -1087,7 +1086,7 @@ def names():
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     # please paginate me (20150910/thisisaaronland)
 
@@ -1121,7 +1120,7 @@ def tag(tag):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -1174,7 +1173,7 @@ def category(category):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -1229,7 +1228,7 @@ def code(code):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -1484,7 +1483,7 @@ def do_search():
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     return body, rsp
 
 def facetify(query):
@@ -1540,7 +1539,7 @@ def facetify(query):
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.search_raw(body=body)
+    rsp = flask.g.search_idx.query_raw(body=body)
 
     aggregations = rsp.get('aggregations', {})
 
@@ -1883,7 +1882,7 @@ def get_by_id(id):
         'query': query
     }
 
-    rsp = flask.g.search_idx.search(body=body)
+    rsp = flask.g.search_idx.query(body=body)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     docs = rsp['rows']
@@ -1934,7 +1933,7 @@ def has_concordance(src, label):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body, **args)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
@@ -1969,7 +1968,7 @@ def get_by_concordance(id, src):
         'query': query
     }
 
-    rsp = flask.g.search_idx.search(body)
+    rsp = flask.g.search_idx.query(body)
 
     try:
         return flask.g.search_idx.single(rsp)
@@ -2045,7 +2044,7 @@ def has_language(lang, spoken=False):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.search(body=body, params=params)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
