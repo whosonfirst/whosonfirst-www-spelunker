@@ -12,8 +12,7 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.datastructures import Headers
-from flask.ext.cors import cross_origin
-# from flask_cors import cross_origin
+from flask_cors import cross_origin
 
 import re
 import time
@@ -54,7 +53,7 @@ class ReverseProxied(object):
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Script-Name /myprefix;
+        proxy_set_header X-Proxy-Path /myprefix;
         }
 
     :param app: the WSGI application
@@ -63,19 +62,19 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
+        proxy_path = environ.get('HTTP_X_PROXY_PATH', '')
+        if proxy_path:
+            environ['SCRIPT_NAME'] = proxy_path
             path_info = environ['PATH_INFO']
-            if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
+            if path_info.startswith(proxy_path):
+                environ['PATH_INFO'] = path_info[len(proxy_path):]
 
         scheme = environ.get('HTTP_X_SCHEME', '')
         if scheme:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
 
-app = flask.Flask('SPELUNKER')
+app = flask.Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
@@ -88,8 +87,6 @@ def init():
     search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
     search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
     
-    # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
-
     search_idx = search.query(host=search_host, port=search_port, index=search_index)
     flask.g.search_idx = search_idx
 
