@@ -207,10 +207,23 @@ def random_place():
 
     seed = random.randint(0, now)
 
+    countries = list(pycountry.countries)
+    count_countries = len(countries)
+    country = countries[ random.randint(0, count_countries) ]
+
+    iso = country.alpha2.lower()
+    iso = flask.g.search_idx.escape(iso)
+
     query = {
         'function_score': {
-            'query': {
-                'match_all' : { }
+
+            # https://github.com/whosonfirst/es-whosonfirst-schema/issues/16
+            #'query': {
+            #    'match_all' : { }
+            #},
+
+            'filter': {
+                'term': { 'wof:country': iso }
             },
             'functions': [
                 { 'random_score': { 'seed': seed } }
