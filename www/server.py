@@ -255,13 +255,8 @@ def brands():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go?
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -350,13 +345,8 @@ def languages(spoken=False):
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go?
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -407,12 +397,8 @@ def concordances():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go?
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -724,13 +710,8 @@ def placetypes():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -1007,13 +988,8 @@ def machinetag_hierarchies(field, **kwargs):
         aggrs['hierarchies']['terms']['exclude'] = exclude_filter
 
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -1079,13 +1055,8 @@ def tags():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -1112,13 +1083,8 @@ def names():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go
-
-    query = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search(body=body)
@@ -1569,14 +1535,9 @@ def facetify(query):
     }
     
     body = {
+        'size': 0,
         'query': query,
         'aggregations': aggrs,
-    }
-
-    # FIX ME: where does this go
-
-    query_str = { 
-        'search_type': 'count'
     }
 
     rsp = flask.g.search_idx.search_raw(body=body)
