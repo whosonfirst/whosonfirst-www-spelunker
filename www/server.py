@@ -315,6 +315,8 @@ def brand(id):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
+    docs = docs_to_geojson(docs)
+
     facets = facetify(query)
     
     pagination_url = build_pagination_url()
@@ -593,8 +595,7 @@ def descendants(id):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
-    docs = flask.g.search_idx.rows(rsp)
-    pagination = flask.g.search_idx.query(rsp)
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -649,6 +650,8 @@ def megacities():
     pagination = rsp['pagination']
     docs = rsp['rows']
 
+    docs = docs_to_geojson(docs)
+
     facets = facetify(query)
 
     pagination_url = build_pagination_url()
@@ -695,6 +698,8 @@ def nullisland():
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -784,6 +789,8 @@ def placetype(placetype):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
     
@@ -962,6 +969,8 @@ def machinetag_places(field, mt):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1143,6 +1152,8 @@ def tag(tag):
     pagination = rsp['pagination']
     docs = rsp['rows']
 
+    docs = docs_to_geojson(docs)
+
     facets = facetify(query)
 
     pagination_url = build_pagination_url()
@@ -1195,6 +1206,8 @@ def category(category):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1250,6 +1263,8 @@ def code(code):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1352,6 +1367,8 @@ def searchify():
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query['query'])
 
@@ -1556,7 +1573,7 @@ def facetify(query):
         'aggregations': aggrs,
     }
 
-    rsp = flask.g.search_idx.query_raw(body=body)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
 
@@ -1902,8 +1919,7 @@ def get_by_id(id):
     rsp = flask.g.search_idx.query(body=body)
     doc = flask.g.search_idx.single(rsp)
 
-    print doc
-    return doc
+    return doc_to_geojson(doc)
 
 def has_concordance(src, label):
 
@@ -1944,6 +1960,8 @@ def has_concordance(src, label):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -2055,6 +2073,8 @@ def has_language(lang, spoken=False):
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -2183,6 +2203,64 @@ def sanitize_float(f):
         f = float(f)
 
     return f
+
+# see below
+
+def docs_to_geojson(docs):
+
+    geojson = []
+
+    for doc in docs:
+        geojson.append(doc_to_geojson(doc))
+
+    return geojson
+
+# this is also in py-mapzen-whosonfirst-search but I've cloned it here
+# during the transition to using py-mapzen-whosonfirst-elasticsearch
+# will eventually be subclassed by py-mz-wof-search - right now though
+# while everything is in flux we need a local copy to work with
+# (20161104/thisisaaronland)
+
+def doc_to_geojson(doc):
+
+    properties = doc['_source']
+    id = properties['wof:id']
+    
+    geom = {}
+    bbox = []
+    
+    lat = None
+    lon = None
+    
+    if not properties.get('wof:path', False):
+        
+        path = mapzen.whosonfirst.uri.id2relpath(id)
+        properties['wof:path'] = path
+        
+    if properties.get('geom:bbox', False):
+        bbox = properties['geom:bbox']
+        bbox = bbox.split(",")
+        
+    if properties.get('geom:latitude', False) and properties.get('geom:longitude', False):
+        lat = properties['geom:latitude']
+        lat = properties['geom:longitude']
+        
+    elif len(bbox) == 4:
+        pass	# derive centroid here...
+        
+    else:
+        pass
+
+    if properties.get('wof:placetype', None) == 'venue' and lat and lon:
+        geom = {'type': 'Point', 'coordinates': [ lon, lat ] }
+        
+    return {
+        'type': 'Feature',
+        'id': id,
+        'bbox': bbox,
+        'geometry': geom,
+        'properties': properties
+    }
 
 if __name__ == '__main__':
 
