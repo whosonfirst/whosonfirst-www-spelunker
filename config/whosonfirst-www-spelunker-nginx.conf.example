@@ -30,7 +30,7 @@ server {
     	    proxy_set_header X-Scheme $scheme;
 
 	    # http://flask.pocoo.org/snippets/35/
-	    proxy_set_header X-Script-Name /spelunker;
+	    proxy_set_header X-Proxy-Path /spelunker;
     	}
 
 	location /data/ {
