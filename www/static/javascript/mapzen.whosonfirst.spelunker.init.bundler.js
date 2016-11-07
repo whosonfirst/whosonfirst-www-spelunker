@@ -21,7 +21,7 @@ window.addEventListener("load", function load(event){
 	window.map = map;
 
 	mapzen.whosonfirst.bundler.set_handler('progress', function(update) {
-		btn.setAttribute('disabled', 'disabled');
+		btn.removeAttribute('disabled');
 		if (update.type == 'query') {
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		} else if (update.type == 'feature') {
@@ -37,7 +37,6 @@ window.addEventListener("load", function load(event){
 			btn.setAttribute('disabled', 'disabled');
 			status.innerHTML = '<i>No places selected</i>';
 		} else {
-			btn.removeAttribute('disabled');
 			status.innerHTML = 'Ready to download ' + geojson.features.length + ' places';
 		}
 	});
