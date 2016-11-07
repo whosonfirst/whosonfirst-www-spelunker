@@ -222,17 +222,27 @@ def random_place():
     iso = country.alpha2.lower()
     iso = flask.g.search_idx.escape(iso)
 
+    mustnot = [
+        { 'term': { 'geom:latitude': 0.0 } },
+        { 'term': { 'geom:longitude': 0.0 } }
+    ]
+    
     query = {
         'function_score': {
 
-            # https://github.com/whosonfirst/es-whosonfirst-schema/issues/16
-            #'query': {
-            #    'match_all' : { }
-            #},
-
-            'filter': {
-                'term': { 'wof:country': iso }
+            'query': {
+                'filtered': {
+                    'query': { 
+                        'term': { 'wof:country': iso }
+                    },
+                    'filter': {
+                        'and': [
+                            { 'bool': { 'must_not': mustnot } }
+                        ]
+                    }
+                }
             },
+
             'functions': [
                 { 'random_score': { 'seed': seed } }
             ]
@@ -248,8 +258,6 @@ def random_place():
     if doc == None:
         logging.error("failed to get random document")
         flask.abort(404)        
-
-    # FIX ME: convert to geojson
 
     id = doc['_id']
     url = flask.url_for('info', id=id)
@@ -1992,7 +2000,7 @@ def get_by_concordance(id, src):
         'query': query
     }
 
-    rsp = flask.g.search_idx.query(body)
+    rsp = flask.g.search_idx.query(body=body)
 
     try:
         return flask.g.search_idx.single(rsp)
@@ -2222,6 +2230,9 @@ def docs_to_geojson(docs):
 # (20161104/thisisaaronland)
 
 def doc_to_geojson(doc):
+
+    if not doc:
+        return None
 
     properties = doc['_source']
     id = properties['wof:id']
