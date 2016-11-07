@@ -1955,7 +1955,7 @@ def has_concordance(src, label):
     if page:
         params['page'] = page
 
-    rsp = flask.g.search_idx.query(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
