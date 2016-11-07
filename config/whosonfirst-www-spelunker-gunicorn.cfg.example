@@ -25,5 +25,7 @@ os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
 os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
 os.environ['SPELUNKER_SEARCH_INDEX'] = cfg.get('search', 'index')
 
+os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
+
 bind = '%s:%s' % (spelunker_host, spelunker_port)
 chdir = spelunker_root

@@ -81,6 +81,25 @@ app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 logging.basicConfig(level=logging.INFO)
 
+# slow query log setup - as in this:
+# os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
+
+slow_handler = logging.NullHandler()
+
+slow_log = os.environ.get('SPELUNKER_SLOW_QUERY_LOG', None)
+
+if slow_log:
+    slow_handler = logging.handlers.RotatingFileHandler(slow_log)
+
+slow_fmt = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+slow_handler.setFormatter(slow_fmt)
+
+slow_logger = logging.getLogger("slow queries")
+slow_logger.setLevel(logging.WARNING)
+slow_logger.addHandler(slow_handler)
+
+# end of slow query log setup
+
 @app.before_request
 def init():
 
@@ -93,7 +112,8 @@ def init():
         'port': search_port,
         'index': search_index,
         'per_page': 50,
-        'slow_queries': 0.5
+        'slow_queries': 0.5,
+        'slow_queries_log': slow_logger
     }
 
     search_idx = mapzen.whosonfirst.elasticsearch.search(**search_args)
@@ -2296,9 +2316,11 @@ if __name__ == '__main__':
     cfg = ConfigParser.ConfigParser()
     cfg.read(options.config)
 
-    os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
-    os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
-    os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
+    os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
+    os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
+    os.environ['SPELUNKER_SEARCH_INDEX'] = cfg.get('search', 'index')
+
+    os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
 
     port = int(options.port)
 
