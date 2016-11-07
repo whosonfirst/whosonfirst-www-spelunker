@@ -238,3 +238,7 @@ pre {
 #bundle-status {
     padding-top: 0.5em;
 }
+
+.preview-controls label {
+    margin-right: 10px;
+}
