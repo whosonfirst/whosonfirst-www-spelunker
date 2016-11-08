@@ -9,7 +9,12 @@
 			<li data-placetype="{{ f.key | e }}" data-count="{{ f.doc_count | e }}"><input type="checkbox" name="pt-{{ f.key | e }}" id="pt-{{ f.key | e }}" data-placetype="{{ f.key | e }}" value="1"> <label for="pt-{{ f.key | e }}">{{ f.key | e }}</label> <small>{{ f.doc_count |number_format|e }}</small></li>
 		{% endfor %}
 	</ul>
-	<a id="btn-download" class="btn btn-default" disabled="disabled">Download bundle</a>
+	<div id="bundle-btns">
+		<a id="btn-bundle" class="btn btn-default" disabled="disabled">GeoJSON bundle</a>
+		<a id="btn-summary" class="btn btn-default" disabled="disabled">CSV summary</a>
+	</div>
+	<div id="bundle-stats"></div>
+	<div id="summary-stats"></div>
 	<div id="bundle-status"><i>No places selected</i></div>
 </div>
 

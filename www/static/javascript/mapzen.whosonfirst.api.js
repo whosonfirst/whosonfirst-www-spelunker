@@ -5,6 +5,7 @@ mapzen.whosonfirst.api = (function(){
 
 	var _endpoint = 'https://whosonfirst-api.mapzen.com/';
 	var _api_key = null;
+	var _access_token = null;
 
 	var self = {
 
@@ -40,6 +41,10 @@ mapzen.whosonfirst.api = (function(){
 			if (_api_key &&
 			    ! form_data.api_key) {
 				form_data.append('api_key', _api_key);
+			}
+			if (_access_token &&
+			    ! form_data.access_token) {
+				form_data.append('access_token', _access_token);
 			}
 
 			var onload = function(rsp){
@@ -116,6 +121,10 @@ mapzen.whosonfirst.api = (function(){
 
 		set_key: function(key) {
 			_api_key = key;
+		},
+
+		set_token: function(token) {
+			_access_token = token;
 		},
 
 		destruct: function(msg){

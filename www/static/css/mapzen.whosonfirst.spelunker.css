@@ -235,8 +235,16 @@ pre {
     padding-bottom: 1.5em;
 }
 
+#bundle-btns {
+    margin-bottom: 1em;
+}
+
 #bundle-status {
-    padding-top: 0.5em;
+    margin-top: 0.5em;
+}
+
+#bundle-status {
+    margin-top: 0.5em;
 }
 
 .preview-controls label {
