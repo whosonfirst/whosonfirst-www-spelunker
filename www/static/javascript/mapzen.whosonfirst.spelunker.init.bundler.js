@@ -1,8 +1,6 @@
 window.addEventListener("load", function load(event){
 
-	//mapzen.whosonfirst.api.set_endpoint('https://whosonfirst-api.dev.mapzen.com/?api_key=mapzen-xQN8mJA');
-	mapzen.whosonfirst.api.set_token('cf5cd07a07ace599232c96d58c129ffc');
-	mapzen.whosonfirst.api.set_endpoint('https://whosonfirst.dev.mapzen.com/api/rest/');
+	mapzen.whosonfirst.api.set_endpoint('https://whosonfirst-api.dev.mapzen.com/?api_key=mapzen-o85WWSN');
 
 	var total = 0;
 
