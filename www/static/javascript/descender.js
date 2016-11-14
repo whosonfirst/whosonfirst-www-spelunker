@@ -209,7 +209,7 @@ function start(wof_id, wof_level) {
 //         var bbox[];
 //         bbox = feature.properties['geom:bbox'];
     if (descendantsProcessed == 0){
-        map.panTo([lat,lon]);
+        descender.view.map.panTo([lat,lon]);
         }
 //         map.fitBounds([bbox[0],bbox[1]]
 //         ,[bbox[2],bbox[3]]);
