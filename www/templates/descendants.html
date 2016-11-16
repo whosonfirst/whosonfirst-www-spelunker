@@ -6,7 +6,7 @@
 <h3>
 Descendants of <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] | e }}</a>
 {% if request.args.get('exclude', '') == "nullisland" %}<small>filtering out any place that is visiting <a href="{{ url_for('nullisland') }}" class="hey-look">Null Island</a> right now</small>
-<small><a href="/descender/?wof_id={{ doc.properties.get("wof:id") | e }}">(download descendant records)</a></small>{% endif %}
+{% endif %}
 </h3>
 </div>
 
