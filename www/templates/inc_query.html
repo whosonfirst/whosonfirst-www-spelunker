@@ -3,7 +3,8 @@
 <pre style="font-size:.9em;max-height:200px;y-overslow:scroll;">{{ es_query|pprint|e }}</pre>
 
 {% if request.args.get('include', '') != "deprecated" %}
-<div style="text-align:right;margin-bottom:.5em; font-size:small;">Would you like try this query again to <a href="{{ pagination_url|e }}&include=deprecated">include records that have been deprecated</a> ?</div>
+<div style="text-align:left; float:left; margin-bottom:.5em; font-size:small;">Click<a href="/bundler/{{ doc.properties.get("wof:id") | e }}"> here </a>to download these descendant records of {{ doc.properties.get("wof:name") | e }}.</div>
+<div style="text-align:right; float:right; margin-bottom:.5em; font-size:small;">Would you like try this query again to <a href="{{ pagination_url|e }}&include=deprecated">include records that have been deprecated</a> ?</div>
 {% endif %}
 
 </div>
