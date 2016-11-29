@@ -2159,7 +2159,11 @@ def append_source_details_to_buckets(buckets):
 
     for b in buckets:
 
-        prefix, key = b['key'].split(':')
+        try:
+            prefix, key = b['key'].split(':')
+        except Exception, e:
+            logging.error("expected a key:value string but got '%s' instead, so skipping" % b['key'])
+            continue
 
         source = src.get_source_by_prefix(prefix)
         
