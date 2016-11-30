@@ -119,6 +119,9 @@ def init():
     search_idx = mapzen.whosonfirst.elasticsearch.search(**search_args)
     flask.g.search_idx = search_idx
 
+    data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://whosonfirst.mapzen.com/data')
+    flask.g.data_root = data_root
+
 @app.template_filter()
 def urlencode(value):
     s = unicode(value)
@@ -221,10 +224,7 @@ def geojson(id):
         logging.warning("no record for ID %s" % id)
         flask.abort(404)
 
-    # strictly speaking we should make the root URL a config thingy
-    # but not today... (20160607/thisisaaronland)
-
-    location = uri.id2abspath('https://whosonfirst.mapzen.com/data', id)
+    location = uri.id2abspath(flask.g.data_root, id)
     return flask.redirect(location, code=303)
 
 @app.route("/random", methods=["GET"])
