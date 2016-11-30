@@ -26,7 +26,7 @@ data:
 index:
 	ubuntu/setup-index-elasticsearch.sh $(data)
 
-mapzen: styleguide tangram refill yesnofix crosshairs
+mapzen: styleguide tangram refill yesnofix crosshairs wofjs
 
 yesnofix:
 	curl -s -o www/static/javascript/mapzen.whosonfirst.yesnofix.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst-yesnofix/master/src/mapzen.whosonfirst.yesnofix.js
@@ -42,6 +42,9 @@ refill:
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
 	curl -s -o www/static/tangram/images/poi_icons_18@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/poi_icons_18%402x.png
 	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
+
+wofjs:
+	curl -s -o www/static/javascript/mapzen.whosonfirst.uri.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.uri.js
 
 js: js-dependencies js-app
 
