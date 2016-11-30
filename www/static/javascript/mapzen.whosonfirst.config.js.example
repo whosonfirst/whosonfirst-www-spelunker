@@ -15,7 +15,7 @@ mapzen.whosonfirst.config = (function(){
 	    var root = '/';	// document.body.getAttribute("data-abs-root-url");
 	    var data = root + "data/";
 	    
-	    mapzen.whosonfirst.data.endpoint(data);
+	    mapzen.whosonfirst.uri.endpoint(data);
 	    */
 
 	    // You can probably turn this on safely but it is still technically
