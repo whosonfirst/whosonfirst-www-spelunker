@@ -1318,12 +1318,17 @@ def searchify():
     q = get_str('q')
     q = get_single(q)
 
+
     if q and re.match(r'^\d+$', q):
 
         id = int(q)
 
-        location = flask.url_for('info', id=id, _external=True)
-        return flask.redirect(location, code=303)        
+        # if we don't this then things like '90210' will result in hillarity
+        # (20161201/thisisaaronland)
+
+        if get_by_id(id):
+            location = flask.url_for('info', id=id, _external=True)
+            return flask.redirect(location, code=303)        
 
     try:
         query, rsp = do_search()
