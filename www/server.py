@@ -1379,6 +1379,7 @@ def searchify():
 
 @app.route("/api/search", methods=["GET"])
 @app.route("/api/search/", methods=["GET"])
+@cross_origin()
 def api_searchify():
 
     try:
