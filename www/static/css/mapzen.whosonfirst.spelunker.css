@@ -221,7 +221,7 @@ pre {
 }
 
 #slippymap-coords {
-    text-align:right;
+    float: right;
     font-size:.8em;
     color:#666;
     margin-bottom:1em;
@@ -249,4 +249,16 @@ pre {
 
 .preview-controls label {
     margin-right: 10px;
+}
+
+#download-feature-credit {
+    float: left;
+    font-size: 11px;
+    color: #666;
+}
+
+#download-feature-credit:after {
+    content: "";
+    clear: both;
+    display: table;
 }
