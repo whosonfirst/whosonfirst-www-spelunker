@@ -43,9 +43,9 @@ import mapzen.whosonfirst.uri as uri
 # http://flask.pocoo.org/snippets/35/
 
 class ReverseProxied(object):
-    '''Wrap the application in this middleware and configure the 
-    front-end server to add these headers, to let you quietly bind 
-    this to a URL other than / and to an HTTP scheme that is 
+    '''Wrap the application in this middleware and configure the
+    front-end server to add these headers, to let you quietly bind
+    this to a URL other than / and to an HTTP scheme that is
     different than what is used locally.
 
     In nginx:
@@ -98,7 +98,7 @@ def init():
     search_host = os.environ.get('WOF_SEARCH_HOST', None)
     search_port = os.environ.get('WOF_SEARCH_PORT', None)
     search_index = os.environ.get('WOF_SEARCH_INDEX', 'whosonfirst')
-    
+
     # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
 
     search_idx = search.query(host=search_host, port=search_port, index=search_index)
@@ -179,7 +179,7 @@ def about():
 def info(id):
 
     doc = get_by_id(id)
-    
+
     if not doc:
         logging.warning("no record for ID %s" % id)
         flask.abort(404)
@@ -242,7 +242,7 @@ def random_place():
         doc = docs[0]
     except Exception, e:
         logging.error("failed to get random document")
-        flask.abort(404)        
+        flask.abort(404)
 
     id = doc['id']
     url = flask.url_for('info', id=id)
@@ -262,12 +262,12 @@ def brands():
             }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -293,7 +293,7 @@ def brand(id):
     }
 
     query = enfilterify(query)
-    
+
     body = {
         'query': query,
     }
@@ -312,7 +312,7 @@ def brand(id):
     docs = rsp['rows']
 
     facets = facetify(query)
-    
+
     pagination_url = build_pagination_url()
     facet_url = pagination_url
 
@@ -327,6 +327,34 @@ def brand(id):
     }
 
     return flask.render_template('brand.html', **template_args)
+
+@app.route("/download/<int:id>", methods=["GET"])
+@app.route("/download/<int:id>/", methods=["GET"])
+def download(id):
+
+    parent_id = sanitize_int(id)
+    doc = get_by_id(parent_id)
+
+    if not doc:
+        logging.warning("no record for ID %s" % id)
+        flask.abort(404)
+
+    query = {
+        'term': {
+            'wof:belongsto': doc.get('id')
+        }
+    }
+
+    query = enfilterify(query)
+    facets = facetify(query)
+
+    template_args = {
+        'doc': doc,
+        'facets': facets,
+        'parent_id': parent_id
+    }
+
+    return flask.render_template('download.html', **template_args)
 
 @app.route("/languages", methods=["GET"])
 @app.route("/languages/", methods=["GET"])
@@ -355,12 +383,12 @@ def languages(spoken=False):
             }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -411,12 +439,12 @@ def concordances():
            }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -441,7 +469,7 @@ def for_concordance(who):
 
     if not source:
         source = src.get_source_by_name(who)
-    
+
     if not source:
         source = src.get_source_by_prefix(who)
 
@@ -466,7 +494,7 @@ def for_geonames():
 def for_geoplanet():
     location = flask.url_for('for_concordance', who='geoplanet')
     return flask.redirect(location, code=301)
-    
+
 @app.route("/tgn/", methods=["GET"])
 def for_tgn():
     location = flask.url_for('for_concordance', who='tgn')
@@ -537,7 +565,7 @@ def info_concordance(id, src):
     else:
         id = sanitize_str(id)
         id = flask.g.search_idx.escape(id)
-        
+
     doc = get_by_concordance(id, src)
 
     if not doc:
@@ -573,7 +601,7 @@ def descendants(id):
     }
 
     query = enfilterify(query)
-    
+
     sort = [
         { 'wof:name' : 'asc' }
     ]
@@ -675,7 +703,7 @@ def nullisland():
     }
 
     query = enfilterify(query)
-    
+
     body = {
          'query': query
     }
@@ -712,7 +740,7 @@ def nullisland():
 @app.route("/placetypes", methods=["GET"])
 @app.route("/placetypes/", methods=["GET"])
 def placetypes():
-    
+
     aggrs = {
         'placetypes': {
             'terms': {
@@ -721,12 +749,12 @@ def placetypes():
             }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -767,7 +795,7 @@ def placetype(placetype):
         }}
 
     query = enfilterify(query)
-    
+
     body = {
         'query': query,
     }
@@ -786,7 +814,7 @@ def placetype(placetype):
     docs = rsp['rows']
 
     facets = facetify(query)
-    
+
     pagination_url = build_pagination_url()
     facet_url = pagination_url
 
@@ -1006,7 +1034,7 @@ def machinetag_hierarchies(field, **kwargs):
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -1072,12 +1100,12 @@ def tags():
             }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -1104,12 +1132,12 @@ def names():
             }
         }
     }
-        
+
     body = {
         'aggregations': aggrs,
     }
 
-    query = { 
+    query = {
         'search_type': 'count'
     }
 
@@ -1323,7 +1351,7 @@ def searchify():
         id = int(q)
 
         location = flask.url_for('info', id=id, _external=True)
-        return flask.redirect(location, code=303)        
+        return flask.redirect(location, code=303)
 
     try:
         query, rsp = do_search()
@@ -1554,13 +1582,13 @@ def facetify(query):
             }
         }
     }
-    
+
     body = {
         'query': query,
         'aggregations': aggrs,
     }
 
-    query_str = { 
+    query_str = {
         'search_type': 'count'
     }
 
@@ -1630,7 +1658,7 @@ def enfilterify(query):
     if include:
 
         for i in include:
-            
+
             if i == "deprecated":
                 deprecated = True
 
@@ -1646,8 +1674,8 @@ def enfilterify(query):
 
     if not deprecated:
 
-        mustnot.append({ 
-            
+        mustnot.append({
+
             # Y U NO WORK ON PROD??? (20160531/thisisaaronland)
             # 'regexp': { 'edtf:deprecated' : '.*' }
             # see above - one day this will bite us in the ass...
@@ -1655,7 +1683,7 @@ def enfilterify(query):
 
             'exists': { 'field' : 'edtf:deprecated' }
         })
-        
+
     #
 
     if placetype:
@@ -1673,7 +1701,7 @@ def enfilterify(query):
 
             # placetype = pt.placetype(p)
             # ids.append(placetype.id())
-            
+
         if len(ids) == 1:
 
             filters.append({ 'term': {
@@ -1695,7 +1723,7 @@ def enfilterify(query):
             iso[idx] = value.lower()
 
         filters.append(simple_enfilter('iso:country', iso))
-                
+
     if tag:
 
         if len(tag) == 1:
@@ -1720,14 +1748,14 @@ def enfilterify(query):
             else:
 
                 must = []
-                
+
                 for t in esc_tags:
                     must.append({ 'term': { 'tags_all': t }})
-                    
+
                 filters.append({ 'bool': {
                     'must': must
                 }})
-        
+
     if category:
 
         if len(category) == 1:
@@ -1738,10 +1766,10 @@ def enfilterify(query):
             esc_cat = map(flask.g.search_idx.escape, category)
 
             must = []
-                
+
             for c in esc_cat:
                 must.append({ 'term': { 'category': c }})
-                    
+
             filters.append({ 'bool': {
                 'must': must
             }})
@@ -1752,11 +1780,11 @@ def enfilterify(query):
         machinetag_field = 'machinetags_all'
 
         if machinetag_filter:
-            
+
             filters.append({'regexp':{
                 machinetag_field : machinetag_filter
             }})
-        
+
     if names:
         filters.append(simple_enfilter('names_all', names))
 
@@ -1822,7 +1850,7 @@ def simple_enfilter(field, terms):
         elif field == 'wof:concordances_sources':
 
             # do not escape the ':' - if you do then ES will
-            # be very confused (20161101/thisisaaronland)  
+            # be very confused (20161101/thisisaaronland)
 
             parts = term.split(':', 2)
             ns = flask.g.search_idx.escape(parts[0])
@@ -1841,7 +1869,7 @@ def simple_enfilter(field, terms):
     else:
 
         esc_terms = []
-            
+
         for t in terms:
 
             if type(t) == types.IntType:
@@ -1850,7 +1878,7 @@ def simple_enfilter(field, terms):
             elif field == 'wof:concordances_sources':
 
                 # do not escape the ':' - if you do then ES will
-                # be very confused (20161101/thisisaaronland)  
+                # be very confused (20161101/thisisaaronland)
 
                 parts = term.split(':', 2)
                 ns = flask.g.search_idx.escape(parts[0])
@@ -1874,7 +1902,7 @@ def simple_enfilter(field, terms):
             # must.append({ 'term': { field: t }})
 
             must.append({ 'query': { 'match': { field: { 'query': t, 'operator': 'and' }}}})
-            
+
         return {
             'bool': { 'must': must }
         }
@@ -1903,7 +1931,7 @@ def get_by_id(id):
             'values': [id]
         }
     }
-    
+
     body = {
         'query': query
     }
@@ -1945,7 +1973,7 @@ def has_concordance(src, label):
     }
 
     query = enfilterify(query)
-    
+
     body = {
          'query': query
     }
@@ -1987,7 +2015,7 @@ def get_by_concordance(id, src):
     query = {
         'match': { concordance : id }
     }
-    
+
     body = {
         'query': query
     }
@@ -2133,7 +2161,7 @@ def append_source_details_to_buckets(buckets):
         prefix, key = b['key'].split(':')
 
         source = src.get_source_by_prefix(prefix)
-        
+
         b['prefix'] = prefix
 
         if source:
@@ -2151,10 +2179,10 @@ def append_source_details_to_buckets(buckets):
 def get_param(k, sanitize=None):
 
     param = flask.request.args.getlist(k)
-    
+
     if len(param) == 0:
         return None
-        
+
     if sanitize:
         param = map(sanitize, param)
 
@@ -2189,7 +2217,7 @@ def sanitize_str(str):
         str = str.strip()
 
     return str
-    
+
 def sanitize_int(i):
 
     if i:
@@ -2218,7 +2246,7 @@ if __name__ == '__main__':
 
     options, args = opt_parser.parse_args()
 
-    if options.verbose:	
+    if options.verbose:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
