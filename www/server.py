@@ -239,8 +239,12 @@ def random_place():
     countries = list(pycountry.countries)
     count_countries = len(countries)
     country = countries[ random.randint(0, count_countries) ]
+    
+    try:
+        iso = country.alpha2.lower()
+    except Exception, e:
+        iso = country.alpha_2.lower()	# WUUUUUUUUHHHHHHHH.... sad face (20161202/thisisaaronland)
 
-    iso = country.alpha2.lower()
     iso = flask.g.search_idx.escape(iso)
 
     mustnot = [
