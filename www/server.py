@@ -328,9 +328,9 @@ def brand(id):
 
     return flask.render_template('brand.html', **template_args)
 
-@app.route("/bundler/<int:id>", methods=["GET"])
-@app.route("/bundler/<int:id>/", methods=["GET"])
-def bundler(id):
+@app.route("/download/<int:id>", methods=["GET"])
+@app.route("/download/<int:id>/", methods=["GET"])
+def download(id):
 
     parent_id = sanitize_int(id)
     doc = get_by_id(parent_id)
@@ -354,7 +354,7 @@ def bundler(id):
         'parent_id': parent_id
     }
 
-    return flask.render_template('bundler.html', **template_args)
+    return flask.render_template('download.html', **template_args)
 
 @app.route("/languages", methods=["GET"])
 @app.route("/languages/", methods=["GET"])
@@ -1850,7 +1850,7 @@ def simple_enfilter(field, terms):
         elif field == 'wof:concordances_sources':
 
             # do not escape the ':' - if you do then ES will
-            # be very confused (20161101/thisisaaronland)  
+            # be very confused (20161101/thisisaaronland)
 
             parts = term.split(':', 2)
             ns = flask.g.search_idx.escape(parts[0])
@@ -1878,7 +1878,7 @@ def simple_enfilter(field, terms):
             elif field == 'wof:concordances_sources':
 
                 # do not escape the ':' - if you do then ES will
-                # be very confused (20161101/thisisaaronland)  
+                # be very confused (20161101/thisisaaronland)
 
                 parts = term.split(':', 2)
                 ns = flask.g.search_idx.escape(parts[0])
