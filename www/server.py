@@ -328,11 +328,6 @@ def brand(id):
 
     return flask.render_template('brand.html', **template_args)
 
-@app.route("/descender", methods=["GET"])
-@app.route("/descender/", methods=["GET"])
-def descender():
-    return flask.render_template('descender.html')
-
 @app.route("/bundler/<int:id>", methods=["GET"])
 @app.route("/bundler/<int:id>/", methods=["GET"])
 def bundler(id):
