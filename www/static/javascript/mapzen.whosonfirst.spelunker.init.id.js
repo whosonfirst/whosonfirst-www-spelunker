@@ -34,7 +34,7 @@ window.addEventListener("load", function load(event){
 
     // now we format the properties hash
     
-    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+    var url = mapzen.whosonfirst.uri.id2abspath(wofid);
 
     var cb = function(feature){
 	

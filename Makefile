@@ -18,43 +18,40 @@ setup-nginx:
 
 setup-local: setup-app setup-nginx
 	ubuntu/setup-elasticsearch.sh
-	# ubuntu/setup-postgis.sh
+	ubuntu/setup-elasticsearch-mappings.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
 
 index:
-	ubuntu/setup-postgis-index.sh $(data)
-	ubuntu/setup-elasticsearch-index.sh $(data)
+	ubuntu/setup-index-elasticsearch.sh $(data)
 
-mapzen: styleguide tangram refill yesnofix crosshairs
-
-pyzen:
-	./ubuntu/setup-py-mapzen.sh
+mapzen: styleguide tangram refill yesnofix crosshairs wofjs
 
 yesnofix:
-	if test -e www/static/javascript/mapzen.whosonfirst.yesnofix.js; then cp www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.yesnofix.js.bak; fi
 	curl -s -o www/static/javascript/mapzen.whosonfirst.yesnofix.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst-yesnofix/master/src/mapzen.whosonfirst.yesnofix.js
 
 styleguide:
-	if test -e www/static/css/mapzen.styleguide.css; then cp www/static/css/mapzen.styleguide.css www/static/css/mapzen.styleguide.css.bak; fi
 	curl -s -o www/static/css/mapzen.styleguide.css https://mapzen.com/common/styleguide/styles/styleguide.css
 
 tangram:
-	if test -e www/static/javascript/tangram.js; then cp www/static/javascript/tangram.js www/static/javascript/tangram.js.bak; fi
 	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
-	if test -e www/static/javascript/tangram.min.js; then cp www/static/javascript/tangram.min.js www/static/javascript/tangram.min.js.bak; fi
 	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
 
 refill:
-	if test -e www/static/tangram/refill.yaml; then cp www/static/tangram/refill.yaml www/static/tangram/refill.yaml.bak; fi
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
-
-	if test -e www/static/tangram/images/poi_icons_18@2x.png; then cp www/static/tangram/images/poi_icons_18@2x.png www/static/tangram/images/poi_icons_18@2x.png.bak; fi
 	curl -s -o www/static/tangram/images/poi_icons_18@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/poi_icons_18%402x.png
-
-	if test -e www/static/tangram/images/building-grid.gif; then cp www/static/tangram/images/building-grid.gif www/static/tangram/images/building-grid.gif.bak; fi
 	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
+
+wofjs:
+	curl -s -o www/static/javascript/mapzen.whosonfirst.enmapify.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.enmapify.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.geojson.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.geojson.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.log.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.log.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.namify.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.namify.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.net.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.net.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.php.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.php.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.placetypes.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.placetypes.js
+	curl -s -o www/static/javascript/mapzen.whosonfirst.uri.js https://raw.githubusercontent.com/whosonfirst/js-mapzen-whosonfirst/master/src/mapzen.whosonfirst.uri.js
 
 js: js-dependencies js-app
 
@@ -64,17 +61,19 @@ js-dependencies:
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.dependencies.js
 
 js-app:
-	cat www/static/javascript/mapzen.whosonfirst.log.js www/static/javascript/mapzen.whosonfirst.php.js www/static/javascript/mapzen.whosonfirst.placetypes.js www/static/javascript/mapzen.whosonfirst.data.js www/static/javascript/mapzen.whosonfirst.geojson.js www/static/javascript/mapzen.whosonfirst.leaflet.js www/static/javascript/mapzen.whosonfirst.leaflet.styles.js www/static/javascript/mapzen.whosonfirst.leaflet.handlers.js www/static/javascript/mapzen.whosonfirst.leaflet.tangram.js www/static/javascript/mapzen.whosonfirst.net.js www/static/javascript/mapzen.whosonfirst.enmapify.js www/static/javascript/mapzen.whosonfirst.properties.js www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.spelunker.js > www/static/javascript/mapzen.whosonfirst.spelunker.app.js
+	cat www/static/javascript/mapzen.whosonfirst.log.js www/static/javascript/mapzen.whosonfirst.php.js www/static/javascript/mapzen.whosonfirst.placetypes.js www/static/javascript/mapzen.whosonfirst.uri.js www/static/javascript/mapzen.whosonfirst.geojson.js www/static/javascript/mapzen.whosonfirst.leaflet.js www/static/javascript/mapzen.whosonfirst.leaflet.styles.js www/static/javascript/mapzen.whosonfirst.leaflet.handlers.js www/static/javascript/mapzen.whosonfirst.leaflet.tangram.js www/static/javascript/mapzen.whosonfirst.net.js www/static/javascript/mapzen.whosonfirst.enmapify.js www/static/javascript/mapzen.whosonfirst.properties.js www/static/javascript/mapzen.whosonfirst.yesnofix.js www/static/javascript/mapzen.whosonfirst.spelunker.js > www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 	echo "" >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 
-es-schema:
-	if test -e schema/elasticsearch/mappings.spelunker.json; then cp schema/elasticsearch/mappings.spelunker.json schema/elasticsearch/mappings.spelunker.json.bak; fi
-	curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
+es:
+	curl -s -o elasticsearch/schema/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/schema/mappings.spelunker.json
+	curl -s -o elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/es2/synonyms/cldr-emoji-annotation-synonyms-en.txt
+	# curl -s -o schema/elasticsearch/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/mappings.spelunker.json
+	# curl -s -o elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/synonyms/cldr-emoji-annotation-synonyms-en.txt
 
 es-reload:
-	curl -s -XDELETE 'http://$(host):9200/whosonfirst' | python -mjson.tool
-	cat "schema/elasticsearch/mappings.spelunker.json" | curl -s -XPUT 'http://$(host):9200/whosonfirst' -d @- | python -mjson.tool
+	curl -s -XDELETE 'http://$(host):9200/spelunker' | python -mjson.tool
+	cat "schema/elasticsearch/mappings.spelunker.json" | curl -s -XPUT http://$(host):9200/spelunker -d @- | python -mjson.tool
 
 es-index:
 	sudo -u www-data ./ubuntu/setup-elasticsearch-index.sh $(data)

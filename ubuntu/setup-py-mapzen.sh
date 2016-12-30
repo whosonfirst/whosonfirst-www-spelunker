@@ -1,23 +1,19 @@
 #!/bin/sh
 
-WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
-PARENT=`dirname $WHOAMI`
+# the old way that we know works
+# and the new way that we are trying to make sure works...
+# (20161104/thisisaaronland)
 
-PROJECT=`dirname $PARENT`
-PROJECT_NAME=`basename ${PROJECT}`
+# sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-elasticsearch/tarball/master
+# sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-utils/tarball/master
+# sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes/tarball/master
+# sudo easy_install https://github.com/whosonfirst/py-mapzen-whosonfirst-sources/tarball/master
 
-GIT=`which git`
+sudo apt-get install python-pip
 
-if [ -d /usr/local/mapzen/py-mapzen-whosonfirst ]
-then
-    cd /usr/local/mapzen/py-mapzen-whosonfirst
-    git pull origin master
-else
-    git clone https://github.com/whosonfirst/py-mapzen-whosonfirst.git /usr/local/mapzen/py-mapzen-whosonfirst
-    cd /usr/local/mapzen/py-mapzen-whosonfirst
-fi 
-
-sudo python setup.py install
-cd -
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-elasticsearch/tarball/master --process-dependency-links
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-utils/tarball/master --process-dependency-links
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes/tarball/master --process-dependency-links
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-sources/tarball/master --process-dependency-links
 
 exit 0

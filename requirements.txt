@@ -1,6 +1,0 @@
-flask
-mapzen.whosonfirst.spatial
-mapzen.whosonfirst.search
-mapzen.whosonfirst.utils
-mapzen.whosonfirst.placetypes
-

@@ -5,8 +5,6 @@ import os
 import multiprocessing
 import ConfigParser
 
-# import mapzen.whosonfirst.spatial as spatial
-
 spelunker_host = 'YOUR-SPELUNKER-WWW-HOST-GOES-HERE'
 spelunker_port = 'YOUR-SPELUNKER-WWW-PORT-GOES-HERE'
 spelunker_root = 'YOUR-SPELUNKER-WWW-ROOT-GOES-HERE'
@@ -23,16 +21,12 @@ worker_class = "egg:gunicorn#gevent"
 cfg = ConfigParser.ConfigParser()
 cfg.read(spelunker_cfg)
 
-# dsn = spatial.cfg2dsn(cfg, 'spatial')
-# os.environ['WOF_SPATIAL_DSN'] = dsn
+os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
+os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
+os.environ['SPELUNKER_SEARCH_INDEX'] = cfg.get('search', 'index')
 
-# https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/46
-# os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
-# os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
-
-os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
-os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
-os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
+os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
+os.environ['SPELUNKER_DATA_ROOT'] = cfg.get('spelunker', 'data_root')
 
 bind = '%s:%s' % (spelunker_host, spelunker_port)
 chdir = spelunker_root

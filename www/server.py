@@ -12,8 +12,7 @@ import werkzeug
 import werkzeug.security
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.datastructures import Headers
-from flask.ext.cors import cross_origin
-# from flask_cors import cross_origin
+from flask_cors import cross_origin
 
 import re
 import time
@@ -31,8 +30,9 @@ import machinetag
 import machinetag.elasticsearch.wildcard
 import machinetag.elasticsearch.hierarchy
 
+import mapzen.whosonfirst.elasticsearch
+
 import mapzen.whosonfirst.utils as utils
-import mapzen.whosonfirst.search as search
 import mapzen.whosonfirst.placetypes as pt
 import mapzen.whosonfirst.sources as src
 import mapzen.whosonfirst.uri as uri
@@ -54,7 +54,7 @@ class ReverseProxied(object):
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Script-Name /myprefix;
+        proxy_set_header X-Proxy-Path /myprefix;
         }
 
     :param app: the WSGI application
@@ -63,46 +63,64 @@ class ReverseProxied(object):
         self.app = app
 
     def __call__(self, environ, start_response):
-        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
+        proxy_path = environ.get('HTTP_X_PROXY_PATH', '')
+        if proxy_path:
+            environ['SCRIPT_NAME'] = proxy_path
             path_info = environ['PATH_INFO']
-            if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
+            if path_info.startswith(proxy_path):
+                environ['PATH_INFO'] = path_info[len(proxy_path):]
 
         scheme = environ.get('HTTP_X_SCHEME', '')
         if scheme:
             environ['wsgi.url_scheme'] = scheme
         return self.app(environ, start_response)
 
-app = flask.Flask('SPELUNKER')
+app = flask.Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 logging.basicConfig(level=logging.INFO)
 
+# slow query log setup - as in this:
+# os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
+
+slow_handler = logging.NullHandler()
+
+slow_log = os.environ.get('SPELUNKER_SLOW_QUERY_LOG', None)
+
+if slow_log:
+    slow_handler = logging.handlers.RotatingFileHandler(slow_log)
+
+slow_fmt = logging.Formatter('%(asctime)s:%(name)s:%(message)s')
+slow_handler.setFormatter(slow_fmt)
+
+slow_logger = logging.getLogger("slow queries")
+slow_logger.setLevel(logging.WARNING)
+slow_logger.addHandler(slow_handler)
+
+# end of slow query log setup
+
 @app.before_request
 def init():
 
-    # See this - yeah, like that. Maybe one day again but
-    # for now it just makes everything fussy and complicated
-    # specifically because we don't actually use it anywhere
-    # (20160201/thisisaaronland)
-
-    """
-    spatial_dsn = os.environ.get('WOF_SPATIAL_DSN', None)
-    spatial_db = spatial.query(spatial_dsn)
-    flask.g.spatial_db = spatial_db
-    """
-
-    search_host = os.environ.get('WOF_SEARCH_HOST', None)
-    search_port = os.environ.get('WOF_SEARCH_PORT', None)
-    search_index = os.environ.get('WOF_SEARCH_INDEX', 'whosonfirst')
+    search_host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
+    search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
+    search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
     
-    # https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/37
+    search_args = {
+        'host': search_host,
+        'port': search_port,
+        'index': search_index,
+        'per_page': 50,
+        'slow_queries': 0.5,
+        'slow_queries_log': slow_logger
+    }
 
-    search_idx = search.query(host=search_host, port=search_port, index=search_index)
+    search_idx = mapzen.whosonfirst.elasticsearch.search(**search_args)
     flask.g.search_idx = search_idx
+
+    data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://whosonfirst.mapzen.com/data')
+    flask.g.data_root = data_root
 
 @app.template_filter()
 def urlencode(value):
@@ -206,10 +224,7 @@ def geojson(id):
         logging.warning("no record for ID %s" % id)
         flask.abort(404)
 
-    # strictly speaking we should make the root URL a config thingy
-    # but not today... (20160607/thisisaaronland)
-
-    location = uri.id2abspath('https://whosonfirst.mapzen.com/data', id)
+    location = uri.id2abspath(flask.g.data_root, id)
     return flask.redirect(location, code=303)
 
 @app.route("/random", methods=["GET"])
@@ -221,11 +236,38 @@ def random_place():
 
     seed = random.randint(0, now)
 
+    countries = list(pycountry.countries)
+    count_countries = len(countries)
+    country = countries[ random.randint(0, count_countries) ]
+    
+    try:
+        iso = country.alpha2.lower()
+    except Exception, e:
+        iso = country.alpha_2.lower()	# WUUUUUUUUHHHHHHHH.... sad face (20161202/thisisaaronland)
+
+    iso = flask.g.search_idx.escape(iso)
+
+    mustnot = [
+        { 'term': { 'geom:latitude': 0.0 } },
+        { 'term': { 'geom:longitude': 0.0 } }
+    ]
+    
     query = {
         'function_score': {
+
             'query': {
-                'match_all' : { }
+                'filtered': {
+                    'query': { 
+                        'term': { 'wof:country': iso }
+                    },
+                    'filter': {
+                        'and': [
+                            { 'bool': { 'must_not': mustnot } }
+                        ]
+                    }
+                }
             },
+
             'functions': [
                 { 'random_score': { 'seed': seed } }
             ]
@@ -233,18 +275,16 @@ def random_place():
     }
 
     body = { 'query': query }
-    args = { 'per_page': 1 }
+    params = { 'per_page': 1 }
 
-    rsp = flask.g.search_idx.search(body, **args)
-    docs = rsp['rows']
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    doc = flask.g.search_idx.single(rsp)
 
-    try:
-        doc = docs[0]
-    except Exception, e:
+    if doc == None:
         logging.error("failed to get random document")
         flask.abort(404)        
 
-    id = doc['id']
+    id = doc['_id']
     url = flask.url_for('info', id=id)
 
     logging.debug("redirect random to %s" % url)
@@ -264,15 +304,11 @@ def brands():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('brands', {})
@@ -298,18 +334,21 @@ def brand(id):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
     
@@ -357,15 +396,11 @@ def languages(spoken=False):
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('languages', {})
@@ -413,15 +448,11 @@ def concordances():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('concordances', {})
@@ -583,18 +614,21 @@ def descendants(id):
         'query': query
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
-    docs = rsp['rows']
     pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -635,17 +669,21 @@ def megacities():
         'sort': sort
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
+
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -680,18 +718,21 @@ def nullisland():
          'query': query
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -723,15 +764,11 @@ def placetypes():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('placetypes', {})
@@ -772,18 +809,21 @@ def placetype(placetype):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
     
@@ -949,18 +989,21 @@ def machinetag_places(field, mt):
          'query': query
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1003,15 +1046,11 @@ def machinetag_hierarchies(field, **kwargs):
         aggrs['hierarchies']['terms']['exclude'] = exclude_filter
 
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
     results = aggregations.get('hierarchies', {})
@@ -1074,15 +1113,11 @@ def tags():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     # please paginate me (20150910/thisisaaronland)
 
@@ -1106,15 +1141,11 @@ def names():
     }
         
     body = {
+        'size': 0,
         'aggregations': aggrs,
     }
 
-    query = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     # please paginate me (20150910/thisisaaronland)
 
@@ -1140,18 +1171,21 @@ def tag(tag):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1192,18 +1226,21 @@ def category(category):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1246,18 +1283,21 @@ def code(code):
         'query': query,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1356,8 +1396,12 @@ def searchify():
             query_string = possible
             break
 
+    rsp = flask.g.search_idx.standard_rsp(rsp)
+
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query['query'])
 
@@ -1386,6 +1430,8 @@ def api_searchify():
         query, rsp = do_search()
     except Exception, e:
         return flask.render_template('search_form.html')
+
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     feature_col = {
         'type': 'FeatureCollection',
@@ -1497,15 +1543,15 @@ def do_search():
         'sort': sort,
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
     return body, rsp
 
 def facetify(query):
@@ -1531,19 +1577,19 @@ def facetify(query):
         },
         'category': {
             'terms': {
-                'field': 'category',	# as in sg:classfiers.category
+                'field': 'sg:classifiers.category',	# as in sg:classfiers.category
                 'size': 0
             }
         },
         'locality_id': {
             'terms': {
-                'field': 'locality_id',
+                'field': 'wof:hierarchy.locality_id',
                 'size': 100
             }
         },
         'region_id': {
             'terms': {
-                'field': 'region_id',
+                'field': 'wof:hierarchy.region_id',
                 'size': 100
             }
         },
@@ -1556,16 +1602,12 @@ def facetify(query):
     }
     
     body = {
+        'size': 0,
         'query': query,
         'aggregations': aggrs,
     }
 
-    query_str = { 
-        'search_type': 'count'
-    }
-
-    args = { 'body': body, 'query': query_str }
-    rsp = flask.g.search_idx.search_raw(**args)
+    rsp = flask.g.search_idx.query(body=body)
 
     aggregations = rsp.get('aggregations', {})
 
@@ -1732,7 +1774,7 @@ def enfilterify(query):
 
         if len(category) == 1:
 
-            filters.append(simple_enfilter('category', category))
+            filters.append(simple_enfilter('sg:classifiers.category', category))
 
         else:
             esc_cat = map(flask.g.search_idx.escape, category)
@@ -1776,16 +1818,16 @@ def enfilterify(query):
         filters.append(simple_enfilter('wof:name', name))
 
     if country:
-        filters.append(simple_enfilter('country_id', country))
+        filters.append(simple_enfilter('wof:hierarchy.country_id', country))
 
     if region:
-        filters.append(simple_enfilter('region_id', region))
+        filters.append(simple_enfilter('wof:hierarchy.region_id', region))
 
     if locality:
-        filters.append(simple_enfilter('locality_id', locality))
+        filters.append(simple_enfilter('wof:hierarchy.locality_id', locality))
 
     if neighbourhood:
-        filters.append(simple_enfilter('neighbourhood_id', neighbourhood))
+        filters.append(simple_enfilter('wof:hierarchy.neighbourhood_id', neighbourhood))
 
     concordance = get_str('concordance')
 
@@ -1908,21 +1950,10 @@ def get_by_id(id):
         'query': query
     }
 
-    rsp = flask.g.search_idx.search(body)
-    docs = rsp['rows']
+    rsp = flask.g.search_idx.query(body=body)
+    doc = flask.g.search_idx.single(rsp)
 
-
-    # WTF... why do I need to do this? it would appear that updates are not being
-    # applied but rather being indexed as new records even though they have the
-    # same ID because... ??? (20160329/thisisaaronland)
-    #
-    # see also: https://github.com/whosonfirst/py-mapzen-whosonfirst-search/issues/12
-
-    try:
-        return docs[-1]
-    except Exception, e:
-        logging.warning("failed to retrieve %s" % id)
-        return None
+    return doc_to_geojson(doc)
 
 def has_concordance(src, label):
 
@@ -1950,18 +1981,21 @@ def has_concordance(src, label):
          'query': query
     }
 
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -1992,11 +2026,10 @@ def get_by_concordance(id, src):
         'query': query
     }
 
-    rsp = flask.g.search_idx.search(body)
-    docs = rsp['rows']
+    rsp = flask.g.search_idx.query(body=body)
 
     try:
-        return docs[0]
+        return flask.g.search_idx.single(rsp)
     except Exception, e:
         logging.warning("failed to retrieve %s" % id)
         return None
@@ -2061,20 +2094,21 @@ def has_language(lang, spoken=False):
          'query': query
     }
 
-
-
-    args = {'per_page': 50}
+    params = {}
 
     page = get_int('page')
     page = get_single(page)
 
     if page:
-        args['page'] = page
+        params['page'] = page
 
-    rsp = flask.g.search_idx.search(body, **args)
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
 
     facets = facetify(query)
 
@@ -2130,7 +2164,11 @@ def append_source_details_to_buckets(buckets):
 
     for b in buckets:
 
-        prefix, key = b['key'].split(':')
+        try:
+            prefix, key = b['key'].split(':')
+        except Exception, e:
+            logging.error("expected a key:value string but got '%s' instead, so skipping" % b['key'])
+            continue
 
         source = src.get_source_by_prefix(prefix)
         
@@ -2204,6 +2242,67 @@ def sanitize_float(f):
 
     return f
 
+# see below
+
+def docs_to_geojson(docs):
+
+    geojson = []
+
+    for doc in docs:
+        geojson.append(doc_to_geojson(doc))
+
+    return geojson
+
+# this is also in py-mapzen-whosonfirst-search but I've cloned it here
+# during the transition to using py-mapzen-whosonfirst-elasticsearch
+# will eventually be subclassed by py-mz-wof-search - right now though
+# while everything is in flux we need a local copy to work with
+# (20161104/thisisaaronland)
+
+def doc_to_geojson(doc):
+
+    if not doc:
+        return None
+
+    properties = doc['_source']
+    id = properties['wof:id']
+    
+    geom = {}
+    bbox = []
+    
+    lat = None
+    lon = None
+    
+    if not properties.get('wof:path', False):
+        
+        path = mapzen.whosonfirst.uri.id2relpath(id)
+        properties['wof:path'] = path
+        
+    if properties.get('geom:bbox', False):
+        bbox = properties['geom:bbox']
+        bbox = bbox.split(",")
+        
+    if properties.get('geom:latitude', False) and properties.get('geom:longitude', False):
+        lat = properties['geom:latitude']
+        lat = properties['geom:longitude']
+        
+    elif len(bbox) == 4:
+        pass	# derive centroid here...
+        
+    else:
+        pass
+
+    if properties.get('wof:placetype', None) == 'venue' and lat and lon:
+        geom = {'type': 'Point', 'coordinates': [ lon, lat ] }
+        
+    return {
+        'type': 'Feature',
+        'id': id,
+        'bbox': bbox,
+        'geometry': geom,
+        'properties': properties
+    }
+
 if __name__ == '__main__':
 
     import sys
@@ -2226,14 +2325,11 @@ if __name__ == '__main__':
     cfg = ConfigParser.ConfigParser()
     cfg.read(options.config)
 
-    """
-    dsn = spatial.cfg2dsn(cfg, 'spatial')
-    os.environ['WOF_SPATIAL_DSN'] = dsn
-    """
+    os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
+    os.environ['SPELUNKER_SEARCH_PORT'] = cfg.get('search', 'port')
+    os.environ['SPELUNKER_SEARCH_INDEX'] = cfg.get('search', 'index')
 
-    os.environ['WOF_SEARCH_INDEX'] = cfg.get('search', 'index')
-    os.environ['WOF_SEARCH_HOST'] = cfg.get('search', 'host')
-    os.environ['WOF_SEARCH_PORT'] = cfg.get('search', 'port')
+    os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
 
     port = int(options.port)
 
