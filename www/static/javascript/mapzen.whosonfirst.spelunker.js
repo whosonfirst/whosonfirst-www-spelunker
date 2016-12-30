@@ -130,7 +130,7 @@ mapzen.whosonfirst.spelunker = (function(){
 					continue;
 				}
 				
-				var url = mapzen.whosonfirst.data.id2abspath(id);
+				var url = mapzen.whosonfirst.uri.id2abspath(id);
 				
 				var cb = function(feature){
 					var props = feature['properties'];

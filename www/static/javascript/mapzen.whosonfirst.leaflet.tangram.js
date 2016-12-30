@@ -190,7 +190,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			return false;
 		    }
 
-		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+		    var url = mapzen.whosonfirst.uri.id2abspath(wofid);
 
 		    // akin to a Leaflet "layer" - draw with the polygon overlay style (defined below)
 

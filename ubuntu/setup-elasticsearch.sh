@@ -17,6 +17,9 @@ WHOAMI=`python -c 'import os, sys; print os.path.realpath(sys.argv[1])' $0`
 
 PARENT=`dirname $WHOAMI`
 PROJECT=`dirname $PARENT`
+PROJECT_NAME=`basename ${PROJECT}`
+
+ELASTICSEARCH_CONFIG_PATH="${PROJECT}/config/${PROJECT_NAME}-elasticsearch.conf"
 
 # see also: https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/18
 
@@ -27,15 +30,49 @@ sudo add-apt-repository ppa:webupd8team/java -y
 sudo apt-get update
 sudo apt-get install oracle-java8-installer -y
 
-# https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-repositories.html
+curl -o /tmp/elasticsearch-2.4.0.deb https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb
+curl -o /tmp/elasticsearch-2.4.0.deb.sha1 https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb.sha1
 
-wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-1.7.list
+remote_sha1=`cat /tmp/elasticsearch-2.4.0.deb.sha1`
+local_sha1=`sha1sum /tmp/elasticsearch-2.4.0.deb | cut -c1-40`
+
+if [ "$remote_sha1" != "$local_sha1" ]
+then
+    echo "Uh oh, elasticsearch SHA1 checksum is invalid."
+    exit 1
+fi
+
+sudo dpkg -i /tmp/elasticsearch-2.4.0.deb
+sudo update-rc.d elasticsearch defaults 95 10
+
+rm /tmp/elasticsearch-2.4.0.deb
+rm /tmp/elasticsearch-2.4.0.deb.sha1
 
 sudo apt-get update
 sudo apt-get install elasticsearch
 
-sudo update-rc.d elasticsearch defaults 95 10
+if [ ! -f ${ELASTICSEARCH_CONFIG_PATH} ]
+then
+    cp ${ELASTICSEARCH_CONFIG_PATH}.example ${ELASTICSEARCH_CONFIG_PATH}
+
+    sudo mv /etc/default/elasticsearch /etc/default/.elasticsearch.dist
+    sudo ln -s ${ELASTICSEARCH_CONFIG_PATH} /etc/default/elasticsearch
+fi
+
+if [ ! -d /etc/elasticsearch/synonyms ]
+then
+    sudo mkdir /etc/elasticsearch/synonyms
+fi
+
+# Why do I need to copy this... symlinks result in all kinds of (Java) file
+# permission errors because... computers? (20161103/thisisaaronland)
+
+if [ ! -f /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt ]
+then
+    sudo cp ${PROJECT}/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt /etc/elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt
+fi
+
+# sudo update-rc.d elasticsearch defaults 95 10
 
 if [ ! -f /var/run/elasticsearch/elasticsearch.pid ]
 then
@@ -51,6 +88,8 @@ else
 
 	    echo "Elasticsearch isn't running BECAUSE COMPUTERS so trying to restart"
 	    sudo /etc/init.d/elasticsearch start
-	    sleep 10	
+	    sleep 10
+	else
+	    sudo /etc/init.d/elasticsearch restart
 	fi
 fi

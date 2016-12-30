@@ -4,64 +4,48 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
-
-		'render_id': function(map, wofid, on_fetch, more){
-		    
-		    if (! more){
-			more = {}
-		    }
-		    
-		    var _self = self;
-		    
-		    if (! wofid){
-			mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
-			return false;
-		    }
-		    
-		    if (! on_fetch){
+		'render_id': function(map, wofid, on_fetch){
 			
-			on_fetch = function(geojson){
-			    self.render_feature(map, geojson, more);
-			};
-		    }
-		    
-		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
-		    
-		    mapzen.whosonfirst.net.fetch(url, on_fetch);
+			var _self = self;
+			
+			if (! wofid){
+				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
+				return false;
+			}
+			
+			if (! on_fetch){
+
+				on_fetch = function(geojson){
+					self.render_feature(map, geojson);
+				};
+			}
+
+			var url = mapzen.whosonfirst.uri.id2abspath(wofid);
+
+			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
-		'render_feature_outline': function(map, feature, more){
+		'render_feature_outline': function(map, feature){
 
-		    if (! more){
-			more = {}
-		    }
-
-		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-		    }
-		    
-		    mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+			mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 		},
 
-		'render_feature': function(map, feature, more){
+		'render_feature': function(map, feature){
 
-		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-		    }
-
+			
 			var props = feature['properties'];
 			
 			var child_id = props['wof:id'];
 			var parent_id = props['wof:parent_id'];
 			
-			var child_url = mapzen.whosonfirst.data.id2abspath(child_id);
-			var parent_url = mapzen.whosonfirst.data.id2abspath(parent_id);
+			var child_url = mapzen.whosonfirst.uri.id2abspath(child_id);
+			var parent_url = mapzen.whosonfirst.uri.id2abspath(parent_id);
 			
 			var on_parent = function(parent_feature){
 				
-			    if (! more['donot_fit_map']){
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
-			    }
 
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
@@ -96,7 +80,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					var name = props['wof:name'];
 
 					var label_text = name;
-					label_text += ', whose centroid is ';
+					label_text += ', whose geom centroid is ';
 					label_text += lat + ", " + lon;
 
 					pt['properties']['lflt:label_text'] = label_text;
@@ -108,21 +92,19 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
-			    if (! more['donot_fit_map']){
 				var force = true;
 				mapzen.whosonfirst.leaflet.fit_map(map, child_feature, force);
-			    }
-			    
-			    child_feature['properties']['lflt:label_text'] = "";
-			    mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
-			    
-			    child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
-			    mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-			    
-			    // we're defining this as a local function to ensure that it gets called
-			    // after any breaches are drawn (20150909/thisisaaronland)
-			    
-			    var draw_centroids = function(){
+
+				child_feature['properties']['lflt:label_text'] = "";
+				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
+
+				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
+				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+
+				// we're defining this as a local function to ensure that it gets called
+				// after any breaches are drawn (20150909/thisisaaronland)
+
+				var draw_centroids = function(){
 
 					// I don't know why this is necessary...
 					// (20150909/thisisaaronland)
@@ -184,7 +166,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					for (var i=0; i < count; i++){
 
 						var breach_id = breaches[i];
-						var breach_url = mapzen.whosonfirst.data.id2abspath(breach_id);
+						var breach_url = mapzen.whosonfirst.uri.id2abspath(breach_id);
 						
 						var breach_style = mapzen.whosonfirst.leaflet.styles.breach_polygon();
 						

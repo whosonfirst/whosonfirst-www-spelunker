@@ -192,8 +192,10 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.placetypes = (function(){
 
 	// __spec__ was generated from: https://github.com/whosonfirst/whosonfirst-placetypes/blob/master/bin/compile.py
+        // 20160329
 
-	var __spec__ = {"102312321": {"role": "optional", "name": "microhood", "parent": [102312319], "names": {}}, "102312323": {"role": "optional", "name": "macrohood", "parent": [102312317], "names": {}}, "102312325": {"role": "common_optional", "name": "venue", "parent": [102312327, 102312329, 102312331, 102312321, 102312319], "names": {}}, "102312327": {"role": "common_optional", "name": "building", "parent": [102312329, 102312331, 102312321, 102312319], "names": {}}, "102312329": {"role": "common_optional", "name": "address", "parent": [102312331, 102312321, 102312319], "names": {}}, "102312319": {"role": "common", "name": "neighbourhood", "parent": [102312323, 102312317], "names": {"eng_p": ["neighbourhood", "neighborhood"]}}, "102312331": {"role": "common_optional", "name": "campus", "parent": [102312321, 102312319], "names": {}}, "102312309": {"role": "common", "name": "continent", "parent": [102312341], "names": {}}, "102371933": {"role": "optional", "name": "metroarea", "parent": [], "names": {}}, "102312307": {"role": "common", "name": "country", "parent": [102312335, 102312309], "names": {}}, "102312335": {"role": "common_optional", "name": "empire", "parent": [102312309], "names": {}}, "102312341": {"role": "common_optional", "name": "planet", "parent": [], "names": {}}, "102312311": {"role": "common", "name": "region", "parent": [102320821, 102322043, 102312307], "names": {}}, "102312313": {"role": "common_optional", "name": "county", "parent": [102312311], "names": {}}, "102322043": {"role": "common_optional", "name": "disputed", "parent": [102312307], "names": {}}, "102312317": {"role": "common", "name": "locality", "parent": [102312313, 102312311], "names": {}}, "136057795": {"role": "common_optional", "name": "timezone", "parent": [102312307, 102312309, 102312341], "names": {}}, "102320821": {"role": "common_optional", "name": "dependency", "parent": [102312307], "names": {}}};
+	var __spec__ = {"102312321": {"role": "optional", "name": "microhood", "parent": [102312319], "names": {}}, "421205763": {"role": "common_optional", "name": "borough", "parent": [102312317, 404221409], "names": {}}, "102312325": {"role": "common_optional", "name": "venue", "parent": [102312327, 102312329, 102312331, 102312321, 102312319], "names": {}}, "102312327": {"role": "common_optional", "name": "building", "parent": [102312329, 102312331, 102312321, 102312319], "names": {}}, "102312329": {"role": "common_optional", "name": "address", "parent": [102312331, 102312321, 102312319], "names": {}}, "102312331": {"role": "common_optional", "name": "campus", "parent": [102312321, 102312319, 102312323, 102312317, 404221409], "names": {}}, "404528653": {"role": "common_optional", "name": "ocean", "parent": [102312341], "names": {}}, "102312335": {"role": "common_optional", "name": "empire", "parent": [102312309], "names": {}}, "102312323": {"role": "optional", "name": "macrohood", "parent": [421205763, 102312317], "names": {}}, "102312341": {"role": "common_optional", "name": "planet", "parent": [], "names": {}}, "102320821": {"role": "common_optional", "name": "dependency", "parent": [102312307], "names": {}}, "136057795": {"role": "common_optional", "name": "timezone", "parent": [102312307, 102312309, 102312341], "names": {}}, "404528655": {"role": "common_optional", "name": "marinearea", "parent": [102312307, 102312309, 102312341], "names": {}}, "102371933": {"role": "optional", "name": "metroarea", "parent": [], "names": {}}, "404221409": {"role": "common_optional", "name": "localadmin", "parent": [102312313, 102312311], "names": {}}, "404221411": {"role": "optional", "name": "macroregion", "parent": [102320821, 102322043, 102312307], "names": {}}, "404221413": {"role": "optional", "name": "macrocounty", "parent": [102312311], "names": {}}, "102312307": {"role": "common", "name": "country", "parent": [102312335, 102312309], "names": {}}, "102312309": {"role": "common", "name": "continent", "parent": [102312341], "names": {}}, "102312311": {"role": "common", "name": "region", "parent": [404221411, 102320821, 102322043, 102312307], "names": {}}, "102312313": {"role": "common_optional", "name": "county", "parent": [404221413, 102312311], "names": {}}, "102322043": {"role": "common_optional", "name": "disputed", "parent": [102312307], "names": {}}, "102312317": {"role": "common", "name": "locality", "parent": [404221409, 102312313, 102312311], "names": {}}, "102312319": {"role": "common", "name": "neighbourhood", "parent": [102312323, 421205763, 102312317], "names": {"eng_p": ["neighbourhood", "neighborhood"]}}}
+
 
 	var __placetypes__ = {};
 	var __roles__ = {};
@@ -433,37 +435,34 @@ mapzen.whosonfirst.placetypes = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-mapzen.whosonfirst.data = (function(){
+mapzen.whosonfirst.uri = (function(){
 
 	var _endpoint = "https://whosonfirst.mapzen.com/data/";
-
-    	// this should only be necessary if the mapzen servers are poorly configured
-	_endpoint = "https://s3.amazonaws.com/whosonfirst.mapzen.com/data/";
 
 	var self = {
 
 		'endpoint': function(e){
 
 			if (e){
-				mapzen.whosonfirst.log.info("set data endpoint to " + e);
+				mapzen.whosonfirst.log.info("set uri endpoint to " + e);
 				_endpoint = e;
 			}
 
 			return _endpoint;
 		},
 
-		'id2abspath': function (id){
-
-			var rel_path = self.id2relpath(id);
-			var abs_path = self.endpoint() + rel_path;
-	
-			return abs_path;
+		'id2abspath': function (id, args){
+		    
+		    var rel_path = self.id2relpath(id, args);
+		    var abs_path = self.endpoint() + rel_path;
+		    
+		    return abs_path;
 		},
 
-		'id2relpath': function(id){
+		'id2relpath': function(id, args){
 
 			parent = self.id2parent(id);
-			fname = self.id2fname(id);
+			fname = self.id2fname(id, args);
 
 			var rel_path = parent + "/" + fname;
 			return rel_path;
@@ -475,18 +474,65 @@ mapzen.whosonfirst.data = (function(){
 			tmp = new Array();
 
 			while (str_id.length){
-				
+
 				var part = str_id.substr(0, 3);
-				tmp.push(part);		
+				tmp.push(part);
 				str_id = str_id.substr(3);
 			}
-			
+
 			parent = tmp.join("/");
 			return parent;
 		},
 
-		'id2fname': function(id){
-			return id + ".geojson";
+		'id2fname': function(id, args){
+
+		    if (! args){
+			args = {};
+		    }
+
+		    var fname = [
+			encodeURIComponent(id)
+		    ];
+
+		    if (args["alt"]) {
+
+			if (args["source"]){
+
+			    // to do: validate source here
+			    // to do: actually write mapzen.whosonfirst.source.js
+			    // (20161130/thisisaaronland)
+
+			    var source = encodeURIComponent(args["source"]);
+			    fname.push(source);
+
+			    if (args["function"]){
+
+				var func = encodeURIComponent(args["function"]);
+				fname.push(func);
+
+				if ((args["extras"]) && (args["extras"].join)){
+
+				    var extras = args["extras"];
+				    var count = extras.length;
+
+				    for (var i = 0; i < count; i++){
+					var extra = encodeURIComponent(extras[i]);
+					fname.push(extra);
+				    }
+				}
+			    }
+			}
+
+			else {
+			    console.log("missing source parameter for alternate geometry");
+			    fname.push("unknown");
+			}
+			
+		    }
+
+		    var str_fname = fname.join("-");
+
+		    return str_fname + ".geojson";
 		}
 	};
 
@@ -505,50 +551,69 @@ mapzen.whosonfirst.geojson = (function(){
 			if (geojson['bbox']){
 				return geojson['bbox'];
 			}
-			
+
 			if (geojson['type'] == 'FeatureCollection'){
-				
+
 				var features = geojson['features'];
 				var count = features.length;
-				
+
 				var swlat = undefined;
 				var swlon = undefined;
 				var nelat = undefined;
 				var nelon = undefined;
-				
+
 				for (var i=0; i < count; i++){
-					
+
 					var bbox = self.derive_bbox(features[i]);
 
-					var _swlat, _swlon, _nelat, _nelon = bbox;
-					
+					var _swlat = bbox[0];
+					var _swlon = bbox[1];
+					var _nelat = bbox[2];
+					var _nelon = bbox[3];
+
 					if ((! swlat) || (_swlat < swlat)){
 						swlat = _swlat;
 					}
-					
+
 					if ((! swlon) || (_swlon < swlon)){
 						swlon = _swlon;
 					}
-					
+
 					if ((! nelat) || (_nelat > nelat)){
 						nelat = _nelat;
 					}
-					
+
 					if ((! nelon) || (_nelon > nelon)){
 						nelon = _nelon;
 					}
 				}
-				
+
 				return [ swlat, swlon, nelat, nelon ];
 			}
-			
+
 			else if (geojson['type'] == 'Feature'){
-				
+
+				// Adapted from http://gis.stackexchange.com/a/172561
 				var geom = geojson['geometry'];
-				
-				// 
+				var coords = geom.coordinates;
+
+				var lats = [],
+				    lngs = [];
+
+				for (var i = 0; i < coords[0].length; i++) {
+					lats.push(coords[0][i][1]);
+					lngs.push(coords[0][i][0]);
+				}
+
+				var minlat = Math.min.apply(null, lats),
+				    maxlat = Math.max.apply(null, lats);
+				var minlng = Math.min.apply(null, lngs),
+				    maxlng = Math.max.apply(null, lngs);
+
+				return [ minlat, minlng,
+					 maxlat, maxlng ];
 			}
-			
+
 			else {}
 		}
 
@@ -883,6 +948,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			    	    var hash = new L.Hash(map);
 				}
 
+			        var scale = L.control.scale();
+				scale.addTo(map);
+
 				var tangram = self.tangram();
 				tangram.addTo(map);
 
@@ -1028,7 +1096,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			return false;
 		    }
 
-		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
+		    var url = mapzen.whosonfirst.uri.id2abspath(wofid);
 
 		    // akin to a Leaflet "layer" - draw with the polygon overlay style (defined below)
 
@@ -1097,7 +1165,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.net = (function(){
 
-	var whosonfirst_cache = {};
+	var default_cache_ttl = 30000; // ms
 
 	var self = {
 
@@ -1114,29 +1182,39 @@ mapzen.whosonfirst.net = (function(){
 			return enc.join("&");
 		},
 
-		'fetch': function(url, on_success, on_fail){
+		'fetch': function(url, on_success, on_fail, cache_ttl){
+
+			if (! cache_ttl){
+				cache_ttl = default_cache_ttl;
+			}
 
 			mapzen.whosonfirst.log.debug("fetch " + url);
 
-			if (whosonfirst_cache[url]){
-				
-				mapzen.whosonfirst.log.debug("return " + url + " from cache");
-				
+			var on_hit = function(data){
 				if (on_success){
-					on_success(whosonfirst_cache[url]);
+					on_success(data);
 				}
-				
-				return;
+			};
+
+			var on_miss = function(){
+				self.fetch_with_xhr(url, on_success, on_fail);
+			};
+
+			if (! self.cache_get(url, on_hit, on_miss, cache_ttl)){
+				self.fetch_with_xhr(url, on_success, on_fail);
 			}
-			
+		},
+
+		'fetch_with_xhr': function(url, on_success, on_fail){
+
 			var req = new XMLHttpRequest();
 			
 			req.onload = function(){
-				
+
 				try {
-					var geojson = JSON.parse(this.responseText);
+					var data = JSON.parse(this.responseText);
 				}
-				
+
 				catch (e){
 					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
 
@@ -1146,19 +1224,19 @@ mapzen.whosonfirst.net = (function(){
 
 					return false;
 				}
-				
-				whosonfirst_cache[url] = geojson;
-				
+
+				self.cache_set(url, data);
+
 				if (on_success){
-					on_success(geojson);
+					on_success(data);
 				}
 			};
-			
-			try {				    
+
+			try {
 				req.open("get", url, true);
 				req.send();
 			}
-			
+
 			catch(e){
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
 				mapzen.whosonfirst.log.debug(e);   
@@ -1169,6 +1247,81 @@ mapzen.whosonfirst.net = (function(){
 			}
 		},
 
+		'cache_get': function(key, on_hit, on_miss, cache_ttl){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			var fq_key = self.cache_prep_key(key);
+
+			localforage.getItem(fq_key, function (err, rsp){
+
+				if ((err) || (! rsp)){
+					on_miss();
+					return;
+				}
+
+				var data = rsp['data'];
+
+				if (! data){
+					on_miss();
+					return;
+				}
+
+				var dt = new Date();
+				var ts = dt.getTime();
+
+				var then = rsp['created'];
+				var diff = ts - then;
+
+				if (diff > cache_ttl){
+					self.cache_unset(key);
+					on_miss();
+					return;
+				}
+
+				on_hit(data);
+			});
+
+			return true;
+		},
+
+		'cache_set': function(key, value){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			var dt = new Date();
+			var ts = dt.getTime();
+
+			var wrapper = {
+				'data': value,
+				'created': ts
+			};
+
+			key = self.cache_prep_key(key);
+
+			localforage.setItem(key, wrapper);
+			return true;
+		},
+
+		'cache_unset': function(key){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			key = self.cache_prep_key(key);
+
+			localforage.removeItem(key);
+			return true;
+		},
+
+		'cache_prep_key': function(key){
+			return key + '#mapzen.whosonfirst.net';
+		}
 	};
 
 	return self;
@@ -1180,64 +1333,48 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.enmapify = (function(){
 
 	var self = {
-
-		'render_id': function(map, wofid, on_fetch, more){
-		    
-		    if (! more){
-			more = {}
-		    }
-		    
-		    var _self = self;
-		    
-		    if (! wofid){
-			mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
-			return false;
-		    }
-		    
-		    if (! on_fetch){
+		'render_id': function(map, wofid, on_fetch){
 			
-			on_fetch = function(geojson){
-			    self.render_feature(map, geojson, more);
-			};
-		    }
-		    
-		    var url = mapzen.whosonfirst.data.id2abspath(wofid);
-		    
-		    mapzen.whosonfirst.net.fetch(url, on_fetch);
+			var _self = self;
+			
+			if (! wofid){
+				mapzen.whosonfirst.log.error("failed to enmapify because missing WOF ID");
+				return false;
+			}
+			
+			if (! on_fetch){
+
+				on_fetch = function(geojson){
+					self.render_feature(map, geojson);
+				};
+			}
+
+			var url = mapzen.whosonfirst.uri.id2abspath(wofid);
+
+			mapzen.whosonfirst.net.fetch(url, on_fetch);
 		},
 		
-		'render_feature_outline': function(map, feature, more){
+		'render_feature_outline': function(map, feature){
 
-		    if (! more){
-			more = {}
-		    }
-
-		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-		    }
-		    
-		    mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+			mapzen.whosonfirst.leaflet.draw_poly(map, feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 		},
 
-		'render_feature': function(map, feature, more){
+		'render_feature': function(map, feature){
 
-		    if (! more['donot_fit_map']){
 			mapzen.whosonfirst.leaflet.fit_map(map, feature);
-		    }
-
+			
 			var props = feature['properties'];
 			
 			var child_id = props['wof:id'];
 			var parent_id = props['wof:parent_id'];
 			
-			var child_url = mapzen.whosonfirst.data.id2abspath(child_id);
-			var parent_url = mapzen.whosonfirst.data.id2abspath(parent_id);
+			var child_url = mapzen.whosonfirst.uri.id2abspath(child_id);
+			var parent_url = mapzen.whosonfirst.uri.id2abspath(parent_id);
 			
 			var on_parent = function(parent_feature){
 				
-			    if (! more['donot_fit_map']){
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
-			    }
 
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
 				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
@@ -1272,7 +1409,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					var name = props['wof:name'];
 
 					var label_text = name;
-					label_text += ', whose centroid is ';
+					label_text += ', whose geom centroid is ';
 					label_text += lat + ", " + lon;
 
 					pt['properties']['lflt:label_text'] = label_text;
@@ -1284,21 +1421,19 @@ mapzen.whosonfirst.enmapify = (function(){
 					return;
 				}
 
-			    if (! more['donot_fit_map']){
 				var force = true;
 				mapzen.whosonfirst.leaflet.fit_map(map, child_feature, force);
-			    }
-			    
-			    child_feature['properties']['lflt:label_text'] = "";
-			    mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
-			    
-			    child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
-			    mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
-			    
-			    // we're defining this as a local function to ensure that it gets called
-			    // after any breaches are drawn (20150909/thisisaaronland)
-			    
-			    var draw_centroids = function(){
+
+				child_feature['properties']['lflt:label_text'] = "";
+				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
+
+				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
+				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+
+				// we're defining this as a local function to ensure that it gets called
+				// after any breaches are drawn (20150909/thisisaaronland)
+
+				var draw_centroids = function(){
 
 					// I don't know why this is necessary...
 					// (20150909/thisisaaronland)
@@ -1360,7 +1495,7 @@ mapzen.whosonfirst.enmapify = (function(){
 					for (var i=0; i < count; i++){
 
 						var breach_id = breaches[i];
-						var breach_url = mapzen.whosonfirst.data.id2abspath(breach_id);
+						var breach_url = mapzen.whosonfirst.uri.id2abspath(breach_id);
 						
 						var breach_style = mapzen.whosonfirst.leaflet.styles.breach_polygon();
 						
@@ -2673,6 +2808,9 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
+
+		var m = mapzen.whosonfirst.leaflet.tangram.map('map');
+		console.log(m);
 	    },
 
 	    'abs_root_url': function(){
@@ -2790,7 +2928,7 @@ mapzen.whosonfirst.spelunker = (function(){
 					continue;
 				}
 				
-				var url = mapzen.whosonfirst.data.id2abspath(id);
+				var url = mapzen.whosonfirst.uri.id2abspath(id);
 				
 				var cb = function(feature){
 					var props = feature['properties'];
@@ -2819,4 +2957,4 @@ mapzen.whosonfirst.spelunker = (function(){
 	return self;
 })();
 
-// last bundled at 2016-07-28T23:22:44 UTC
+// last bundled at 2016-11-30T17:40:39 UTC
