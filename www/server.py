@@ -1894,7 +1894,7 @@ def simple_enfilter(field, terms):
                 # do not escape the ':' - if you do then ES will
                 # be very confused (20161101/thisisaaronland)  
 
-                parts = term.split(':', 2)
+                parts = t.split(':', 2)
                 ns = flask.g.search_idx.escape(parts[0])
                 pred = flask.g.search_idx.escape(parts[1])
 
