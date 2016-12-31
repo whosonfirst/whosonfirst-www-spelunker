@@ -193,7 +193,7 @@ mapzen.whosonfirst.bundler = (function() {
 
 			var result = _query.results.shift();
 			var wof_id = result['wof:id'];
-			var wof_url = mapzen.whosonfirst.data.id2abspath(wof_id);
+			var wof_url = mapzen.whosonfirst.uri.id2abspath(wof_id);
 
 			// If this was not from a WOF query (i.e., the container)
 			var summarize_feature = (! result['wof:placetype']);

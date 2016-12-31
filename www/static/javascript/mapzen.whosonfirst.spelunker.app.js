@@ -629,50 +629,52 @@ mapzen.whosonfirst.leaflet = (function(){
 
 	var self = {
 		'draw_point': function(map, geojson, style, handler){
-			
+
 			var layer = L.geoJson(geojson, {
 				'style': style,
 				'pointToLayer': handler,
 			});
-			
+
 			layer.addTo(map);
+			return layer;
 		},
-		
+
 		'draw_poly': function(map, geojson, style){
-			
+
 			var layer = L.geoJson(geojson, {
-				'style': style				
+				'style': style
 			});
-			
+
 			// https://github.com/Leaflet/Leaflet.label
-			
+
 			try {
 			    var props = geojson['properties'];
-			    
+
 			    if (props){
 				var label = props['lflt:label_text'];
-				
+
 				if (label){
 				    layer.bindLabel(label, {noHide: true });
 				}
 			    }
-			    
+
 			    else {
 				console.log("polygon is missing a properties dictionary");
 			    }
 			}
-			
+
 			catch (e){
 				console.log("failed to bind label because " + e);
 			}
-			
+
 			layer.addTo(map);
+			return layer;
 		},
-		
+
 		'draw_bbox': function(map, geojson, style){
 
 			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
-			
+
 			if (! bbox){
 				console.log("no bounding box");
 				return false;
@@ -711,15 +713,15 @@ mapzen.whosonfirst.leaflet = (function(){
 				console.log("no bounding box");
 				return false;
 			}
-			
+
 			if ((bbox[1] == bbox[3]) && (bbox[2] == bbox[4])){
 				map.setView([bbox[1], bbox[0]], 14);
 				return;
 			}
-			
+
 			var sw = [bbox[1], bbox[0]];
 			var ne = [bbox[3], bbox[2]];
-			
+
 			var bounds = new L.LatLngBounds([sw, ne]);
 			var current = map.getBounds();
 
@@ -735,32 +737,32 @@ mapzen.whosonfirst.leaflet = (function(){
 				  console.log("north bbox: " + bounds.getNorth() + " current: " + current.getNorth().toFixed(6));
 				  console.log("east bbox: " + bounds.getEast() + " current: " + current.getEast().toFixed(6));
 				*/
-				
+
 				if (bounds.getSouth() <= current.getSouth().toFixed(6)){
 					redraw = true;
 				}
-				
+
 				else if (bounds.getWest() <= current.getWest().toFixed(6)){
 					redraw = true;
 				}
-				
+
 				else if (bounds.getNorth() >= current.getNorth().toFixed(6)){
 					redraw = true;
 				}
-				
+
 				else if (bounds.getEast() >= current.getEast().toFixed(6)){
 					redraw = true;
 				}
-				
+
 				else {}
 			}
-			
+
 			if (redraw){
 				map.fitBounds(bounds);
 			}
 		}
 	};
-	
+
 	return self;
 })();
 var mapzen = mapzen || {};
@@ -1178,7 +1180,7 @@ mapzen.whosonfirst.net = (function(){
 				v = encodeURIComponent(v);
 				enc.push(k + "=" + v);
 			}
-			
+
 			return enc.join("&");
 		},
 
@@ -1188,15 +1190,15 @@ mapzen.whosonfirst.net = (function(){
 				cache_ttl = default_cache_ttl;
 			}
 
-			mapzen.whosonfirst.log.debug("fetch " + url);
-
 			var on_hit = function(data){
+				mapzen.whosonfirst.log.debug("[cached] fetch " + url);
 				if (on_success){
 					on_success(data);
 				}
 			};
 
 			var on_miss = function(){
+				mapzen.whosonfirst.log.debug("[xhr] fetch " + url);
 				self.fetch_with_xhr(url, on_success, on_fail);
 			};
 
@@ -1208,7 +1210,7 @@ mapzen.whosonfirst.net = (function(){
 		'fetch_with_xhr': function(url, on_success, on_fail){
 
 			var req = new XMLHttpRequest();
-			
+
 			req.onload = function(){
 
 				try {
@@ -1239,7 +1241,7 @@ mapzen.whosonfirst.net = (function(){
 
 			catch(e){
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
-				mapzen.whosonfirst.log.debug(e);   
+				mapzen.whosonfirst.log.debug(e);
 
 				if (on_fail){
 					on_fail();
@@ -2809,59 +2811,60 @@ mapzen.whosonfirst.spelunker = (function(){
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
 
-		var m = mapzen.whosonfirst.leaflet.tangram.map('map');
-		console.log(m);
+		if (document.getElementById('map')) {
+			var m = mapzen.whosonfirst.leaflet.tangram.map('map');
+		}
 	    },
 
 	    'abs_root_url': function(){
 		var body = document.body;
 		return body.getAttribute("data-abs-root-url");
 	    },
-	    	    
+
 	    'draw_list': function(classname){
-		
+
 		var locs = document.getElementsByClassName(classname);
 			var count = locs.length;
-			
+
 			var swlat = undefined;
 			var swlon = undefined;
 			var nelat = undefined;
 			var nelon = undefined;
-			
+
 			var features = [];
-			
+
 			for (var i=0; i < count; i++){
-				
+
 				var loc = locs[i];
 				var lat = loc.getAttribute("data-latitude");
 				var lon = loc.getAttribute("data-longitude");
 				var id = loc.getAttribute("data-id");
-				
+
 				var anchor = loc.getElementsByTagName("a");
-				anchor = anchor[0];			  
+				anchor = anchor[0];
 				var name = anchor.textContent;
-				
+
 				if ((! swlat) || (lat < swlat)){
 					swlat = lat;
-				}					
+				}
 
 				if ((! swlon) || (lat < swlon)){
 					swlon = lon;
-				}					
+				}
 
 				if ((! nelat) || (lat > nelat)){
 					nelat = lat;
-				}					
+				}
 
 				if ((! nelon) || (lat < nelon)){
 					nelon = lon;
-				}					
+				}
 
 				var geom = { 'type': 'Point', 'coordinates': [ lon, lat ] };
 				var props = { 'lflt:label_text': name, 'wof:id': id };
-				
-				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props, 'id': id };					
-				features.push(feature);		
+
+				var feature = {'type': 'Feature', 'geometry': geom, 'properties': props, 'id': id };
+				features.push(feature);
 			}
 
 			// Just draw Null Island and be done with yeah?
@@ -2871,7 +2874,7 @@ mapzen.whosonfirst.spelunker = (function(){
 			    var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
 
 			    var on_fetch = function(feature){
-				
+
 				var bbox = mapzen.whosonfirst.geojson.derive_bbox(feature);
 				var sw = [ bbox[0], bbox[1] ]
 				var ne = [ bbox[2], bbox[3] ]
@@ -2880,7 +2883,7 @@ mapzen.whosonfirst.spelunker = (function(){
 
 				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
 			    };
-    
+
 			    mapzen.whosonfirst.enmapify.render_id(map, 1, on_fetch);
 			    return;
 			}
@@ -2890,7 +2893,7 @@ mapzen.whosonfirst.spelunker = (function(){
 			var geojson = { 'type': 'FeatureCollection', 'features': features };
 
 			var map = mapzen.whosonfirst.leaflet.tangram.map_with_bbox('map', swlat, swlon, nelat, nelon);
-			
+
 			var style = mapzen.whosonfirst.leaflet.styles.search_centroid();
 			var handler = mapzen.whosonfirst.leaflet.handlers.point(style);
 
@@ -2910,45 +2913,44 @@ mapzen.whosonfirst.spelunker = (function(){
 				'pointToLayer': handler,
 				'onEachFeature': oneach,
 			});
-			
+
 			layer.addTo(map);
 		},
 
 		'draw_names': function(cls){
 
-			var locs = document.getElementsByClassName(cls);  
+			var locs = document.getElementsByClassName(cls);
 			var count = locs.length;
-			
+
 			for (var i=0; i < count; i++){
 
 				var loc = locs[i];
 				var id = loc.getAttribute("data-value");
-				
+
 				if (! id){
 					continue;
 				}
-				
 				var url = mapzen.whosonfirst.uri.id2abspath(id);
-				
+
 				var cb = function(feature){
 					var props = feature['properties'];
 					var name = props['wof:name'];
 					var id = props['wof:id'];
-					
+
 					var cls_id = cls + "_" + id;
 
 					mapzen.whosonfirst.log.info("assign name for ID " + id + " to be " + name + " for " + cls_id);
 
-					var els = document.getElementsByClassName(cls_id);  
+					var els = document.getElementsByClassName(cls_id);
 					var count_els = els.length;
 
 					for (var j=0; j < count_els; j++){
 						var el = els[j];
 						el.innerHTML = mapzen.whosonfirst.php.htmlspecialchars(name) + " <code><small>" + mapzen.whosonfirst.php.htmlspecialchars(id) + "</small></code>";
 					}
-				};		       
-				
-				mapzen.whosonfirst.net.fetch(url, cb);		    
+				};
+
+				mapzen.whosonfirst.net.fetch(url, cb);
 			}
 		},
 
@@ -2956,5 +2958,320 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	return self;
 })();
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-// last bundled at 2016-11-30T17:40:39 UTC
+mapzen.whosonfirst.bundler = (function() {
+
+	var _queue = [];
+	var _handlers = {
+		on_success: null,
+		on_error: null,
+		on_progress: null
+	};
+	var _query = null;
+	var _features = [];
+	var _summary = [];
+	var _discard_next = null;
+
+	var self = {
+
+		set_handler: function(handler, callback) {
+			_handlers['on_' + handler] = callback;
+		},
+
+		enqueue_feature: function(id) {
+			_queue.push({
+				wof_id: id
+			});
+			if (! _query) {
+				self.process_queue();
+			}
+		},
+
+		enqueue_placetype: function(placetype, parent_id) {
+			_queue.push({
+				placetype: placetype,
+				parent_id: parent_id
+			});
+			if (! _query) {
+				self.process_queue();
+			}
+		},
+
+		dequeue_placetype: function(placetype) {
+			_queue = _queue.filter(function(q) {
+				return (q.placetype != placetype);
+			});
+			self.filter_features(placetype);
+			if (_query && _query.args.placetype == placetype) {
+				_query = null;
+				_discard_next = placetype;
+				self.process_queue();
+			}
+		},
+
+		filter_features: function(placetype) {
+
+			_features = _features.filter(function(item) {
+				return item.properties['wof:placetype'] != placetype;
+			});
+
+			_summary = _summary.filter(function(item) {
+				return item['wof:placetype'] != placetype;
+			});
+
+			if (_handlers.on_progress) {
+				_handlers.on_progress({
+					type: 'summary',
+					summary_count: _summary.length,
+					summary_size: self.get_summary_size()
+				});
+				_handlers.on_progress({
+					type: 'bundle',
+					bundle_count: _features.length,
+					bundle_size: self.get_bundle_size()
+				});
+			}
+
+			if (! _query && _queue.length == 0 && _handlers.on_success) {
+				var bundle = self.bundle_features();
+				_handlers.on_success(bundle);
+			}
+		},
+
+		bundle_features: function() {
+			var feature_collection = {
+				'type': 'FeatureCollection',
+				'features': _features,
+			};
+			return feature_collection;
+		},
+
+		summarize_features: function() {
+			var rows = [];
+			var keys = [];
+			var row;
+			for (var i in _summary) {
+				if (i == 0) {
+					keys = Object.keys(_summary[0]);
+					rows.push(keys);
+				}
+				row = [];
+				for (j in keys) {
+					var key = keys[j];
+					row.push(_summary[i][key]);
+				}
+				rows.push(row);
+			}
+			return rows;
+		},
+
+		process_queue: function() {
+			if (! _query && _queue.length > 0) {
+				_query = {
+					args: _queue.shift(),
+					page: 1
+				};
+				if (_query.args.wof_id) {
+					_query.results = [{
+						'wof:id': _query.args.wof_id
+					}];
+					_query.pages = 1;
+					self.download_feature();
+				} else {
+					self.query_wof_api();
+				}
+			} else if (_query &&
+			           _query.page < _query.pages) {
+				_query.page++;
+				self.query_wof_api();
+			} else if (_query &&
+			           _query.results &&
+			           _query.results.length > 0) {
+				self.download_feature();
+			} else if (_handlers.on_success) {
+				_query = null;
+				var bundle = self.bundle_features();
+				_handlers.on_success(bundle);
+			} else {
+				_query = null;
+				// Done! (But no on_success handler set.)
+			}
+		},
+
+		query_wof_api: function() {
+
+			var method = 'whosonfirst.places.getDescendants';
+			var data = {
+				id: _query.args.parent_id,
+				placetype: _query.args.placetype,
+				page: _query.page,
+				per_page: 500,
+				exclude: 'nullisland'
+			};
+
+			var on_success = function(rsp) {
+
+				_query.page = rsp.page;
+				_query.pages = rsp.pages;
+
+				if (! _query.results) {
+					_query.results = [];
+				}
+
+				_query.results.push.apply(_query.results, rsp.results);
+				_summary.push.apply(_summary, rsp.results);
+
+				if (_handlers.on_progress) {
+					_handlers.on_progress({
+						type: 'query',
+						placetype: _query.args.placetype,
+						page: _query.page,
+						pages: _query.pages
+					});
+					_handlers.on_progress({
+						type: 'summary',
+						summary_count: _summary.length,
+						summary_size: self.get_summary_size()
+					});
+				}
+
+				self.process_queue();
+			};
+
+			var on_error = function(rsp) {
+				if (_handlers.on_error) {
+					_handlers.on_error(rsp);
+				}
+			};
+
+			mapzen.whosonfirst.api.call(method, data, on_success, on_error);
+		},
+
+		download_feature: function() {
+
+			var result = _query.results.shift();
+			var wof_id = result['wof:id'];
+			var wof_url = mapzen.whosonfirst.uri.id2abspath(wof_id);
+
+			// If this was not from a WOF query (i.e., the container)
+			var summarize_feature = (! result['wof:placetype']);
+
+			var on_success = function(feature) {
+				if (_discard_next == feature.properties['wof:placetype']) {
+					_discard_next = null;
+					return;
+				}
+
+				_features.push(feature);
+				if (summarize_feature) {
+					_summary.push({
+						'wof:id': feature.properties['wof:id'],
+						'wof:name': feature.properties['wof:name'],
+						'wof:parent_id': feature.properties['wof:parent_id'],
+						'wof:placetype': feature.properties['wof:placetype'],
+						'wof:country': feature.properties['wof:country'],
+						'wof:repo': feature.properties['wof:repo']
+					});
+					if (_handlers.on_progress) {
+						_handlers.on_progress({
+							type: 'summary',
+							summary_count: _summary.length,
+							summary_size: self.get_summary_size()
+						});
+					}
+				}
+
+				if (_handlers.on_progress) {
+					_handlers.on_progress({
+						type: 'feature',
+						feature: feature,
+						bundle_count: _features.length
+					});
+					_handlers.on_progress({
+						type: 'bundle',
+						bundle_count: _features.length,
+						bundle_size: self.get_bundle_size()
+					});
+				}
+				self.process_queue();
+			};
+
+			var on_error = function(rsp) {
+				if (_handlers.on_error) {
+					_handlers.on_error(rsp);
+				}
+			};
+
+			mapzen.whosonfirst.net.fetch(wof_url, on_success, on_error);
+		},
+
+		get_bundle_blob: function() {
+			var bundle = self.bundle_features();
+			var json = JSON.stringify(bundle);
+			var args = {
+				type: "application/json"
+			};
+			var blob = new Blob([json], args);
+			return blob;
+		},
+
+		get_bundle_size: function() {
+			var blob = self.get_bundle_blob();
+			return blob.size;
+		},
+
+		save_bundle: function(filename) {
+			var blob = self.get_bundle_blob();
+			saveAs(blob, filename);
+		},
+
+		get_summary_blob: function(filename) {
+			var summary = self.summarize_features();
+			var process_row = function(row) {
+				var processed = '', value;
+				for (var i = 0; i < row.length; i++) {
+					value = (row[i] === null) ? '' : row[i].toString();
+					if (row[i] instanceof Date) {
+						value = row[i].toLocaleString();
+					}
+					value = value.replace(/"/g, '""');
+					if (value.search(/("|,|\n)/g) >= 0) {
+						value = '"' + value + '"';
+					}
+					if (i > 0) {
+						processed += ',';
+					}
+					processed += value;
+				}
+				return processed + '\n';
+			};
+
+			var csv = '';
+			for (var i = 0; i < summary.length; i++) {
+				csv += process_row(summary[i]);
+			}
+
+			var args = {
+				type: 'text/csv;charset=utf-8;'
+			};
+			var blob = new Blob([csv], args);
+			return blob;
+		},
+
+		get_summary_size: function() {
+			var blob = self.get_summary_blob();
+			return blob.size;
+		},
+
+		save_summary: function(filename) {
+			var blob = self.get_summary_blob();
+			saveAs(blob, filename);
+		}
+	};
+
+	return self;
+})();
+
+// last bundled at 2016-12-31T01:21:22 UTC
