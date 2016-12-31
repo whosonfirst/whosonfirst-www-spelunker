@@ -3,7 +3,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.net = (function(){
 
-	var whosonfirst_cache = {};
+	var default_cache_ttl = 30000; // ms
 
 	var self = {
 
@@ -16,33 +16,43 @@ mapzen.whosonfirst.net = (function(){
 				v = encodeURIComponent(v);
 				enc.push(k + "=" + v);
 			}
-			
+
 			return enc.join("&");
 		},
 
-		'fetch': function(url, on_success, on_fail){
+		'fetch': function(url, on_success, on_fail, cache_ttl){
 
-			mapzen.whosonfirst.log.debug("fetch " + url);
-
-			if (whosonfirst_cache[url]){
-				
-				mapzen.whosonfirst.log.debug("return " + url + " from cache");
-				
-				if (on_success){
-					on_success(whosonfirst_cache[url]);
-				}
-				
-				return;
+			if (! cache_ttl){
+				cache_ttl = default_cache_ttl;
 			}
-			
-			var req = new XMLHttpRequest();
-			
-			req.onload = function(){
-				
-				try {
-					var geojson = JSON.parse(this.responseText);
+
+			var on_hit = function(data){
+				mapzen.whosonfirst.log.debug("[cached] fetch " + url);
+				if (on_success){
+					on_success(data);
 				}
-				
+			};
+
+			var on_miss = function(){
+				mapzen.whosonfirst.log.debug("[xhr] fetch " + url);
+				self.fetch_with_xhr(url, on_success, on_fail);
+			};
+
+			if (! self.cache_get(url, on_hit, on_miss, cache_ttl)){
+				self.fetch_with_xhr(url, on_success, on_fail);
+			}
+		},
+
+		'fetch_with_xhr': function(url, on_success, on_fail){
+
+			var req = new XMLHttpRequest();
+
+			req.onload = function(){
+
+				try {
+					var data = JSON.parse(this.responseText);
+				}
+
 				catch (e){
 					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
 
@@ -52,22 +62,22 @@ mapzen.whosonfirst.net = (function(){
 
 					return false;
 				}
-				
-				whosonfirst_cache[url] = geojson;
-				
+
+				self.cache_set(url, data);
+
 				if (on_success){
-					on_success(geojson);
+					on_success(data);
 				}
 			};
-			
-			try {				    
+
+			try {
 				req.open("get", url, true);
 				req.send();
 			}
-			
+
 			catch(e){
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
-				mapzen.whosonfirst.log.debug(e);   
+				mapzen.whosonfirst.log.debug(e);
 
 				if (on_fail){
 					on_fail();
@@ -75,6 +85,81 @@ mapzen.whosonfirst.net = (function(){
 			}
 		},
 
+		'cache_get': function(key, on_hit, on_miss, cache_ttl){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			var fq_key = self.cache_prep_key(key);
+
+			localforage.getItem(fq_key, function (err, rsp){
+
+				if ((err) || (! rsp)){
+					on_miss();
+					return;
+				}
+
+				var data = rsp['data'];
+
+				if (! data){
+					on_miss();
+					return;
+				}
+
+				var dt = new Date();
+				var ts = dt.getTime();
+
+				var then = rsp['created'];
+				var diff = ts - then;
+
+				if (diff > cache_ttl){
+					self.cache_unset(key);
+					on_miss();
+					return;
+				}
+
+				on_hit(data);
+			});
+
+			return true;
+		},
+
+		'cache_set': function(key, value){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			var dt = new Date();
+			var ts = dt.getTime();
+
+			var wrapper = {
+				'data': value,
+				'created': ts
+			};
+
+			key = self.cache_prep_key(key);
+
+			localforage.setItem(key, wrapper);
+			return true;
+		},
+
+		'cache_unset': function(key){
+
+			if (typeof(localforage) != 'object'){
+				return false;
+			}
+
+			key = self.cache_prep_key(key);
+
+			localforage.removeItem(key);
+			return true;
+		},
+
+		'cache_prep_key': function(key){
+			return key + '#mapzen.whosonfirst.net';
+		}
 	};
 
 	return self;

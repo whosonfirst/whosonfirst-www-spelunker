@@ -130,9 +130,15 @@ mapzen.whosonfirst.spelunker = (function(){
 				if (! id){
 					continue;
 				}
+<<<<<<< HEAD
 
 				var url = mapzen.whosonfirst.data.id2abspath(id);
 
+=======
+				
+				var url = mapzen.whosonfirst.uri.id2abspath(id);
+				
+>>>>>>> dev-bundler
 				var cb = function(feature){
 					var props = feature['properties'];
 					var name = props['wof:name'];

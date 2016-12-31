@@ -1,6 +1,18 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+/*
+  things this expects
+
+  - mapzen.whosonfirst.uri
+  - mapzen.whosonfirst.brands (for brands)
+  - mapzen.whosonfirst.log
+  - mapzen.whosonfirst.net
+  - mapzen.whosonfirst.php
+  - localforage
+
+*/
+
 mapzen.whosonfirst.namify = (function() {
 
     var cache_ttl = 30000;
@@ -13,7 +25,7 @@ mapzen.whosonfirst.namify = (function() {
 	
 	'namify_wof': function(){
 
-	    var resolver = mapzen.whosonfirst.data.id2abspath;
+	    var resolver = mapzen.whosonfirst.uri.id2abspath;
 
 	    var els = document.getElementsByClassName("wof-namify");
 	    var count = els.length;
@@ -58,7 +70,7 @@ mapzen.whosonfirst.namify = (function() {
 	    };
 	    
 	    var on_miss = function(){
-		console.log("INVOKING ON MISS FOR " + url);
+		// console.log("INVOKING ON MISS FOR " + url);
 		self.namify_el_from_source(url, el);
 	    };
 
@@ -77,7 +89,7 @@ mapzen.whosonfirst.namify = (function() {
 	    };
 
 	    var on_fail = function(rsp){
-		console.log("sad face");
+		// console.log("sad face");
 	    };
 	    
 	    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
@@ -117,17 +129,17 @@ mapzen.whosonfirst.namify = (function() {
 	    localforage.getItem(fq_key, function (err, rsp){
 
 		if ((err) || (! rsp)){
-		    console.log("cache MISS for " + fq_key);
+		    // console.log("cache MISS for " + fq_key);
 		    on_miss();
 		}
 
-		console.log("cache HIT for " + fq_key);
-		console.log(rsp);
+		// console.log("cache HIT for " + fq_key);
+		// console.log(rsp);
 
 		var data = rsp['data'];
 
 		if (! data){
-		    console.log("cache WTF for " + fq_key);
+		    // console.log("cache WTF for " + fq_key);
 		    on_miss();
 		}
 
@@ -138,7 +150,7 @@ mapzen.whosonfirst.namify = (function() {
 		var diff = ts - then;
 
 		if (diff > cache_ttl){
-		    console.log("cache EXPIRED for " + fq_key);
+		    // console.log("cache EXPIRED for " + fq_key);
 		    self.cache_unset(key);
 		    on_miss();
 		}
@@ -164,7 +176,7 @@ mapzen.whosonfirst.namify = (function() {
 	    };
 
 	    key = self.cache_prep_key(key);
-	    console.log("cache SET for " + key);
+	    // console.log("cache SET for " + key);
 
 	    localforage.setItem(key, wrapper);
 	    return true;
@@ -177,7 +189,7 @@ mapzen.whosonfirst.namify = (function() {
 	    }
 
 	    key = self.cache_prep_key(key);
-	    console.log("cache UNSET for " + key);
+	    // console.log("cache UNSET for " + key);
 
 	    localforage.removeItem(key);
 	    return true;

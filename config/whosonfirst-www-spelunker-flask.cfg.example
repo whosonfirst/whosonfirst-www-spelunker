@@ -1,0 +1,11 @@
+[data]
+endpoint=
+
+[search]
+host=YOUR-SPELUNKER-SEARCH-HOST-GOES-HERE
+port=YOUR-SPELUNKER-SEARCH-PORT-GOES-HERE
+index=YOUR-SPELUNKER-SEARCH-INDEX-GOES-HERE
+
+[spelunker]
+slow_query_log=/tmp/slow-query.log
+data_root=https://whosonfirst.mapzen.com/data
