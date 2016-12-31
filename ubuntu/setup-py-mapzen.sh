@@ -11,7 +11,7 @@
 
 sudo apt-get install python-pip
 
-sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-elasticsearch/tarball/master --process-dependency-links
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-search/tarball/master --process-dependency-links
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-utils/tarball/master --process-dependency-links
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes/tarball/master --process-dependency-links
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-sources/tarball/master --process-dependency-links
