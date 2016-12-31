@@ -82,3 +82,12 @@ localforage:
 
 crosshairs:
 	curl -s -o www/static/javascript/slippymap.crosshairs.js https://raw.githubusercontent.com/whosonfirst/js-slippymap-crosshairs/master/src/slippymap.crosshairs.js
+
+dev-to-mz:
+	git checkout master
+	git pull origin dev
+	git push origin master
+	git checkout mapzen
+	git pull origin master
+	git push origin mapzen
+	git checkout dev
