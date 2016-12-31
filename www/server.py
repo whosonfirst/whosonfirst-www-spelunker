@@ -1421,26 +1421,6 @@ def searchify():
 
     return flask.render_template('search_results.html', **template_args)
 
-@app.route("/api/search", methods=["GET"])
-@app.route("/api/search/", methods=["GET"])
-@cross_origin()
-def api_searchify():
-
-    try:
-        query, rsp = do_search()
-    except Exception, e:
-        return flask.render_template('search_form.html')
-
-    rsp = flask.g.search_idx.standard_rsp(rsp)
-
-    feature_col = {
-        'type': 'FeatureCollection',
-        'features': rsp['rows'],
-        'pagination': rsp['pagination'],
-    }
-
-    return flask.jsonify(feature_col)
-
 def do_search():
 
     q = get_str('q')
