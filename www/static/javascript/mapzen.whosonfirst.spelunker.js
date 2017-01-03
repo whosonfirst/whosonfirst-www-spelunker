@@ -10,9 +10,6 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
-
-		var m = mapzen.whosonfirst.leaflet.tangram.map('map');
-		console.log(m);
 	    },
 
 	    'abs_root_url': function(){

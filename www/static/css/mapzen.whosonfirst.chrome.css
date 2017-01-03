@@ -15,3 +15,6 @@
     color: #fff;
 }
 
+.wof-host:before {
+    content: "this is not prod – this is ";
+}
