@@ -10,10 +10,13 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
+<<<<<<< HEAD
 
 		if (document.getElementById('map')) {
 			var m = mapzen.whosonfirst.leaflet.tangram.map('map');
 		}
+=======
+>>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
 	    },
 
 	    'abs_root_url': function(){

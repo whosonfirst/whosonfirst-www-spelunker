@@ -2810,10 +2810,13 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
+<<<<<<< HEAD
 
 		if (document.getElementById('map')) {
 			var m = mapzen.whosonfirst.leaflet.tangram.map('map');
 		}
+=======
+>>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
 	    },
 
 	    'abs_root_url': function(){
@@ -2961,6 +2964,7 @@ mapzen.whosonfirst.spelunker = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+<<<<<<< HEAD
 mapzen.whosonfirst.bundler = (function() {
 
 	var _queue = [];
@@ -3268,10 +3272,41 @@ mapzen.whosonfirst.bundler = (function() {
 		save_summary: function(filename) {
 			var blob = self.get_summary_blob();
 			saveAs(blob, filename);
+=======
+mapzen.whosonfirst.chrome = (function(){
+
+	var self = {
+
+		'init': function() {
+
+			var host = location.host;
+
+			if (host == "whosonfirst.mapzen.com") {
+				return;
+			}
+
+			var host_id = host.replace(".", "-");
+			
+			var host_el = document.createElement("div");
+			host_el.setAttribute("id", "wof-host-" + host_id);
+			host_el.setAttribute("class", "wof-host");
+
+			host_el.appendChild(document.createTextNode(host));
+
+			document.body.insertBefore(host_el, document.body.childNodes[0]);
+>>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
 		}
 	};
 
 	return self;
 })();
+<<<<<<< HEAD
 
 // last bundled at 2016-12-31T01:21:22 UTC
+=======
+window.addEventListener("load", function load(event){
+	mapzen.whosonfirst.chrome.init();
+});
+
+// last bundled at 2017-01-03T16:07:52 UTC
+>>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
