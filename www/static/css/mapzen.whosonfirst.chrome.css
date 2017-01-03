@@ -17,4 +17,13 @@
 
 .wof-host:before {
     content: "this is not prod – this is ";
+    font-weight: 200;
+}
+
+@media print {
+    
+    .wof-host {
+	display:none !important;
+    }
+    
 }
