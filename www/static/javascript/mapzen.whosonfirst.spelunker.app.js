@@ -1178,7 +1178,7 @@ mapzen.whosonfirst.net = (function(){
 				v = encodeURIComponent(v);
 				enc.push(k + "=" + v);
 			}
-			
+
 			return enc.join("&");
 		},
 
@@ -1188,15 +1188,15 @@ mapzen.whosonfirst.net = (function(){
 				cache_ttl = default_cache_ttl;
 			}
 
-			mapzen.whosonfirst.log.debug("fetch " + url);
-
 			var on_hit = function(data){
+				mapzen.whosonfirst.log.debug("[cached] fetch " + url);
 				if (on_success){
 					on_success(data);
 				}
 			};
 
 			var on_miss = function(){
+				mapzen.whosonfirst.log.debug("[xhr] fetch " + url);
 				self.fetch_with_xhr(url, on_success, on_fail);
 			};
 
@@ -1208,7 +1208,7 @@ mapzen.whosonfirst.net = (function(){
 		'fetch_with_xhr': function(url, on_success, on_fail){
 
 			var req = new XMLHttpRequest();
-			
+
 			req.onload = function(){
 
 				try {
@@ -1239,7 +1239,7 @@ mapzen.whosonfirst.net = (function(){
 
 			catch(e){
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
-				mapzen.whosonfirst.log.debug(e);   
+				mapzen.whosonfirst.log.debug(e);
 
 				if (on_fail){
 					on_fail();
@@ -2808,9 +2808,6 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	    'init': function(){
 		mapzen.whosonfirst.config.init();
-
-		var m = mapzen.whosonfirst.leaflet.tangram.map('map');
-		console.log(m);
 	    },
 
 	    'abs_root_url': function(){
@@ -2956,5 +2953,37 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	return self;
 })();
+var mapzen = mapzen || {};
+mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-// last bundled at 2016-11-30T17:40:39 UTC
+mapzen.whosonfirst.chrome = (function(){
+
+	var self = {
+
+		'init': function() {
+
+			var host = location.host;
+
+			if (host == "whosonfirst.mapzen.com") {
+				return;
+			}
+
+			var host_id = host.replace(".", "-");
+			
+			var host_el = document.createElement("div");
+			host_el.setAttribute("id", "wof-host-" + host_id);
+			host_el.setAttribute("class", "wof-host");
+
+			host_el.appendChild(document.createTextNode(host));
+
+			document.body.insertBefore(host_el, document.body.childNodes[0]);
+		}
+	};
+
+	return self;
+})();
+window.addEventListener("load", function load(event){
+	mapzen.whosonfirst.chrome.init();
+});
+
+// last bundled at 2017-01-03T16:07:52 UTC
