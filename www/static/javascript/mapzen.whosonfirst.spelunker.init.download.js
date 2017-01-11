@@ -1,7 +1,5 @@
 window.addEventListener("load", function load(event){
 
-	mapzen.whosonfirst.api.set_endpoint('https://whosonfirst-api.dev.mapzen.com/?api_key=mapzen-o85WWSN');
-
 	var total = 0;
 
 	var bundler = document.getElementById('wof-bundler');
