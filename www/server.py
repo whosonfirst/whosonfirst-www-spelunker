@@ -343,7 +343,7 @@ def brand(id):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -623,7 +623,7 @@ def descendants(id):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -678,7 +678,7 @@ def megacities():
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -727,7 +727,7 @@ def nullisland():
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -818,7 +818,7 @@ def placetype(placetype):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -998,7 +998,7 @@ def machinetag_places(field, mt):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1180,7 +1180,7 @@ def tag(tag):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1235,7 +1235,7 @@ def category(category):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1292,7 +1292,7 @@ def code(code):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1366,7 +1366,7 @@ def searchify():
         return flask.redirect(location, code=303)        
 
     try:
-        query, rsp = do_search()
+        query, params, rsp = do_search()
     except Exception, e:
         logging.error("query failed because %s" % e)
         return flask.render_template('search_form.html', error=True)
@@ -1396,7 +1396,7 @@ def searchify():
             query_string = possible
             break
 
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -1532,7 +1532,7 @@ def do_search():
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    return body, rsp
+    return body, params, rsp
 
 def facetify(query):
 
@@ -1970,7 +1970,7 @@ def has_concordance(src, label):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
@@ -2083,7 +2083,7 @@ def has_language(lang, spoken=False):
         params['page'] = page
 
     rsp = flask.g.search_idx.query(body=body, params=params)
-    rsp = flask.g.search_idx.standard_rsp(rsp)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
