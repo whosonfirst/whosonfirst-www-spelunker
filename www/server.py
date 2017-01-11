@@ -106,7 +106,7 @@ def init():
     search_host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
     search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
-    
+
     search_args = {
         'host': search_host,
         'port': search_port,
@@ -239,7 +239,7 @@ def random_place():
     countries = list(pycountry.countries)
     count_countries = len(countries)
     country = countries[ random.randint(0, count_countries) ]
-    
+
     try:
         iso = country.alpha2.lower()
     except Exception, e:
@@ -251,13 +251,13 @@ def random_place():
         { 'term': { 'geom:latitude': 0.0 } },
         { 'term': { 'geom:longitude': 0.0 } }
     ]
-    
+
     query = {
         'function_score': {
 
             'query': {
                 'filtered': {
-                    'query': { 
+                    'query': {
                         'term': { 'wof:country': iso }
                     },
                     'filter': {
@@ -1959,9 +1959,14 @@ def get_by_id(id):
     }
 
     rsp = flask.g.search_idx.query(body=body)
-    doc = flask.g.search_idx.single(rsp)
-
-    return doc_to_geojson(doc)
+    if 'hits' in rsp:
+        doc = flask.g.search_idx.single(rsp)
+        return doc_to_geojson(doc)
+    elif 'error' in rsp:
+        logging.error(rsp['error'])
+    else:
+        logging.error(rsp)
+    return None
 
 def has_concordance(src, label):
 
@@ -2274,35 +2279,35 @@ def doc_to_geojson(doc):
 
     properties = doc['_source']
     id = properties['wof:id']
-    
+
     geom = {}
     bbox = []
-    
+
     lat = None
     lon = None
-    
+
     if not properties.get('wof:path', False):
-        
+
         path = mapzen.whosonfirst.uri.id2relpath(id)
         properties['wof:path'] = path
-        
+
     if properties.get('geom:bbox', False):
         bbox = properties['geom:bbox']
         bbox = bbox.split(",")
-        
+
     if properties.get('geom:latitude', False) and properties.get('geom:longitude', False):
         lat = properties['geom:latitude']
         lat = properties['geom:longitude']
-        
+
     elif len(bbox) == 4:
         pass	# derive centroid here...
-        
+
     else:
         pass
 
     if properties.get('wof:placetype', None) == 'venue' and lat and lon:
         geom = {'type': 'Point', 'coordinates': [ lon, lat ] }
-        
+
     return {
         'type': 'Feature',
         'id': id,
