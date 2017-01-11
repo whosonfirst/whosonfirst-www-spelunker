@@ -5,28 +5,25 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
 
-	    // this is invoked by by mapzen.whosonfirst.spelunker.init.js
-	    // which is running code (20160202/thisisaaronland)
+		// this is invoked by by mapzen.whosonfirst.spelunker.init.js
+		// which is running code (20160202/thisisaaronland)
 
-	    'init': function(){
-		mapzen.whosonfirst.config.init();
-<<<<<<< HEAD
+		'init': function(){
+			mapzen.whosonfirst.config.init();
 
-		if (document.getElementById('map')) {
-			var m = mapzen.whosonfirst.leaflet.tangram.map('map');
-		}
-=======
->>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
-	    },
+			if (document.getElementById('map')) {
+				var m = mapzen.whosonfirst.leaflet.tangram.map('map');
+			}
+		},
 
-	    'abs_root_url': function(){
-		var body = document.body;
-		return body.getAttribute("data-abs-root-url");
-	    },
+		'abs_root_url': function(){
+			var body = document.body;
+			return body.getAttribute("data-abs-root-url");
+		},
 
-	    'draw_list': function(classname){
+		'draw_list': function(classname){
 
-		var locs = document.getElementsByClassName(classname);
+			var locs = document.getElementsByClassName(classname);
 			var count = locs.length;
 
 			var swlat = undefined;
