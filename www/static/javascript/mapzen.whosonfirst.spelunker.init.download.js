@@ -5,7 +5,7 @@ window.addEventListener("load", function load(event){
 	var bundler = document.getElementById('wof-bundler');
 	var status = document.getElementById('bundle-status');
 	var parent_id = bundler.getAttribute('data-parent-id');
-	var checkboxes = bundler.querySelectorAll('#wof-bundler input[type="checkbox"]');
+	var checkboxes = bundler.querySelectorAll('input.placetype');
 	var btn_bundle = document.getElementById('btn-bundle');
 	var btn_summary = document.getElementById('btn-summary');
 	var summary_stats = document.getElementById('summary-stats');
