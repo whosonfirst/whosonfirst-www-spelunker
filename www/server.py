@@ -122,6 +122,8 @@ def init():
     data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://whosonfirst.mapzen.com/data')
     flask.g.data_root = data_root
 
+    flask.g.enable_feature_bundler = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER', 0))
+
 @app.template_filter()
 def urlencode(value):
     s = unicode(value)
@@ -370,6 +372,9 @@ def brand(id):
 @app.route("/download/<int:id>", methods=["GET"])
 @app.route("/download/<int:id>/", methods=["GET"])
 def download(id):
+
+    if not flask.g.enable_feature_bundler:
+        flask.abort(404)
 
     parent_id = sanitize_int(id)
     doc = get_by_id(parent_id)

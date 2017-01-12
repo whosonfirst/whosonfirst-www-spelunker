@@ -28,5 +28,7 @@ os.environ['SPELUNKER_SEARCH_INDEX'] = cfg.get('search', 'index')
 os.environ['SPELUNKER_SLOW_QUERY_LOG'] = cfg.get('spelunker', 'slow_query_log')
 os.environ['SPELUNKER_DATA_ROOT'] = cfg.get('spelunker', 'data_root')
 
+os.environ['SPELUNKER_ENABLE_FEATURE_BUNDLER'] = int(cfg.get('spelunker', 'enable_feature_bundler'))
+
 bind = '%s:%s' % (spelunker_host, spelunker_port)
 chdir = spelunker_root
