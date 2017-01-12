@@ -22,11 +22,12 @@ window.addEventListener("load", function load(event){
 
 	mapzen.whosonfirst.bundler.set_handler('progress', function(update) {
 		if (update.type == 'query') {
-			btn_summary.removeAttribute('disabled');
+			if (update.page == update.pages) {
+				btn_summary.removeAttribute('disabled');
+			}
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		} else if (update.type == 'feature') {
 			var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
-			btn_bundle.removeAttribute('disabled');
 			status.innerHTML = 'Bundled ' + percent + ': ' + update.feature.properties['wof:name'] + ' (' + update.feature.properties['wof:placetype'] + ')';
 			if (document.getElementById('preview-bundle').checked) {
 				render_feature(update.feature);
@@ -57,6 +58,7 @@ window.addEventListener("load", function load(event){
 			btn_summary.setAttribute('disabled', 'disabled');
 			status.innerHTML = '<i>No places selected</i>';
 		} else {
+			btn_bundle.removeAttribute('disabled');
 			status.innerHTML = '😎 Bundle is ready to save.';
 		}
 	});
