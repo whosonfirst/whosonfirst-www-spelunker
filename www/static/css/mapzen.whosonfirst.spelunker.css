@@ -247,6 +247,10 @@ pre {
     margin-top: 0.5em;
 }
 
+.preview-controls {
+    padding-top: 15px;
+}
+
 .preview-controls label {
     margin-right: 5px;
 }
