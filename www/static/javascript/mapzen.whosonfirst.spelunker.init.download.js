@@ -57,7 +57,7 @@ window.addEventListener("load", function load(event){
 			btn_summary.setAttribute('disabled', 'disabled');
 			status.innerHTML = '<i>No places selected</i>';
 		} else {
-			status.innerHTML = 'Bundle is ready to save.';
+			status.innerHTML = '😎 Bundle is ready to save.';
 		}
 	});
 
