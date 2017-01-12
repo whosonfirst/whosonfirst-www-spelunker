@@ -14,14 +14,18 @@ mapzen.whosonfirst.config = (function(){
 			var root = document.body.getAttribute("data-abs-root-url");
 			var data = root + "data/";
 
-			mapzen.whosonfirst.uri.endpoint(data);
+			if (mapzen.whosonfirst.uri) {
+				mapzen.whosonfirst.uri.endpoint(data);
+			}
 
 			// You can probably turn this on safely but it is still technically
 			// a work in progress; the code is being merged with master now but
 			// disabled to make sure the rendering stuff works correcty and because
 			// we like to fly close to the sun... (20160222/thisisaaronland)
 
-			mapzen.whosonfirst.yesnofix.enabled(false);
+			if (mapzen.whosonfirst.yesnofix) {
+				mapzen.whosonfirst.yesnofix.enabled(false);
+			}
 
 			// Here is where we configure the Who's On First API details.
 			// Set this to the key you got from https://mapzen.com/developers
@@ -34,7 +38,9 @@ mapzen.whosonfirst.config = (function(){
 			var api_host = 'whosonfirst-api.mapzen.com';
 
 			var api_endpoint = 'https://' + api_host + '/?api_key=' + api_key;
-			mapzen.whosonfirst.api.set_endpoint(api_endpoint);
+			if (mapzen.whosonfirst.api) {
+				mapzen.whosonfirst.api.set_endpoint(api_endpoint);
+			}
 		}
 	};
 
