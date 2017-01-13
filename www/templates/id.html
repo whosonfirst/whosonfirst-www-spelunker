@@ -27,7 +27,7 @@
 {% elif doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" %}
  ({{ doc.properties.get("edtf:inception") | e }})
 {% elif doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
- (? - {{ doc.properties.get("edtf:inception") | e >)
+ (? - {{ doc.properties.get("edtf:inception") | e }})
 {% else %}
 {% endif %}
 
