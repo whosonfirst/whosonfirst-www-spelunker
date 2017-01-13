@@ -98,6 +98,9 @@ window.addEventListener("load", function load(event){
 		mapzen.whosonfirst.log.error("failed to format and render properties, because there was a problem retrieving " + url);
 	};
 
+	// TO DO: 
+    	// https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/72
+
     	var args = {
 	    "cache-busting": true
 	};
