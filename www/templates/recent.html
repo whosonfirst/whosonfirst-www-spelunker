@@ -6,6 +6,13 @@
 <div class="col-md-12">
 
 <h3>Places that have been updated <span class="hey-look">recently</span>
+
+{% if err_days %}
+
+<small class="see-also">That is a <span class="hey-look">awkward number</span> of days to look for recently updated places. Please specify a number between <span class="hey-look">{{ min_days | number_format | e}} and {{max_days | number_format|e }}</span> days, okay?</span>
+
+{% else %}
+
 {% if pagination.total == 1 %}
 
 {% if days == 1 %}
@@ -38,6 +45,8 @@
 
 {% else %}
 {% include "inc_docs.html" %}
+{% endif %}
+
 {% endif %}
 
 </div>

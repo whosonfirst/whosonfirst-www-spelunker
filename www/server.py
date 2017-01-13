@@ -260,14 +260,14 @@ def lastmod_week():
 @app.route("/recent/<int:days>", methods=["GET"])
 def lastmod_days(days):
 
-    # PLEASE MAKE ME BETTER ERROR MESSAGES
-    # (20170112/thisisaaronland)
+    min_days = 1
+    max_days = 90
 
-    if days < 1:
-        flask.abort(400)
+    if days < min_days:
+        return flask.render_template('recent.html', err_days=1, min_days=min_days, max_days=max_days)
 
-    if days > 30:
-        flask.abort(400)
+    if days > max_days:
+        return flask.render_template('recent.html', err_days=1, min_days=min_days, max_days=max_days)
 
     now = int(time.time())
     then = now - (86400 * days)
@@ -277,6 +277,8 @@ def lastmod_days(days):
             'wof:lastmodified': { 'gte': then, 'lte': now }
         }    
     }
+
+    query = enfilterify(query)
     
     sort = [
         { 'wof:lastmodified': { 'order': 'desc', 'mode': 'max' } }
