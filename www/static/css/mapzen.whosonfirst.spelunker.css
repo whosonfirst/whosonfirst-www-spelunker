@@ -149,6 +149,11 @@ q {
     color: #666;
 }
 
+.dates {
+    color: #000;
+    font-weight: 200;
+}
+
 .flagged {
     color: #800000;
 }
