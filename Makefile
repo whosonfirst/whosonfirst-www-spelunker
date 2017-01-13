@@ -95,4 +95,5 @@ dev-to-mz:
 	git checkout mapzen
 	git pull origin master
 	git push origin mapzen
+	git checkout master
 	git checkout dev
