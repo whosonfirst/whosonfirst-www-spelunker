@@ -30,6 +30,12 @@
 
 {% if pagination.total == 0 %}
 
+{% if days == 1 %}
+<small class="see-also">There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last day</span> 
+{% else %}
+<small class="see-also">There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last {{ days | number_format|e }} days</span> 
+{% endif %}
+
 {% else %}
 {% include "inc_docs.html" %}
 {% endif %}

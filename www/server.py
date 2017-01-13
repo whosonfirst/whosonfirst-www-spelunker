@@ -15,6 +15,7 @@ from werkzeug.datastructures import Headers
 from flask_cors import cross_origin
 
 import re
+import datetime
 import time
 import random
 import types
@@ -128,6 +129,27 @@ def init():
 def urlencode(value):
     s = unicode(value)
     return urllib.quote(s)
+
+@app.template_filter()
+def format_timestamp(ts, fmt=None):
+
+    try :
+
+        now = datetime.datetime.fromtimestamp(time.time())
+        then = datetime.datetime.fromtimestamp(ts)
+
+        if fmt == None:
+
+            if now.year != then.year:
+                fmt = '%B %d, %Y'
+            else:
+                fmt  = '%B %d'
+
+        return then.strftime(fmt)
+
+    except Exception, e:
+        logging.error("Failed to format timestamp (%s) because %s" % (ts, e))
+        return ts
 
 # http://flask.pocoo.org/snippets/29/
 

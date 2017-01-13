@@ -39,6 +39,7 @@
 <small class="flagged">this record has been <strong>superseded</strong></small>
 {% else %}{% endif %}
 
+  <small> / it was last modified on <span class="hey-look">{{ doc.properties.get("wof:lastmodified") |format_timestamp| e }}</span></small>
 </li>
 {% endfor %}
 </ol>
