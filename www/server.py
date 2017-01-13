@@ -229,6 +229,62 @@ def geojson(id):
     location = uri.id2abspath(flask.g.data_root, id)
     return flask.redirect(location, code=303)
 
+@app.route("/recent", methods=["GET"])
+@app.route("/recent/", methods=["GET"])
+def recently_modified():
+
+    days = 7
+
+    now = int(time.time())
+    then = now - (86400 * days)
+
+    query = {
+        'range': {
+            'wof:lastmodified': { 'gte': then, 'lte': now }
+        }    
+    }
+    
+    sort = [
+        { 'wof:lastmodified': { 'order': 'desc', 'mode': 'max' } }
+    ]
+
+    body = {
+        'query': query,
+        'sort': sort
+    }
+
+    params = {}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        params['page'] = page
+
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'es_query': body,
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'facets': facets,
+        'facet_url': facet_url
+    }
+
+    return flask.render_template('recent.html', **template_args)
+
 @app.route("/random", methods=["GET"])
 @app.route("/random/", methods=["GET"])
 def random_place():
