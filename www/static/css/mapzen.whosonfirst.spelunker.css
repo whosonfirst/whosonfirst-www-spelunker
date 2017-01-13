@@ -151,7 +151,10 @@ q {
 
 .dates {
     color: #000;
-    font-weight: 200;
+}
+
+.dates-cessation {
+    color: #800000;
 }
 
 .flagged {
