@@ -1482,12 +1482,17 @@ def searchify():
     q = get_str('q')
     q = get_single(q)
 
+
     if q and re.match(r'^\d+$', q):
 
         id = int(q)
 
-        location = flask.url_for('info', id=id, _external=True)
-        return flask.redirect(location, code=303)
+        # if we don't this then things like '90210' will result in hillarity
+        # (20161201/thisisaaronland)
+
+        if get_by_id(id):
+            location = flask.url_for('info', id=id, _external=True)
+            return flask.redirect(location, code=303)        
 
     try:
         query, params, rsp = do_search()
@@ -2276,7 +2281,7 @@ def append_source_details_to_buckets(buckets):
         try:
             prefix, key = b['key'].split(':')
         except Exception, e:
-            logging.error("expected a key:value string but got '%s' instead, so skipping" % b['key'])
+            logging.error("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
             continue
 
         source = src.get_source_by_prefix(prefix)
