@@ -231,9 +231,21 @@ def geojson(id):
 
 @app.route("/recent", methods=["GET"])
 @app.route("/recent/", methods=["GET"])
-def recently_modified():
+def lastmod_week():
+    return lastmod_days(7)
 
-    days = 7
+@app.route("/recent/<int:days>", methods=["GET"])
+@app.route("/recent/<int:days>", methods=["GET"])
+def lastmod_days(days):
+
+    # PLEASE MAKE ME BETTER ERROR MESSAGES
+    # (20170112/thisisaaronland)
+
+    if days < 1:
+        flask.abort(400)
+
+    if days > 30:
+        flask.abort(400)
 
     now = int(time.time())
     then = now - (86400 * days)
@@ -275,6 +287,7 @@ def recently_modified():
     facet_url = pagination_url
 
     template_args = {
+        'days': days,
         'es_query': body,
         'docs': docs,
         'pagination': pagination,

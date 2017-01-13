@@ -8,11 +8,20 @@
 <h3>Places that have been updated <span class="hey-look">recently</span>
 {% if pagination.total == 1 %}
 
-<small class="see-also">There is <span class="hey-look">one place</span> that has been updated <span class="hey-look">recently</span></small>
+{% if days == 1 %}
+<small class="see-also">There is <span class="hey-look">one place</span> that has been updated <span class="hey-look">in the last day</span></small>
+{% else %}
+<small class="see-also">There is <span class="hey-look">one place</span> that has been updated <span class="hey-look">in the last {{ days | number_format|e }} days</span></small>
+{% endif %}
 
 {% elif pagination.total > 1 %}
 
-<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been updated <span class="hey-look">recently</span> 
+{% if days == 1 %}
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been updated <span class="hey-look">in the last day</span> 
+{% else %}
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been updated <span class="hey-look">in the last {{ days | number_format|e }} days</span> 
+{% endif %}
+
 {% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
 </small>
 
