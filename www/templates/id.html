@@ -19,6 +19,16 @@
 
 <div class="row" id="wof-record" data-wof-id="{{ doc.properties.get('wof:id') |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
 <h2>
+
+{% if doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" and doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
+<small> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong> &#8212; <strong>{{ doc.properties.get("edtf:cessation") | e }}</strong>)</small>
+{% elif doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" %}
+<small> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)</small>
+{% elif doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
+<small> (the past &#8212; <strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)</small>
+{% else %}
+{% endif %}
+
 {{ doc.properties.get("wof:name") |e }} <small>{{doc.properties.get("wof:path") |e }}</small>
 
 {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
@@ -41,10 +51,6 @@
 
 {% else %}
 
-{% endif %}
-
-{% if doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" and doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
-<small class="flagged"> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong> - <strong>{{ doc.properties.get("edtf:cessation") | e }}</strong>)</small>
 {% endif %}
 
 </h2>
