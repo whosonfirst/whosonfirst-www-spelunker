@@ -43,6 +43,10 @@
 
 {% endif %}
 
+{% if doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" and doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
+<small class="flagged"> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong> - <strong>{{ doc.properties.get("edtf:cessation") | e }}</strong>)</small>
+{% endif %}
+
 </h2>
 </div>
 
