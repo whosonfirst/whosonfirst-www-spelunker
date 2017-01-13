@@ -22,11 +22,23 @@
 {{ doc.properties.get("wof:name") |e }} <small>{{doc.properties.get("wof:path") |e }}</small>
 
 {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
+
+{% if doc.properties['wof:superseded_by']|length == 1 %}
+<small class="flagged">this record has been both <strong>deprecated</strong> and <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></small>
+{% else %}
 <small class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></small>
+{% endif %}
+
 {% elif doc.properties.get("edtf:deprecated") %}
 <small class="flagged">this record has been <strong>deprecated</strong></small>
 {% elif doc.properties.get("wof:superseded_by") %}
+
+{% if doc.properties['wof:superseded_by']|length == 1 %}
+<small class="flagged">this record has been <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></small>
+{% else %}
 <small class="flagged">this record has been <strong>superseded</strong></small>
+{% endif %}
+
 {% else %}
 
 {% endif %}

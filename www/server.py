@@ -131,6 +131,10 @@ def urlencode(value):
     return urllib.quote(s)
 
 @app.template_filter()
+def length(value):
+    return len(value)
+
+@app.template_filter()
 def format_timestamp(ts, fmt=None):
 
     try :
