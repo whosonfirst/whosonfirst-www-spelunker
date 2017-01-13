@@ -36,7 +36,7 @@ window.addEventListener("load", function load(event){
     
     var url = mapzen.whosonfirst.uri.id2abspath(wofid);
 
-    var cb = function(feature){
+    var on_success = function(feature){
 	
 		var props = feature['properties'];
 		var id = props['wof:id'];
@@ -98,6 +98,10 @@ window.addEventListener("load", function load(event){
 		mapzen.whosonfirst.log.error("failed to format and render properties, because there was a problem retrieving " + url);
 	};
 
-	mapzen.whosonfirst.net.fetch(url, cb);
+    	var args = {
+	    "cache-busting": true
+	};
+
+	mapzen.whosonfirst.net.fetch(url, on_success, on_fail, args);
         return;
 });
