@@ -23,11 +23,11 @@
 {{ doc.properties.get("wof:name") |e }} 
 
 {% if doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" and doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
-<small> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong> &#8212; <strong>{{ doc.properties.get("edtf:cessation") | e }}</strong>)</small>
+ (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong> - <strong>{{ doc.properties.get("edtf:cessation") | e }}</strong>)
 {% elif doc.properties.get("edtf:inception") and doc.properties.get("edtf:inception") != "uuuu" %}
-<small> (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)</small>
+ (<strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)
 {% elif doc.properties.get("edtf:cessation") and doc.properties.get("edtf:cessation") != "uuuu" %}
-<small> (the past &#8212; <strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)</small>
+ (? - <strong>{{ doc.properties.get("edtf:inception") | e }}</strong>)
 {% else %}
 {% endif %}
 
