@@ -20,7 +20,19 @@
   <small>
     &#8212;
     {% if doc['properties']['iso:country'] |e %}
+
+    {% if doc['properties']['wof:placetype'] == "venue" %}
+
+    {% if doc['properties']['mz:is_current'] == 0 %}
+    this was a venue in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span> but <span class="flagged">it is closed</span>
+    {% else %}
+    this is a venue in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span>
+    {% endif %}
+
+    {% else %}
     this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |e }}</span>
+    {% endif %}
+
     {% else %}
     {% if doc['properties']['wof:placetype'] == "ocean" %}this is an{% else %}this is a{% endif %} <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a>
     {% endif %}
