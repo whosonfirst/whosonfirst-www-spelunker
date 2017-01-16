@@ -166,6 +166,10 @@ q {
     color:#666;
 }
 
+.noslash:before {
+    content:"" !important;
+}
+
 #props-toggle {
     display: none;
     font-family:monospace;
