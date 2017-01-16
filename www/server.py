@@ -126,6 +126,16 @@ def init():
     flask.g.enable_feature_bundler = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER', 0))
 
 @app.template_filter()
+def country_name(code):
+
+    try:
+        c = pycountry.countries.get(alpha2=code)
+        return c.name
+    except Exception, e:
+        logging.error("failed to get country name for %s, because %s" % (code, e))
+        return code
+
+@app.template_filter()
 def urlencode(value):
     s = unicode(value)
     return urllib.quote(s)
