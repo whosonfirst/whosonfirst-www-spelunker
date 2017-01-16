@@ -132,8 +132,15 @@ def country_name(code):
         c = pycountry.countries.get(alpha2=code)
         return c.name
     except Exception, e:
-        logging.error("failed to get country name for %s, because %s" % (code, e))
-        return code
+
+        # I hate you Python... (20170116/thisisaaronland)
+
+        try:
+            c = pycountry.countries.get(alpha_2=code)
+            return c.name
+        except Exception, e:
+            logging.error("failed to get country name for %s, because %s" % (code, e))
+            return code
 
 @app.template_filter()
 def urlencode(value):
