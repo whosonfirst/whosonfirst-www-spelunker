@@ -34,7 +34,13 @@
     {% endif %}
 
     {% else %}
+
+    {% if doc['properties']['wof:placetype'] == "country" %}
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> 
+    {% else %}
     this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |country_name|e }}</span>
+    {% endif %}
+
     {% endif %}
 
     {% else %}
