@@ -17,20 +17,22 @@
   <code>{{ doc['properties']['wof:id'] |e }}</code>
   <span class="flag" data-country="{{ doc['properties'].get('wof:country') | lower |e }}"></span>
   <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{{ doc['properties']['wof:name'] |e }}</a>
+
   <small>
     &#8212;
+
     {% if doc['properties']['iso:country'] |e %}
 
     {% if doc['properties']['wof:placetype'] == "venue" %}
 
     {% if doc['properties']['mz:is_current'] == '0' %}
-    this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |country_name|e }}</span> but <span class="hey-look flagged noslash">it is closed</span>
+    this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span> but <span class="hey-look flagged noslash">it is closed</span>
 
     {% elif doc['properties']['mz:is_current'] == '1' %}
-    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |country_name|e }}</span> that we believe <span class="hey-look">to be open</span>
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span> that we believe <span class="hey-look">to be open</span>
 
     {% else %}
-    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |country_name|e }}</span>
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span>
     {% endif %}
 
     {% else %}
@@ -38,7 +40,7 @@
     {% if doc['properties']['wof:placetype'] == "country" %}
     this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> 
     {% else %}
-    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look">{{ doc['properties']['iso:country'] |country_name|e }}</span>
+    this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span>
     {% endif %}
 
     {% endif %}
@@ -47,21 +49,24 @@
     {% if doc['properties']['wof:placetype'] == "ocean" %}this is an{% else %}this is a{% endif %} <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">{{ doc['properties']['wof:placetype'] |e }}</a>
     {% endif %}
   </small>
+
+  <ul class="list-inline inc-docs-meta">
+
   {% if doc.properties.get('gn:population', None) %}
-  <small>
-    and its <span class="hey-look">population</span> is {{ doc.properties.get('gn:population') |number_format|e }}
-  </small>
+    <li>its <span class="hey-look">population</span> is {{ doc.properties.get('gn:population') |number_format|e }}</li>
   {% endif %}
 
-{% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
-<small class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></small>
-{% elif doc.properties.get("edtf:deprecated") %}
-<small class="flagged">this record has been <strong>deprecated</strong></small>
-{% elif doc.properties.get("wof:superseded_by") %}
-<small class="flagged">this record has been <strong>superseded</strong></small>
-{% else %}{% endif %}
+  {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
+  <li><span class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></span></li>
+  {% elif doc.properties.get("edtf:deprecated") %}
+  <li><span class="flagged">this record has been <strong>deprecated</strong></span></li>
+  {% elif doc.properties.get("wof:superseded_by") %}
+  <li><span class="flagged">this record has been <strong>superseded</strong></span></li>
+  {% else %}{% endif %}
 
-  <small> / it was last modified on <span class="hey-look">{{ doc.properties.get("wof:lastmodified") |format_timestamp| e }}</span></small>
+  <li>it was last modified on <span class="hey-look">{{ doc.properties.get("wof:lastmodified") |format_timestamp| e }}</span></li>
+  </ul>
+
 </li>
 {% endfor %}
 </ol>

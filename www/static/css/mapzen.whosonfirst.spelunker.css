@@ -161,11 +161,6 @@ q {
     color: #800000;
 }
 
-.flagged:before {
-    content:" / ";
-    color:#666;
-}
-
 .noslash:before {
     content:"" !important;
 }
@@ -277,4 +272,22 @@ pre {
     content: "";
     clear: both;
     display: table;
+}
+
+.inc-docs-meta {
+    color:#999;
+    font-size:small;
+    margin-bottom:.5em;
+}
+
+.inc-docs-meta li:after {
+    content: " /";
+}
+
+.inc-docs-meta li:first-child {
+
+}
+
+.inc-docs-meta li:last-child:after {
+    content: "" !important;
 }
