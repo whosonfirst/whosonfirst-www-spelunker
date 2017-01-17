@@ -57,11 +57,23 @@
   {% endif %}
 
   {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
-  <li><span class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></span></li>
+
+    {% if doc.properties['wof:superseded_by']|length == 1 %}
+    <li><span class="flagged">this record has been both <strong>deprecated</strong> and <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></span></li>
+    {% else %}
+    <li><span class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></span></li>
+    {% endif %}
+
   {% elif doc.properties.get("edtf:deprecated") %}
   <li><span class="flagged">this record has been <strong>deprecated</strong></span></li>
   {% elif doc.properties.get("wof:superseded_by") %}
-  <li><span class="flagged">this record has been <strong>superseded</strong></span></li>
+
+    {% if doc.properties['wof:superseded_by']|length == 1 %}
+    <li><span class="flagged">this record has been <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></span></li>
+    {% else %}
+    <li><span class="flagged">this record has been <strong>superseded</strong></span></li>
+    {% endif %}
+
   {% else %}{% endif %}
 
   <li>it was last modified on <span class="hey-look">{{ doc.properties.get("wof:lastmodified") |format_timestamp| e }}</span></li>
