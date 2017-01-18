@@ -39,7 +39,7 @@
     {% if doc['properties']['wof:placetype'] == "venue" %}
 
     {% if doc['properties']['mz:is_current'] == '0' %}
-    <small>this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> but <span class="hey-look flagged noslash">it is closed</span></small>
+    <small>this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> but <span class="hey-look flagged noslash">it is closed</span> now</small>
 
     {% elif doc['properties']['mz:is_current'] == '1' %}
     <small>this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> that we believe <span class="hey-look">to be open</span></small>

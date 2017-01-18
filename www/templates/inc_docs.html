@@ -26,7 +26,7 @@
     {% if doc['properties']['wof:placetype'] == "venue" %}
 
     {% if doc['properties']['mz:is_current'] == '0' %}
-    this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span> but <span class="hey-look flagged noslash">it is closed</span>
+    this was a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span> but <span class="hey-look flagged noslash">it is closed</span> now
 
     {% elif doc['properties']['mz:is_current'] == '1' %}
     this is a <a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}">venue</a> in <span class="hey-look"><a href="{{ url_for('placetype', placetype=doc['properties']['wof:placetype']) }}?iso={{ doc['properties']['iso:country'] |e}}">{{ doc['properties']['iso:country'] |country_name|e }}</a></span> that we believe <span class="hey-look">to be open</span>
