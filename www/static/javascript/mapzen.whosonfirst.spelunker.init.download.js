@@ -6,6 +6,7 @@ window.addEventListener("load", function load(event){
 	var status = document.getElementById('bundle-status');
 	var parent_id = bundler.getAttribute('data-parent-id');
 	var checkboxes = bundler.querySelectorAll('input.placetype');
+	var btn_start = document.getElementById('btn-start');
 	var btn_bundle = document.getElementById('btn-bundle');
 	var btn_summary = document.getElementById('btn-summary');
 	var summary_stats = document.getElementById('summary-stats');
@@ -28,39 +29,33 @@ window.addEventListener("load", function load(event){
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		} else if (update.type == 'feature') {
 			var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
-			status.innerHTML = 'Bundled ' + percent + ': ' + update.feature.properties['wof:name'] + ' (' + update.feature.properties['wof:placetype'] + ')';
+		        var name = update.feature.properties['wof:name'];
+		        if (! name) {
+			    name = update.feature.properties['wof:id'];
+			}
+			status.innerHTML = 'Bundled ' + percent + ': <span class="hey-look">' + name + '</span> (' + update.feature.properties['wof:placetype'] + ')';
 			if (document.getElementById('preview-bundle').checked) {
 				render_feature(update.feature);
 			}
 		} else if (update.type == 'bundle') {
 			if (update.bundle_count == 0) {
-				btn_bundle.setAttribute('disabled', 'disabled');
 				bundle_stats.innerHTML = '';
-				status.innerHTML = '<i>No places selected</i>';
 			} else {
-				var plural = (update.bundle_count != 1) ? 's' : '';
-				bundle_stats.innerHTML = 'GeoJSON bundle: ' + update.bundle_count.toLocaleString() + ' feature' + plural + ' (' + display_filesize(update.bundle_size) + ')';
+				bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
 			}
 		} else if (update.type == 'summary') {
 			if (update.summary_count == 0) {
-				btn_summary.setAttribute('disabled', 'disabled');
 				summary_stats.innerHTML = '';
 			} else {
-				var plural = (update.summary_count != 1) ? 's' : '';
-				summary_stats.innerHTML = 'CSV summary: ' + update.summary_count.toLocaleString() + ' row' + plural + ' (' + display_filesize(update.summary_size) + ')';
+				summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
 			}
 		}
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('success', function(geojson) {
-		if (geojson.features.length == 0) {
-			btn_bundle.setAttribute('disabled', 'disabled');
-			btn_summary.setAttribute('disabled', 'disabled');
-			status.innerHTML = '<i>No places selected</i>';
-		} else {
-			btn_bundle.removeAttribute('disabled');
-			status.innerHTML = '😎 Bundle is ready to save.';
-		}
+	    document.getElementById('bundle-btns').className = '';
+	    document.getElementById('stats').className = '';
+	    status.innerHTML = '';
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {
@@ -116,6 +111,13 @@ window.addEventListener("load", function load(event){
 				}
 			});
 		}
+	    var plural = (total == 1) ? '' : 's';
+	    document.getElementById('selected-count').innerHTML = 'You have selected <span class="hey-look">' + total.toLocaleString() + '</span> feature' + plural + '.';
+	    if (total > 0) {
+		document.getElementById('start-btn').className = '';
+	    } else {
+		document.getElementById('start-btn').className = 'hidden';
+	    }
 	};
 
 	for (var i = 0; i < checkboxes.length; i++){
@@ -128,7 +130,30 @@ window.addEventListener("load", function load(event){
 		checkboxes[i].addEventListener('change', function(e){
 			checkbox_changed(e.target);
 		}, false);
+	    checkboxes[i].removeAttribute('disabled');
 	}
+
+    btn_start.addEventListener('click', function(e) {
+	mapzen.whosonfirst.bundler.bundle();
+	document.getElementById('start-btn').className = 'hidden';
+	for (var i = 0; i < checkboxes.length; i++) {
+	    checkboxes[i].setAttribute('disabled', 'disabled');
+	}
+	document.getElementById('edit-selection').className = '';
+	document.getElementById('output').className = '';
+    });
+
+    document.getElementById('edit-selection').addEventListener('click', function(e) {
+	e.preventDefault();
+	mapzen.whosonfirst.bundler.pause();
+	document.getElementById('btn-start').innerHTML = 'Done editing';
+	document.getElementById('start-btn').className = '';
+	document.getElementById('edit-selection').className = 'hidden';
+	document.getElementById('output').className = 'hidden';
+	for (var i = 0; i < checkboxes.length; i++) {
+	    checkboxes[i].removeAttribute('disabled');
+	}
+    });
 
 	btn_bundle.addEventListener('click', function(e) {
 		e.preventDefault();

@@ -13,8 +13,18 @@ mapzen.whosonfirst.bundler = (function() {
 	var _features = [];
 	var _summary = [];
 	var _discard_next = null;
+        var _paused = false;
 
 	var self = {
+
+	    bundle: function() {
+		_paused = false;
+		self.process_queue();
+	    },
+
+	    pause: function() {
+		_paused = true;
+	    },
 
 		set_handler: function(handler, callback) {
 			_handlers['on_' + handler] = callback;
@@ -24,9 +34,6 @@ mapzen.whosonfirst.bundler = (function() {
 			_queue.push({
 				wof_id: id
 			});
-			if (! _query) {
-				self.process_queue();
-			}
 		},
 
 		enqueue_placetype: function(placetype, parent_id) {
@@ -34,9 +41,6 @@ mapzen.whosonfirst.bundler = (function() {
 				placetype: placetype,
 				parent_id: parent_id
 			});
-			if (! _query) {
-				self.process_queue();
-			}
 		},
 
 		dequeue_placetype: function(placetype) {
@@ -74,10 +78,10 @@ mapzen.whosonfirst.bundler = (function() {
 				});
 			}
 
-			if (! _query && _queue.length == 0 && _handlers.on_success) {
-				var bundle = self.bundle_features();
-				_handlers.on_success(bundle);
-			}
+			//if (! _query && _queue.length == 0 && _handlers.on_success) {
+			//	var bundle = self.bundle_features();
+			//	_handlers.on_success(bundle);
+			//}
 		},
 
 		bundle_features: function() {
@@ -108,6 +112,9 @@ mapzen.whosonfirst.bundler = (function() {
 		},
 
 		process_queue: function() {
+		    if (_paused) {
+			return;
+		    }
 			if (! _query && _queue.length > 0) {
 				_query = {
 					args: _queue.shift(),

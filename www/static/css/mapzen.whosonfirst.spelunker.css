@@ -242,6 +242,16 @@ pre {
     padding-bottom: 1.5em;
 }
 
+#wof-bundler ul {
+    padding-left: 0;
+    padding-top: 0.5em;
+    margin-bottom: 0;
+}
+
+#start-btn, #bundle-btns {
+    padding-top: 0.5em;
+}
+
 #bundle-btns {
     margin-bottom: 1em;
 }
