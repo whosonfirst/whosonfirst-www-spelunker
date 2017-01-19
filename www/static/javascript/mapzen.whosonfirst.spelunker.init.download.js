@@ -56,7 +56,11 @@ window.addEventListener("load", function load(event){
 	mapzen.whosonfirst.bundler.set_handler('success', function(geojson) {
 		document.getElementById('bundle-btns').className = '';
 		document.getElementById('stats').className = '';
-		status.innerHTML = '';
+		if (bundle_count != total) {
+			status.innerHTML = '<i>The number of items in your bundle (' + bundle_count.toLocaleString() + ') does not match the expected ' + total.toLocaleString() + '.</i>';
+		} else {
+			status.innerHTML = '';
+		}
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {

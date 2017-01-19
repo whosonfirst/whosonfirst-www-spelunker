@@ -208,6 +208,10 @@ mapzen.whosonfirst.bundler = (function() {
 		download_feature: function() {
 
 			var result = _query.results.shift();
+			if (_query.results.length == 0) {
+				_query = null;
+			}
+
 			var wof_id = result['wof:id'];
 			var wof_url = mapzen.whosonfirst.uri.id2abspath(wof_id);
 
