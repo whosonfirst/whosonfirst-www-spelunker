@@ -343,6 +343,57 @@ def lastmod_days(days):
 
     return flask.render_template('recent.html', **template_args)
 
+@app.route("/current", methods=["GET"])
+@app.route("/current/", methods=["GET"])
+def current():
+
+    query = {
+        'match': { 'mz:is_current': 1 }
+    }
+
+    query = enfilterify(query)
+    
+    sort = [
+        { 'wof:lastmodified': { 'order': 'desc', 'mode': 'max' } }
+    ]
+
+    body = {
+        'query': query,
+        'sort': sort
+    }
+
+    params = {}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        params['page'] = page
+
+    rsp = flask.g.search_idx.query(body=body, params=params)
+    rsp = flask.g.search_idx.standard_rsp(rsp, **params)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    docs = docs_to_geojson(docs)
+
+    facets = facetify(query)
+
+    pagination_url = build_pagination_url()
+    facet_url = pagination_url
+
+    template_args = {
+        'es_query': body,
+        'docs': docs,
+        'pagination': pagination,
+        'pagination_url': pagination_url,
+        'facets': facets,
+        'facet_url': facet_url
+    }
+
+    return flask.render_template('current.html', **template_args)
+
 @app.route("/random", methods=["GET"])
 @app.route("/random/", methods=["GET"])
 def random_place():

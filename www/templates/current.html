@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Places that have been flagged as "current"{% endblock %}
+{% block content %}
+
+<div class="row">
+<div class="col-md-12">
+
+<h3>Places that have been flagged as <q class="hey-look">current</q>
+
+{% if pagination.total == 1 %}
+
+<small class="see-also">There is <span class="hey-look">one place</span> that has been flagged as <q class="hey-look">current</q></small>
+
+{% elif pagination.total > 1 %}
+
+<small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been flagged as <q class="hey-look">current</q> 
+
+{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+</small>
+
+{% else %}{% endif %}
+</h3>
+
+{% if pagination.total == 0 %}
+
+<small class="see-also">There aren't <span class="hey-look">any places</span> that have been flagged as <q class="hey-look">current</q> 
+
+{% else %}
+{% include "inc_docs.html" %}
+{% endif %}
+
+
+</div>
+</div>
+
+{% endblock %}
