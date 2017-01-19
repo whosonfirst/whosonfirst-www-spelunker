@@ -17,6 +17,12 @@ mapzen.whosonfirst.bundler = (function() {
 
 	var self = {
 
+		// This exists because Elasticsearch has a limit on the number of items you
+		// can retrieve using `from` and `size`. This is dumb, and something we can
+		// work around, but for now we are just going to warn the user until we have
+		// a proper fix in place. (20170119/dphiffer)
+		feature_count_limit: 10000,
+
 		bundle: function() {
 			_paused = false;
 			self.process_queue();
@@ -130,7 +136,10 @@ mapzen.whosonfirst.bundler = (function() {
 					self.query_wof_api();
 				}
 			} else if (_query &&
-			           _query.page < _query.pages) {
+			           _query.page < _query.pages &&
+			           // Note the comment at the top of the file, ultimately
+			           // we should remove this last part:
+			           _query.page * 500 < self.feature_count_limit) {
 				_query.page++;
 				self.query_wof_api();
 			} else if (_query &&

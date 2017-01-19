@@ -1,6 +1,8 @@
 window.addEventListener("load", function load(event){
 
 	var total = 0;
+	var bundle_count = 0;
+	var summary_count = 0;
 
 	var bundler = document.getElementById('wof-bundler');
 	var status = document.getElementById('bundle-status');
@@ -23,9 +25,6 @@ window.addEventListener("load", function load(event){
 
 	mapzen.whosonfirst.bundler.set_handler('progress', function(update) {
 		if (update.type == 'query') {
-			if (update.page == update.pages) {
-				btn_summary.removeAttribute('disabled');
-			}
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		} else if (update.type == 'feature') {
 			var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
@@ -43,12 +42,14 @@ window.addEventListener("load", function load(event){
 			} else {
 				bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
 			}
+			bundle_count = update.bundle_count;
 		} else if (update.type == 'summary') {
 			if (update.summary_count == 0) {
 				summary_stats.innerHTML = '';
 			} else {
 				summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
 			}
+			summary_count = update.summary_count;
 		}
 	});
 
@@ -114,6 +115,9 @@ window.addEventListener("load", function load(event){
 		var plural = (total == 1) ? '' : 's';
 		document.getElementById('selected-count').innerHTML = 'You have selected <span class="hey-look">' + total.toLocaleString() + '</span> feature' + plural + '.';
 		if (total > 0) {
+			if (total > mapzen.whosonfirst.bundler.feature_count_limit) {
+				document.getElementById('selected-count').innerHTML += '<br><i>Please note that you currently cannot download more than ' + mapzen.whosonfirst.bundler.feature_count_limit.toLocaleString() + ' features of a given placetype at a time. This is not by design, and we are working to remove the limit.</i><br>';
+			}
 			document.getElementById('start-btn').className = '';
 		} else {
 			document.getElementById('start-btn').className = 'hidden';
