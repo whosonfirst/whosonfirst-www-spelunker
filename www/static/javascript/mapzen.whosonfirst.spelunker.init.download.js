@@ -65,6 +65,13 @@ window.addEventListener("load", function load(event){
 			if (details.error.code) {
 				status.innerHTML += ' (' + details.error.code + ')';
 			}
+		} else if (details && details.xhr && details.xhr.status == 404) {
+			var feature = 'feature';
+			if (details.xhr.responseURL) {
+				var file = details.xhr.responseURL.match(/\/([^\/]+)$/)[1];
+				feature = '<a href="' + details.xhr.responseURL + '">' + file + '</a>';
+			}
+			status.innerHTML = 'Error loading ' + feature;
 		} else {
 			status.innerHTML = 'Error: something went wrong, but I don’t know what.';
 		}

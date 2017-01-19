@@ -39,7 +39,7 @@ mapzen.whosonfirst.net = (function(){
 			    args["cache_ttl"] = default_cache_ttl;
 			}
 
-		        else { 
+		        else {
 			     cache_ttl = default_cache_ttl;
 			}
 
@@ -78,7 +78,11 @@ mapzen.whosonfirst.net = (function(){
 					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
 
 					if (on_fail){
-						on_fail();
+						on_fail({
+							url: url,
+							args: args,
+							xhr: req
+						});
 					}
 
 					return false;
@@ -96,10 +100,10 @@ mapzen.whosonfirst.net = (function(){
 			    	if (args["cache-busting"]){
 
 				    var cb = Math.floor(Math.random() * 1000000);
-				    
+
 				    var tmp = document.createElement("a");
 				    tmp.href = url;
-				    
+
 				    if (tmp.search){
 					tmp.search += "&cb=" + cb;
 				    }
@@ -110,7 +114,7 @@ mapzen.whosonfirst.net = (function(){
 
 				    url = tmp.href;
 				}
-			    
+
 			    	// console.log("ARGS " + args);
 			    	// console.log("URL " + url);
 
