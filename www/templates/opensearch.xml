@@ -5,15 +5,15 @@
 	<Description>Search all the {% if label %}{{ label |e }}{% else %}things{% endif %} in the Who&apos;s On First Spelunker</Description>
 
 	{% if scope=='preferred' %}
-	<Image height="16" width="16" type="image/x-icon">{% include "inc_opensearch_preferred_b64.txt" %}</Image>
+	<Image height="16" width="16" type="image/x-icon">data:image/x-icon;base64,{% include "inc_opensearch_preferred_b64.txt" %}</Image>
 	{% elif scope=='names' %}
-	<Image height="16" width="16" type="image/x-icon">{% include "inc_opensearch_names_b64.txt" %}</Image>
+	<Image height="16" width="16" type="image/x-icon">data:image/x-icon;base64,{% include "inc_opensearch_names_b64.txt" %}</Image>
 	{% elif scope=='alt' %}
-	<Image height="16" width="16" type="image/x-icon">{% include "inc_opensearch_alt_b64.txt" %}</Image>
+	<Image height="16" width="16" type="image/x-icon">data:image/x-icon;base64,{% include "inc_opensearch_alt_b64.txt" %}</Image>
 	{% elif scope =='name' %}
-	<Image height="16" width="16" type="image/x-icon">{% include "inc_opensearch_name_b64.txt" %}</Image>
+	<Image height="16" width="16" type="image/x-icon">data:image/x-icon;base64,{% include "inc_opensearch_name_b64.txt" %}</Image>
 	{% else %}
-	<Image height="16" width="16" type="image/x-icon">{% include "inc_opensearch_default_b64.txt" %}</Image>
+	<Image height="16" width="16" type="image/x-icon">data:image/x-icon;base64,{% include "inc_opensearch_default_b64.txt" %}</Image>
 	{% endif %}
 
 	{% if 0 %}<Image height="16" width="16">data:image/x-icon;base64,</Image>{% endif %}
