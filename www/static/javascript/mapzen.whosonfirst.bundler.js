@@ -13,18 +13,18 @@ mapzen.whosonfirst.bundler = (function() {
 	var _features = [];
 	var _summary = [];
 	var _discard_next = null;
-        var _paused = false;
+	var _paused = false;
 
 	var self = {
 
-	    bundle: function() {
-		_paused = false;
-		self.process_queue();
-	    },
+		bundle: function() {
+			_paused = false;
+			self.process_queue();
+		},
 
-	    pause: function() {
-		_paused = true;
-	    },
+		pause: function() {
+			_paused = true;
+		},
 
 		set_handler: function(handler, callback) {
 			_handlers['on_' + handler] = callback;
@@ -112,9 +112,9 @@ mapzen.whosonfirst.bundler = (function() {
 		},
 
 		process_queue: function() {
-		    if (_paused) {
-			return;
-		    }
+			if (_paused) {
+				return;
+			}
 			if (! _query && _queue.length > 0) {
 				_query = {
 					args: _queue.shift(),

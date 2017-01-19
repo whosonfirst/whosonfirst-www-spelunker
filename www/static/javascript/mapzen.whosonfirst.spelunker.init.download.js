@@ -29,9 +29,9 @@ window.addEventListener("load", function load(event){
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		} else if (update.type == 'feature') {
 			var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
-		        var name = update.feature.properties['wof:name'];
-		        if (! name) {
-			    name = update.feature.properties['wof:id'];
+			var name = update.feature.properties['wof:name'];
+			if (! name) {
+				name = update.feature.properties['wof:id'];
 			}
 			status.innerHTML = 'Bundled ' + percent + ': <span class="hey-look">' + name + '</span> (' + update.feature.properties['wof:placetype'] + ')';
 			if (document.getElementById('preview-bundle').checked) {
@@ -53,9 +53,9 @@ window.addEventListener("load", function load(event){
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('success', function(geojson) {
-	    document.getElementById('bundle-btns').className = '';
-	    document.getElementById('stats').className = '';
-	    status.innerHTML = '';
+		document.getElementById('bundle-btns').className = '';
+		document.getElementById('stats').className = '';
+		status.innerHTML = '';
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {
@@ -111,13 +111,13 @@ window.addEventListener("load", function load(event){
 				}
 			});
 		}
-	    var plural = (total == 1) ? '' : 's';
-	    document.getElementById('selected-count').innerHTML = 'You have selected <span class="hey-look">' + total.toLocaleString() + '</span> feature' + plural + '.';
-	    if (total > 0) {
-		document.getElementById('start-btn').className = '';
-	    } else {
-		document.getElementById('start-btn').className = 'hidden';
-	    }
+		var plural = (total == 1) ? '' : 's';
+		document.getElementById('selected-count').innerHTML = 'You have selected <span class="hey-look">' + total.toLocaleString() + '</span> feature' + plural + '.';
+		if (total > 0) {
+			document.getElementById('start-btn').className = '';
+		} else {
+			document.getElementById('start-btn').className = 'hidden';
+		}
 	};
 
 	for (var i = 0; i < checkboxes.length; i++){
@@ -130,30 +130,30 @@ window.addEventListener("load", function load(event){
 		checkboxes[i].addEventListener('change', function(e){
 			checkbox_changed(e.target);
 		}, false);
-	    checkboxes[i].removeAttribute('disabled');
+		checkboxes[i].removeAttribute('disabled');
 	}
 
-    btn_start.addEventListener('click', function(e) {
-	mapzen.whosonfirst.bundler.bundle();
-	document.getElementById('start-btn').className = 'hidden';
-	for (var i = 0; i < checkboxes.length; i++) {
-	    checkboxes[i].setAttribute('disabled', 'disabled');
-	}
-	document.getElementById('edit-selection').className = '';
-	document.getElementById('output').className = '';
-    });
+	btn_start.addEventListener('click', function(e) {
+		mapzen.whosonfirst.bundler.bundle();
+		document.getElementById('start-btn').className = 'hidden';
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].setAttribute('disabled', 'disabled');
+		}
+		document.getElementById('edit-selection').className = '';
+		document.getElementById('output').className = '';
+	});
 
-    document.getElementById('edit-selection').addEventListener('click', function(e) {
-	e.preventDefault();
-	mapzen.whosonfirst.bundler.pause();
-	document.getElementById('btn-start').innerHTML = 'Done editing';
-	document.getElementById('start-btn').className = '';
-	document.getElementById('edit-selection').className = 'hidden';
-	document.getElementById('output').className = 'hidden';
-	for (var i = 0; i < checkboxes.length; i++) {
-	    checkboxes[i].removeAttribute('disabled');
-	}
-    });
+	document.getElementById('edit-selection').addEventListener('click', function(e) {
+		e.preventDefault();
+		mapzen.whosonfirst.bundler.pause();
+		document.getElementById('btn-start').innerHTML = 'Done editing';
+		document.getElementById('start-btn').className = '';
+		document.getElementById('edit-selection').className = 'hidden';
+		document.getElementById('output').className = 'hidden';
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].removeAttribute('disabled');
+		}
+	});
 
 	btn_bundle.addEventListener('click', function(e) {
 		e.preventDefault();
