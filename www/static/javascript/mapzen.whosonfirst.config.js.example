@@ -37,9 +37,9 @@ mapzen.whosonfirst.config = (function(){
 			// if this is a dev thing and not a prod thing.
 			var api_host = 'whosonfirst-api.mapzen.com';
 
-			var api_endpoint = 'https://' + api_host + '/?api_key=' + api_key;
 			if (mapzen.whosonfirst.api) {
-				mapzen.whosonfirst.api.set_endpoint(api_endpoint);
+				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + '/');
+				mapzen.whosonfirst.api.set_key(api_key);
 			}
 		}
 	};
