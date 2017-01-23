@@ -3,7 +3,7 @@
 <pre style="font-size:.9em;max-height:200px;y-overslow:scroll;">{{ es_query|pprint|e }}</pre>
 
 {% if request.path.endswith('/descendants/') and g.enable_feature_bundler %}
-<div style="text-align:left; float:left; margin-bottom:.5em; font-size:small;"><a href="{{ url_for('index') }}download/{{ doc.properties.get("wof:id") | e }}/{% if request.args.get('exclude', '') != "" %}?exclude={{ request.args.get('exclude', '') | e }}{/if}">Download descendants</a> of {{ doc.properties.get("wof:name") | e }}.</div>
+<div style="text-align:left; float:left; margin-bottom:.5em; font-size:small;"><a href="{{ url_for('index') }}download/{{ doc.properties.get("wof:id") | e }}/{% if request.args.get('exclude', '') != "" %}?exclude={{ request.args.get('exclude', '') | e }}{% endif %}">Download descendants</a> of {{ doc.properties.get("wof:name") | e }}.</div>
 {% endif %}
 
 {% if request.args.get('include', '') != "deprecated" %}
