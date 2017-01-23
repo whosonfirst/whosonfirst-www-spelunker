@@ -102,8 +102,9 @@ mapzen.whosonfirst.api = (function(){
 				}
 
 				var query_string = query.join("&");
+				var sep = (_endpoint.indexOf('?') == -1) ? '?' : '&';
 
-				mapzen.whosonfirst.log.info(_endpoint + "?" + query_string);
+				mapzen.whosonfirst.log.info(_endpoint + sep + query_string);
 			}
 
 			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
