@@ -23,11 +23,13 @@ window.addEventListener("load", function load(event){
 	});
 	window.map = map;
 
-	if (var exclude = location.search.match(/exclude=([^&]+)/)) {
+	var exclude, include;
+
+	if (exclude = location.search.match(/exclude=([^&]+)/)) {
 		mapzen.whosonfirst.bundler.set_filter('exclude', exclude[1]);
 	}
 
-	if (var include = location.search.match(/include=([^&]+)/)) {
+	if (include = location.search.match(/include=([^&]+)/)) {
 		mapzen.whosonfirst.bundler.set_filter('include', include[1]);
 	}
 
