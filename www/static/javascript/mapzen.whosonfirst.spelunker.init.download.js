@@ -23,6 +23,14 @@ window.addEventListener("load", function load(event){
 	});
 	window.map = map;
 
+	if (var exclude = location.search.match(/exclude=([^&]+)/)) {
+		mapzen.whosonfirst.bundler.set_filter('exclude', exclude[1]);
+	}
+
+	if (var include = location.search.match(/include=([^&]+)/)) {
+		mapzen.whosonfirst.bundler.set_filter('include', include[1]);
+	}
+
 	mapzen.whosonfirst.bundler.set_handler('progress', function(update) {
 		if (update.type == 'query') {
 			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';

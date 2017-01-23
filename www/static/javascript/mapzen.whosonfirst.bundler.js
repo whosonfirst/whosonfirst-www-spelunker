@@ -14,6 +14,7 @@ mapzen.whosonfirst.bundler = (function() {
 	var _summary = [];
 	var _discard_next = null;
 	var _paused = false;
+	var _filters = {};
 
 	var self = {
 
@@ -30,6 +31,10 @@ mapzen.whosonfirst.bundler = (function() {
 
 		pause: function() {
 			_paused = true;
+		},
+
+		set_filter: function(key, value) {
+			_filters[key] = value;
 		},
 
 		set_handler: function(handler, callback) {
@@ -163,9 +168,16 @@ mapzen.whosonfirst.bundler = (function() {
 				id: _query.args.parent_id,
 				placetype: _query.args.placetype,
 				page: _query.page,
-				per_page: 500,
-				exclude: 'nullisland'
+				per_page: 500
 			};
+
+			if (_filters.include) {
+				data.include = _filters.include;
+			}
+
+			if (_filters.exclude) {
+				data.exclude = _filters.exclude;
+			}
 
 			var on_success = function(rsp) {
 
