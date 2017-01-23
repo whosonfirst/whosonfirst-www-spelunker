@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row" id="wof-bundler" data-parent-id="{{ parent_id |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
 	<div class="col-md-6">
-		<h3>Download descendants of <a href="{{ url_for('info'), id=parent_id | e }}">{{ doc.properties.get("wof:name") | e }}</a></h3>
+		<h3>Download descendants of <a href="{{ url_for('info', id=parent_id) | e }}">{{ doc.properties.get("wof:name") | e }}</a></h3>
 		<small>Choose each placetype you wish to download.</small>
 		<ul>
 			<li data-placetype="{{ doc.properties.get("wof:placetype") | e }}" data-count="1"><input type="checkbox" name="pt-self" id="pt-self" value="1" class="placetype"> <label for="pt-self">{{ doc.properties.get("wof:placetype") | e }}</label> <small>1 ({{ doc.properties.get("wof:name") |e }} itself)</small></li>
