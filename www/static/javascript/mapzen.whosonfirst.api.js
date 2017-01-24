@@ -121,7 +121,7 @@ mapzen.whosonfirst.api = (function(){
 				var endpoint_url = _endpoint;
 				if (_api_key) {
 					var sep = (_endpoint.indexOf('?') == -1) ? '?' : '&';
-					endpoint_url += sep + _api_key;
+					endpoint_url += sep + 'api_key=' + _api_key;
 				}
 
 				req.open("POST", endpoint_url, true);
