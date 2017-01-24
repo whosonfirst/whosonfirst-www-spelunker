@@ -264,7 +264,7 @@ mapzen.whosonfirst.bundler = (function() {
 					_handlers.on_progress({
 						type: 'bundle',
 						bundle_count: _features.length,
-						bundle_size: self.get_bundle_size()
+						bundle_size: 0 //self.get_bundle_size()
 					});
 				}
 				self.process_queue();
