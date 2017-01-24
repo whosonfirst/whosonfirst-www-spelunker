@@ -1,13 +1,28 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+/*
+
+This is the "business logic" of the Bundler, handling things like queueing up
+queries to the API and downloading features. For the UI code, take a look at
+mapzen.whosonfirst.spelunker.init.download.js.
+
+In short:
+- A query is an API session (storing pagination state & feature IDs to download)
+- The queue is a list of pending query sessions
+
+(20170124/dphiffer)
+
+*/
+
 mapzen.whosonfirst.bundler = (function() {
 
 	var _queue = [];
 	var _handlers = {
-		on_success: null,
+		on_bundle_ready: null,
 		on_error: null,
-		on_progress: null
+		on_api_query: null,
+		on_feature_download: null
 	};
 	var _query = null;
 	var _features = [];
@@ -66,6 +81,8 @@ mapzen.whosonfirst.bundler = (function() {
 			}
 		},
 
+		// This removes a certain kind of placetype from the bundle
+		// and the queue.
 		filter_features: function(placetype) {
 
 			_features = _features.filter(function(item) {
@@ -75,24 +92,6 @@ mapzen.whosonfirst.bundler = (function() {
 			_summary = _summary.filter(function(item) {
 				return item['wof:placetype'] != placetype;
 			});
-
-			if (_handlers.on_progress) {
-				_handlers.on_progress({
-					type: 'summary',
-					summary_count: _summary.length,
-					summary_size: self.get_summary_size()
-				});
-				_handlers.on_progress({
-					type: 'bundle',
-					bundle_count: _features.length,
-					bundle_size: self.get_bundle_size()
-				});
-			}
-
-			//if (! _query && _queue.length == 0 && _handlers.on_success) {
-			//	var bundle = self.bundle_features();
-			//	_handlers.on_success(bundle);
-			//}
 		},
 
 		bundle_features: function() {
@@ -142,8 +141,8 @@ mapzen.whosonfirst.bundler = (function() {
 				}
 			} else if (_query &&
 			           _query.page < _query.pages &&
-			           // Note the comment at the top of the file, ultimately
-			           // we should remove this last part:
+			           // Note the comment about Elasticsearch up above,
+			           // ultimately we should remove this last part:
 			           _query.page * 500 < self.feature_count_limit) {
 				_query.page++;
 				self.query_wof_api();
@@ -151,13 +150,16 @@ mapzen.whosonfirst.bundler = (function() {
 			           _query.results &&
 			           _query.results.length > 0) {
 				self.download_feature();
-			} else if (_handlers.on_success) {
+			} else if (_handlers.on_bundle_ready) {
 				_query = null;
-				var bundle = self.bundle_features();
-				_handlers.on_success(bundle);
+				_handlers.on_bundle_ready({
+					bundle: self.bundle_features(),
+					bundle_size: self.get_bundle_size(),
+					summary_size: self.get_summary_size()
+				});
 			} else {
 				_query = null;
-				// Done! (But no on_success handler set.)
+				// Done! (But no on_bundle_ready handler set.)
 			}
 		},
 
@@ -191,17 +193,12 @@ mapzen.whosonfirst.bundler = (function() {
 				_query.results.push.apply(_query.results, rsp.results);
 				_summary.push.apply(_summary, rsp.results);
 
-				if (_handlers.on_progress) {
-					_handlers.on_progress({
+				if (_handlers.on_api_query) {
+					_handlers.on_api_query({
 						type: 'query',
 						placetype: _query.args.placetype,
 						page: _query.page,
 						pages: _query.pages
-					});
-					_handlers.on_progress({
-						type: 'summary',
-						summary_count: _summary.length,
-						summary_size: self.get_summary_size()
 					});
 				}
 
@@ -246,27 +243,15 @@ mapzen.whosonfirst.bundler = (function() {
 						'wof:country': feature.properties['wof:country'],
 						'wof:repo': feature.properties['wof:repo']
 					});
-					if (_handlers.on_progress) {
-						_handlers.on_progress({
-							type: 'summary',
-							summary_count: _summary.length,
-							summary_size: self.get_summary_size()
-						});
-					}
 				}
 
-				if (_handlers.on_progress) {
-					_handlers.on_progress({
-						type: 'feature',
+				if (_handlers.on_feature_download) {
+					_handlers.on_feature_download({
 						feature: feature,
 						bundle_count: _features.length
 					});
-					_handlers.on_progress({
-						type: 'bundle',
-						bundle_count: _features.length,
-						bundle_size: self.get_bundle_size()
-					});
 				}
+
 				self.process_queue();
 			};
 
