@@ -1,3 +1,11 @@
+/*
+
+This is the "UI logic" of the Bundler, handling things like button events,
+preview map, and anything tightly coupled to the download page. For the business
+code, take a look at mapzen.whosonfirst.bundler.js. (20170124/dphiffer)
+
+*/
+
 window.addEventListener("load", function load(event){
 
 	var total = 0;
@@ -33,44 +41,32 @@ window.addEventListener("load", function load(event){
 		mapzen.whosonfirst.bundler.set_filter('include', include[1]);
 	}
 
-	mapzen.whosonfirst.bundler.set_handler('progress', function(update) {
-		if (update.type == 'query') {
-			status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
-		} else if (update.type == 'feature') {
-			var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
-			var name = update.feature.properties['wof:name'];
-			if (! name) {
-				name = update.feature.properties['wof:id'];
-			}
-			status.innerHTML = 'Bundled ' + percent + ': <span class="hey-look">' + name + '</span> (' + update.feature.properties['wof:placetype'] + ')';
-			if (document.getElementById('preview-bundle').checked) {
-				render_feature(update.feature);
-			}
-		} else if (update.type == 'bundle') {
-			if (update.bundle_count == 0) {
-				bundle_stats.innerHTML = '';
-			} else {
-				bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
-			}
-			bundle_count = update.bundle_count;
-		} else if (update.type == 'summary') {
-			if (update.summary_count == 0) {
-				summary_stats.innerHTML = '';
-			} else {
-				summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
-			}
-			summary_count = update.summary_count;
+	mapzen.whosonfirst.bundler.set_handler('api_query', function(update) {
+		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
+	});
+
+	mapzen.whosonfirst.bundler.set_handler('feature_download', function(update) {
+		var percent = (100 * update.bundle_count / total).toFixed(1) + '%';
+		var name = update.feature.properties['wof:name'];
+		if (! name) {
+			name = update.feature.properties['wof:id'];
+		}
+		status.innerHTML = 'Bundled ' + percent + ': <span class="hey-look">' + name + '</span> (' + update.feature.properties['wof:placetype'] + ')';
+		if (document.getElementById('preview-bundle').checked) {
+			render_feature(update.feature);
 		}
 	});
 
-	mapzen.whosonfirst.bundler.set_handler('success', function(geojson) {
+	mapzen.whosonfirst.bundler.set_handler('bundle_ready', function(update) {
 		document.getElementById('bundle-btns').className = '';
 		document.getElementById('stats').className = '';
-		if (bundle_count != total) {
+		if (update.bundle.features.length != total) {
 			status.innerHTML = '<i>The number of items in your bundle (' + bundle_count.toLocaleString() + ') does not match the expected ' + total.toLocaleString() + '.</i>';
 		} else {
 			status.innerHTML = '';
 		}
+		bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
+		summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {
