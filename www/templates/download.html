@@ -11,7 +11,7 @@
 				<li data-placetype="{{ f.key | e }}" data-count="{{ f.doc_count | e }}"><input type="checkbox" name="pt-{{ f.key | e }}" id="pt-{{ f.key | e }}" data-placetype="{{ f.key | e }}" value="1" class="placetype"> <label for="pt-{{ f.key | e }}">{{ f.key | e }}</label> <small>{{ f.doc_count |number_format|e }}</small></li>
 			{% endfor %}
 		</ul>
-		<span id="selected-count"></span> <a href="#" id="edit-selection" class="hidden">Edit selection</a>
+		<span id="selected-count"></span> <a href="#" id="cancel-download" class="hidden">Cancel download</a>
 		<div id="start-btn" class="hidden">
 			<a id="btn-start" class="btn btn-default">Start download</a>
 		</div>

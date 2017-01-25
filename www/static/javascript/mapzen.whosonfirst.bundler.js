@@ -153,9 +153,9 @@ mapzen.whosonfirst.bundler = (function() {
 			} else if (_handlers.on_bundle_ready) {
 				_query = null;
 				_handlers.on_bundle_ready({
-					bundle: self.bundle_features(),
-					bundle_size: self.get_bundle_size(),
-					summary_size: self.get_summary_size()
+					bundle: self.bundle_features()
+					//bundle_size: self.get_bundle_size(),
+					//summary_size: self.get_summary_size()
 				});
 			} else {
 				_query = null;

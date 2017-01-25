@@ -25,6 +25,7 @@ window.addEventListener("load", function load(event){
 	var btn_summary = document.getElementById('btn-summary');
 	var summary_stats = document.getElementById('summary-stats');
 	var bundle_stats = document.getElementById('bundle-stats');
+	var preview_toggle = document.getElementById('preview-bundle');
 
 	var bbox = bundler.getAttribute("data-wof-bbox");
 	bbox = bbox.split(",");
@@ -45,11 +46,16 @@ window.addEventListener("load", function load(event){
 		mapzen.whosonfirst.bundler.set_filter('include', include[1]);
 	}
 
+	var disable_map_msg = '';
 	mapzen.whosonfirst.bundler.set_handler('api_query', function(update) {
 		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		filesize += update.filesize;
 		if (filesize > filesize_warning) {
-			document.getElementById('bundle-warning').innerHTML = '<i>Your bundle will probably weigh in around <span class="hey-look">' + display_filesize(filesize, 0) + '</span>, which means the bundling process could start running slower overall. It’s probably a good idea to <span class="hey-look">disable the map preview</span> as a way to keep memory usage down.</i>';
+			if (preview_toggle.checked && disable_map_msg == '') {
+				preview_toggle.checked = false;
+				disable_map_msg = '<span id="disabled-map"> To avoid running out of memory, <span class="hey-look">the preview map is now disabled</span>.</span>';
+			}
+			document.getElementById('bundle-warning').innerHTML = '<i>Your bundle will probably weigh in around <span class="hey-look">' + display_filesize(filesize, 0) + '</span>, which means the bundling process could start running slower overall.' + disable_map_msg + '</i>';
 		}
 	});
 
@@ -60,7 +66,7 @@ window.addEventListener("load", function load(event){
 			name = update.feature.properties['wof:id'];
 		}
 		status.innerHTML = 'Bundled ' + percent + ': <span class="hey-look">' + name + '</span> (' + update.feature.properties['wof:placetype'] + ')';
-		if (document.getElementById('preview-bundle').checked) {
+		if (preview_toggle.checked) {
 			render_feature(update.feature);
 		}
 	});
@@ -73,8 +79,8 @@ window.addEventListener("load", function load(event){
 		} else {
 			status.innerHTML = '';
 		}
-		bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
-		summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
+		//bundle_stats.innerHTML = 'GeoJSON bundle: ' + display_filesize(update.bundle_size);
+		//summary_stats.innerHTML = 'CSV summary: ' + display_filesize(update.summary_size);
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {
@@ -95,11 +101,15 @@ window.addEventListener("load", function load(event){
 		}
 	});
 
-	document.getElementById('preview-bundle').addEventListener('change', function(e) {
+	preview_toggle.addEventListener('change', function(e) {
 		if (e.target.checked) {
 			var bundle = mapzen.whosonfirst.bundler.bundle_features();
 			for (var i in bundle.features) {
 				render_feature(bundle.features[i]);
+			}
+			var map_warning = document.getElementById('disabled-map');
+			if (map_warning) {
+				map_warning.className = 'hidden';
 			}
 		} else {
 			map.eachLayer(function(layer) {
@@ -163,25 +173,23 @@ window.addEventListener("load", function load(event){
 	}
 
 	btn_start.addEventListener('click', function(e) {
+		status.innerHTML = 'Preparing to bundle';
 		mapzen.whosonfirst.bundler.bundle();
 		document.getElementById('start-btn').className = 'hidden';
 		for (var i = 0; i < checkboxes.length; i++) {
 			checkboxes[i].setAttribute('disabled', 'disabled');
 		}
-		document.getElementById('edit-selection').className = '';
+		document.getElementById('cancel-download').className = '';
 		document.getElementById('output').className = '';
 	});
 
-	document.getElementById('edit-selection').addEventListener('click', function(e) {
+	document.getElementById('cancel-download').addEventListener('click', function(e) {
 		e.preventDefault();
 		mapzen.whosonfirst.bundler.pause();
-		document.getElementById('btn-start').innerHTML = 'Done editing';
+		document.getElementById('btn-start').innerHTML = 'Resume download';
 		document.getElementById('start-btn').className = '';
-		document.getElementById('edit-selection').className = 'hidden';
+		document.getElementById('cancel-download').className = 'hidden';
 		document.getElementById('output').className = 'hidden';
-		for (var i = 0; i < checkboxes.length; i++) {
-			checkboxes[i].removeAttribute('disabled');
-		}
 	});
 
 	btn_bundle.addEventListener('click', function(e) {
