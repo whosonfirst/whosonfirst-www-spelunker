@@ -264,6 +264,10 @@ pre {
     margin-top: 0.5em;
 }
 
+#bundle-warning {
+    margin-top: 0.5em;
+}
+
 .preview-controls {
     padding-top: 15px;
 }

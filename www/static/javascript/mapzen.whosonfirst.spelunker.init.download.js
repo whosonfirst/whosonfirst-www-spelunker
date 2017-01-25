@@ -8,7 +8,11 @@ code, take a look at mapzen.whosonfirst.bundler.js. (20170124/dphiffer)
 
 window.addEventListener("load", function load(event){
 
+	 // Warn the user if the filesize exceeds 100MB
+	var filesize_warning = 100000000;
+
 	var total = 0;
+	var filesize = 0;
 	var bundle_count = 0;
 	var summary_count = 0;
 
@@ -43,6 +47,10 @@ window.addEventListener("load", function load(event){
 
 	mapzen.whosonfirst.bundler.set_handler('api_query', function(update) {
 		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
+		filesize += update.filesize;
+		if (filesize > filesize_warning) {
+			document.getElementById('bundle-warning').innerHTML = '<i>Your bundle will probably weigh in around <span class="hey-look">' + display_filesize(filesize, 0) + '</span>, which means the bundling process could start running slower overall. It’s probably a good idea to <span class="hey-look">disable the map preview</span> as a way to keep memory usage down.</i>';
+		}
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('feature_download', function(update) {
@@ -249,15 +257,18 @@ window.addEventListener("load", function load(event){
 		return types;
 	}
 
-	function display_filesize(bytes) {
+	function display_filesize(bytes, precision) {
+		if (typeof precision == "undefined") {
+			precision = 1;
+		}
 		if (bytes < 1024 * 1024) {
 			if (Math.round(bytes / 1024) == 0) {
-				return (bytes / 1024).toFixed(1) + ' KB';
+				return (bytes / 1024).toFixed(precision) + ' KB';
 			} else {
 				return Math.round(bytes / 1024) + ' KB';
 			}
 		} else {
-			return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+			return (bytes / (1024 * 1024)).toFixed(precision) + ' MB';
 		}
 	}
 });

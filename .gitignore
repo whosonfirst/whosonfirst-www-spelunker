@@ -12,3 +12,4 @@ data
 build
 dist
 *.egg-info
+.remote-sync.json
