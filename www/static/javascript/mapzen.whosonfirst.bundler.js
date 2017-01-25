@@ -170,7 +170,8 @@ mapzen.whosonfirst.bundler = (function() {
 				id: _query.args.parent_id,
 				placetype: _query.args.placetype,
 				page: _query.page,
-				per_page: 500
+				per_page: 500,
+				extras: 'mz:filesize'
 			};
 
 			if (_filters.include) {
@@ -193,12 +194,20 @@ mapzen.whosonfirst.bundler = (function() {
 				_query.results.push.apply(_query.results, rsp.results);
 				_summary.push.apply(_summary, rsp.results);
 
+				var filesize = 0;
+				for (var i = 0; i < rsp.results.length; i++) {
+					if (rsp.results[i]['mz:filesize']) {
+						filesize += parseInt(rsp.results[i]['mz:filesize']);
+					}
+				}
+
 				if (_handlers.on_api_query) {
 					_handlers.on_api_query({
 						type: 'query',
 						placetype: _query.args.placetype,
 						page: _query.page,
-						pages: _query.pages
+						pages: _query.pages,
+						filesize: filesize
 					});
 				}
 
