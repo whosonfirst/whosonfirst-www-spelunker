@@ -8,6 +8,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     	// below in the 'scenefile' method (20160201/thisisaaronland)
 
 	var _scenefile = 'static/tangram/refill.yaml'
+	var _key = 'mapzen-XXXXXXX';
 	var _cache = {};
 
 	var self = {
@@ -57,14 +58,18 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'tangram': function(scene){
 
 			var scenefile = self.scenefile();
-
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
 			var tangram = Tangram.leafletLayer({
-				scene: scenefile,
+				scene: {
+					import: scenefile,
+					global: {
+						sdk_mapzen_api_key: _key
+					}
+				},
 				numWorkers: 2,
-        			unloadInvisibleTiles: false,
+				unloadInvisibleTiles: false,
 				updateWhenIdle: false,
 				attribution: attribution,
 			});
@@ -249,7 +254,12 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
 		    return false;
+		},
+
+		set_key: function(api_key) {
+			_key = api_key;
 		}
+
 	};
 
 	return self;
