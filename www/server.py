@@ -272,6 +272,22 @@ def geojson(id):
     location = uri.id2abspath(flask.g.data_root, id)
     return flask.redirect(location, code=303)
 
+@app.route("/id/<int:id>.json", methods=["GET"])
+@cross_origin()
+def json(id):
+
+    # please make me work (20170203/thisisaaronland)
+
+    """
+    if not pt.is_valid_placetype(id) and not src.is_valid_source(id):
+        flask.abort(404)
+    """
+
+    location = uri.id2abspath(flask.g.data_root, id)
+    location = location.replace(".geojson", ".json")	# hack but oh well (for now)
+
+    return flask.redirect(location, code=303)
+
 @app.route("/recent", methods=["GET"])
 @app.route("/recent/", methods=["GET"])
 def lastmod_week():
