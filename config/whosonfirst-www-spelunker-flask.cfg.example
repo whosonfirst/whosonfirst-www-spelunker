@@ -9,4 +9,6 @@ index=YOUR-SPELUNKER-SEARCH-INDEX-GOES-HERE
 [spelunker]
 slow_query_log=/tmp/slow-query.log
 data_root=https://whosonfirst.mapzen.com/data
+static_root=https://whosonfirst.mapzen.com/static
 enable_feature_bundler=0
+enable_feature_staticmaps=0

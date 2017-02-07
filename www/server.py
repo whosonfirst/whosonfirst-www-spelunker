@@ -123,7 +123,11 @@ def init():
     data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://whosonfirst.mapzen.com/data')
     flask.g.data_root = data_root
 
+    static_root = os.environ.get('SPELUNKER_STATIC_ROOT', 'https://whosonfirst.mapzen.com/static')
+    flask.g.static_root = static_root
+
     flask.g.enable_feature_bundler = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER', 0))
+    flask.g.enable_feature_staticmaps = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_STATICMAPS', 0))
 
 @app.template_filter()
 def country_name(code):
@@ -255,6 +259,23 @@ def info(id):
     }
 
     return flask.render_template('id.html', **template_args)
+
+@app.route("/id/<int:id>.png", methods=["GET"])
+def staticmap(id):
+
+    if not flask.g.enable_feature_staticmaps:
+        flask.abort(404)
+
+    doc = get_by_id(id)
+
+    if not doc:
+        logging.warning("no record for ID %s" % id)
+        flask.abort(404)
+
+    location = uri.id2abspath(flask.g.static_root, id)
+    location = location.replace(".geojson", ".png")
+
+    return flask.redirect(location, code=303)
 
 # https://www.w3.org/TR/cors/#resource-requests
 # https://github.com/CoryDolphin/flask-cors#route-specific-cors-via-decorator
