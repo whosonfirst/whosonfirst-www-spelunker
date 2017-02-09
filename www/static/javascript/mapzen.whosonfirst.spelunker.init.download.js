@@ -8,8 +8,9 @@ code, take a look at mapzen.whosonfirst.bundler.js. (20170124/dphiffer)
 
 window.addEventListener("load", function load(event){
 
-	 // Warn the user if the filesize exceeds 100MB
+	 // Warn the user if the filesize exceeds 100MB or 250 features
 	var filesize_warning = 100000000;
+	var filecount_warning = 250;
 
 	var total = 0;
 	var filesize = 0;
@@ -50,12 +51,18 @@ window.addEventListener("load", function load(event){
 	mapzen.whosonfirst.bundler.set_handler('api_query', function(update) {
 		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
 		filesize += update.filesize;
+		var warning = null;
 		if (filesize > filesize_warning) {
+			warning = 'Your bundle will probably weigh in around <span class="hey-look">' + display_filesize(filesize, 0) + '</span>, which means the bundling process could start running slower overall.';
+		} else if (update.count > filecount_warning) {
+			warning = 'You have selected a <span class="hey-look">large quantity</span> of features, which could be difficult to display on the preview map.';
+		}
+		if (warning) {
 			if (preview_toggle.checked && disable_map_msg == '') {
 				preview_toggle.checked = false;
 				disable_map_msg = '<span id="disabled-map"> To avoid running out of memory, <span class="hey-look">the preview map is now disabled</span>.</span>';
 			}
-			document.getElementById('bundle-warning').innerHTML = '<i>Your bundle will probably weigh in around <span class="hey-look">' + display_filesize(filesize, 0) + '</span>, which means the bundling process could start running slower overall.' + disable_map_msg + '</i>';
+			document.getElementById('bundle-warning').innerHTML = '<i>' + warning + disable_map_msg + '</i>';
 		}
 	});
 

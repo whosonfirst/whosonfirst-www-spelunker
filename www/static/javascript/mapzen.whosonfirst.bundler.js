@@ -207,6 +207,7 @@ mapzen.whosonfirst.bundler = (function() {
 						placetype: _query.args.placetype,
 						page: _query.page,
 						pages: _query.pages,
+						count: rsp.results.length,
 						filesize: filesize
 					});
 				}
