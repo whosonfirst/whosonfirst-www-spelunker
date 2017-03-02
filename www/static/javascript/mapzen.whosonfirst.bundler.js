@@ -33,12 +33,6 @@ mapzen.whosonfirst.bundler = (function() {
 
 	var self = {
 
-		// This exists because Elasticsearch has a limit on the number of items you
-		// can retrieve using `from` and `size`. This is dumb, and something we can
-		// work around, but for now we are just going to warn the user until we have
-		// a proper fix in place. (20170119/dphiffer)
-		feature_count_limit: 10000,
-
 		bundle: function() {
 			_paused = false;
 			self.process_queue();
@@ -128,22 +122,19 @@ mapzen.whosonfirst.bundler = (function() {
 			if (! _query && _queue.length > 0) {
 				_query = {
 					args: _queue.shift(),
-					page: 1
+					page: 1,
+					done_querying: false
 				};
 				if (_query.args.wof_id) {
 					_query.results = [{
 						'wof:id': _query.args.wof_id
 					}];
-					_query.pages = 1;
 					self.download_feature();
 				} else {
 					self.query_wof_api();
 				}
 			} else if (_query &&
-			           _query.page < _query.pages &&
-			           // Note the comment about Elasticsearch up above,
-			           // ultimately we should remove this last part:
-			           _query.page * 500 < self.feature_count_limit) {
+			           ! _query.done_querying) {
 				_query.page++;
 				self.query_wof_api();
 			} else if (_query &&
@@ -182,22 +173,35 @@ mapzen.whosonfirst.bundler = (function() {
 				data.exclude = _filters.exclude;
 			}
 
-			var on_success = function(rsp) {
+			if (_query.next_query) {
+				var args = _query.next_query.split('&');
+				for (var i = 0; i < args.length; i++) {
+					var arg = args[i].split('=');
+					var key = decodeURIComponent(arg[0]);
+					var value = decodeURIComponent(arg[1]);
+					data[key] = value;
+				}
+			}
 
-				_query.page = rsp.page;
-				_query.pages = rsp.pages;
+			var on_success = function(rsp) {
 
 				if (! _query.results) {
 					_query.results = [];
 				}
 
-				_query.results.push.apply(_query.results, rsp.results);
-				_summary.push.apply(_summary, rsp.results);
+				if (! rsp.results ||
+				    rsp.results.length == 0) {
+					_query.done_querying = true;
+				} else {
+					_query.next_query = rsp.next_query;
+					_query.results.push.apply(_query.results, rsp.results);
+					_summary.push.apply(_summary, rsp.results);
 
-				var filesize = 0;
-				for (var i = 0; i < rsp.results.length; i++) {
-					if (rsp.results[i]['mz:filesize']) {
-						filesize += parseInt(rsp.results[i]['mz:filesize']);
+					var filesize = 0;
+					for (var i = 0; i < rsp.results.length; i++) {
+						if (rsp.results[i]['mz:filesize']) {
+							filesize += parseInt(rsp.results[i]['mz:filesize']);
+						}
 					}
 				}
 
@@ -206,7 +210,6 @@ mapzen.whosonfirst.bundler = (function() {
 						type: 'query',
 						placetype: _query.args.placetype,
 						page: _query.page,
-						pages: _query.pages,
 						count: rsp.results.length,
 						filesize: filesize
 					});
