@@ -49,7 +49,7 @@ window.addEventListener("load", function load(event){
 
 	var disable_map_msg = '';
 	mapzen.whosonfirst.bundler.set_handler('api_query', function(update) {
-		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ' of ' + update.pages + ')';
+		status.innerHTML = 'Looking up ' + update.placetype + ' places (page ' + update.page + ')';
 		filesize += update.filesize;
 		var warning = null;
 		if (filesize > filesize_warning) {
