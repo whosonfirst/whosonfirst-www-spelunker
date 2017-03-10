@@ -96,15 +96,19 @@ mapzen.whosonfirst.api = (function(){
 
 				var query = [];
 
-				for (k of form_data.keys()){
-					var v = form_data.get(k);
-					query.push(k + "=" + v);
+				if (form_data.keys) {
+
+					// this conditional exists because form_data.keys doesn't work on Safari
+
+					for (k of form_data.keys()){
+						var v = form_data.get(k);
+						query.push(k + "=" + v);
+					}
+
+					var query_string = query.join("&");
+					var sep = (_endpoint.indexOf('?') == -1) ? '?' : '&';
+					mapzen.whosonfirst.log.info(_endpoint + sep + query_string);
 				}
-
-				var query_string = query.join("&");
-				var sep = (_endpoint.indexOf('?') == -1) ? '?' : '&';
-
-				mapzen.whosonfirst.log.info(_endpoint + sep + query_string);
 			}
 
 			// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data
