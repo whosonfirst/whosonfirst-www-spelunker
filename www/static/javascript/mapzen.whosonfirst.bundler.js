@@ -193,7 +193,11 @@ mapzen.whosonfirst.bundler = (function() {
 				    rsp.results.length == 0) {
 					_query.done_querying = true;
 				} else {
-					_query.next_query = rsp.next_query;
+					if (! rsp.next_query) {
+						_query.done_querying = true;
+					} else {
+						_query.next_query = rsp.next_query;
+					}
 					_query.results.push.apply(_query.results, rsp.results);
 					_summary.push.apply(_summary, rsp.results);
 
