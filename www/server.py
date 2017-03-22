@@ -27,7 +27,7 @@ import pprint
 # https://github.com/whosonfirst/py-machinetag
 # https://github.com/whosonfirst/py-machinetag-elasticsearch
 
-import machinetag
+import machinetag.common
 import machinetag.elasticsearch.wildcard
 import machinetag.elasticsearch.hierarchy
 
@@ -1167,7 +1167,7 @@ def mt_hierarchies_predicates_for_value(value):
 @app.route("/machinetags/places/<string:ns_or_mt>/", methods=["GET"])
 def mt_places_for_namespace(ns_or_mt):
 
-    mt = machinetag.from_string(ns_or_mt, allow_wildcards=True)
+    mt = machinetag.common.from_string(ns_or_mt, allow_wildcards=True)
 
     if not mt.is_machinetag():
         mt  = machinetag.from_triple(ns_or_mt, "*", None, allow_wildcards=True)
@@ -1181,7 +1181,7 @@ def mt_places_for_namespace(ns_or_mt):
 @app.route("/machinetags/places/<string:ns>/<string:pred>/", methods=["GET"])
 def mt_places_for_namespace_and_predicate(ns, pred):
 
-    mt  = machinetag.from_triple(ns, pred, None, allow_wildcards=True)
+    mt  = machinetag.common.from_triple(ns, pred, None, allow_wildcards=True)
 
     if not mt.is_machinetag():
         flask.abort(404)
@@ -1192,7 +1192,7 @@ def mt_places_for_namespace_and_predicate(ns, pred):
 @app.route("/machinetags/places/<string:ns>/<string:pred>/<string:value>/", methods=["GET"])
 def mt_places_for_namespace_and_predicate_and_value(ns, pred, value):
 
-    mt  = machinetag.from_triple(ns, pred, value, allow_wildcards=True)
+    mt  = machinetag.common.from_triple(ns, pred, value, allow_wildcards=True)
 
     if not mt.is_machinetag():
         flask.abort(404)
@@ -1318,7 +1318,7 @@ def machinetag_hierarchies(field, **kwargs):
             else:
                 pass
 
-            mt = machinetag.from_triple(ns, pred, value)
+            mt = machinetag.common.from_triple(ns, pred, value)
 
         if mt.is_machinetag():
 
