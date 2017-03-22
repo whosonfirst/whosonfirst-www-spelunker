@@ -435,6 +435,10 @@ def current():
 @app.route("/random/", methods=["GET"])
 def random_place():
 
+    # need to sort out redirects (20170322/thisisaaronland)
+
+    flask.abort(404)
+
     now = time.time()
     now = int(now)
 
