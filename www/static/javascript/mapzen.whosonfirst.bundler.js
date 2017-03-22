@@ -189,18 +189,22 @@ mapzen.whosonfirst.bundler = (function() {
 					_query.results = [];
 				}
 
-				if (! rsp.results ||
-				    rsp.results.length == 0) {
+				if (! rsp.places ||
+				    rsp.places.length == 0) {
 					_query.done_querying = true;
 				} else {
-					_query.next_query = rsp.next_query;
-					_query.results.push.apply(_query.results, rsp.results);
-					_summary.push.apply(_summary, rsp.results);
+					if (! rsp.next_query) {
+						_query.done_querying = true;
+					} else {
+						_query.next_query = rsp.next_query;
+					}
+					_query.results.push.apply(_query.results, rsp.places);
+					_summary.push.apply(_summary, rsp.places);
 
 					var filesize = 0;
-					for (var i = 0; i < rsp.results.length; i++) {
-						if (rsp.results[i]['mz:filesize']) {
-							filesize += parseInt(rsp.results[i]['mz:filesize']);
+					for (var i = 0; i < rsp.places.length; i++) {
+						if (rsp.places[i]['mz:filesize']) {
+							filesize += parseInt(rsp.places[i]['mz:filesize']);
 						}
 					}
 				}
@@ -210,7 +214,7 @@ mapzen.whosonfirst.bundler = (function() {
 						type: 'query',
 						placetype: _query.args.placetype,
 						page: _query.page,
-						count: rsp.results.length,
+						count: rsp.places.length,
 						filesize: filesize
 					});
 				}
