@@ -435,10 +435,6 @@ def current():
 @app.route("/random/", methods=["GET"])
 def random_place():
 
-    # need to sort out redirects (20170322/thisisaaronland)
-
-    flask.abort(404)
-
     now = time.time()
     now = int(now)
 
@@ -491,6 +487,9 @@ def random_place():
     if doc == None:
         logging.error("failed to get random document")
         flask.abort(404)
+
+    # TO DO need to sort out redirects which currently end up with port
+    # numbers being tacked on... (20170322/thisisaaronland)
 
     id = doc['_id']
     url = flask.url_for('info', id=id)
