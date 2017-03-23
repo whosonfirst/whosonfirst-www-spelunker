@@ -176,6 +176,17 @@ def format_timestamp(ts, fmt=None):
         logging.error("Failed to format timestamp (%s) because %s" % (ts, e))
         return ts
 
+@app.template_filter()
+def wof_url_for(endpoint, **kwargs):
+
+    url = flask.url_for(endpoint, **kwargs)
+    host = flask.request.headers.get("X-Proxy-Host", None)
+
+    if host:
+        url = host + url
+
+    return url
+
 # http://flask.pocoo.org/snippets/29/
 
 @app.template_filter()
