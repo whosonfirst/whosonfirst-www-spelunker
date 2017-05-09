@@ -34,6 +34,9 @@ yesnofix:
 styleguide:
 	curl -s -o www/static/css/mapzen.styleguide.css https://mapzen.com/common/styleguide/styles/styleguide.css
 
+geopoint:
+	curl -s -o www/static/javascript/geopoint.js https://raw.githubusercontent.com/davidwood/node-geopoint/master/geopoint.js
+
 tangram:
 	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
 	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js

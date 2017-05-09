@@ -241,10 +241,20 @@ mapzen.whosonfirst.properties = (function(){
 		    var lat = document.getElementById("geom.latitude");
 		    var lon = document.getElementById("geom.longitude");
 		    
-		    lat = lat.innerText;
-		    lon = lon.innerText;
-		    
-		    var bbox = [ lon, lat, lon, lat ];
+		    lat = parseFloat(lat.innerText);
+		    lon = parseFloat(lon.innerText);
+
+		    // this is cloned in to the spelunker repo but
+		    // https://github.com/davidwood/node-geopoint
+
+		    var gp = new GeoPoint(lat, lon, false);
+		    var bounds = gp.boundingCoordinates(.5);
+
+		    var bbox = [
+			bounds[0].longitude(), bounds[0].latitude(),
+			bounds[1].longitude(), bounds[1].latitude()
+		    ];
+
 		    bbox = bbox.join(",");
 		    bbox = encodeURIComponent(bbox);
 		    
