@@ -31,6 +31,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.oa:id': self.render_ourairport_id,
 		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.concordances.transitland:onestop_id': self.render_transitland_onestop_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
 		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
@@ -91,6 +92,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.hierarchy.region_id': 'region',
 		'wof.hierarchy.campus_id': 'campus',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.intersection': 'intersection',
 		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
 		'wof.hierarchy.macrohood_id': 'macro hood',
@@ -221,6 +223,53 @@ mapzen.whosonfirst.properties = (function(){
 	'render_wikidata_id': function(d, ctx){
 	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_transitland_onestop_id': function(d, ctx){
+
+	    var href = "https://mapzen.com/mobility/explorer/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
+	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
+
+	    link.onclick = function(e){
+
+		try {
+		    var el = e.target;
+		    var parent = el.parentNode;
+
+		    var href = parent.getAttribute("href");
+		    
+		    var lat = document.getElementById("geom.latitude");
+		    var lon = document.getElementById("geom.longitude");
+		    
+		    lat = parseFloat(lat.innerText);
+		    lon = parseFloat(lon.innerText);
+
+		    // this is cloned in to the spelunker repo but
+		    // https://github.com/davidwood/node-geopoint
+
+		    var gp = new GeoPoint(lat, lon, false);
+		    var bounds = gp.boundingCoordinates(.5);
+
+		    var bbox = [
+			bounds[0].longitude(), bounds[0].latitude(),
+			bounds[1].longitude(), bounds[1].latitude()
+		    ];
+
+		    bbox = bbox.join(",");
+		    bbox = encodeURIComponent(bbox);
+		    
+		    href = href.replace("__BBOX__", bbox);
+		    location.href = href;
+		}
+
+		catch (e) {
+		    console.log("Failed to generate Transitland / Mobility Explore URL, because " + e);
+		}
+
+		return false;
+	    };
+
+	    return link;
 	},
 
 	'render_tgn_id': function(d, ctx){
