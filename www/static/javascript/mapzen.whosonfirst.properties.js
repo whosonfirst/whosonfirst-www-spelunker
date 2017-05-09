@@ -31,6 +31,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.oa:id': self.render_ourairport_id,
 		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.concordances.transitland:onestop_id': self.render_transitland_onestop_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
 		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
@@ -91,6 +92,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.hierarchy.region_id': 'region',
 		'wof.hierarchy.campus_id': 'campus',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.intersection': 'intersection',
 		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
 		'wof.hierarchy.macrohood_id': 'macro hood',
@@ -221,6 +223,32 @@ mapzen.whosonfirst.properties = (function(){
 	'render_wikidata_id': function(d, ctx){
 	    var link = "https://www.wikidata.org/wiki/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_transitland_onestop_id': function(d, ctx){
+
+	    var href = "https://mapzen.com/mobility/explorer/#/?bbox=__BBOX__&onestop_id=" + encodeURICompenent(d);
+	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
+
+	    link.onclick = function(e){
+
+		var el = e.target;
+		var href = el.getAttribute("href");
+
+		console.log("CLICK " + href);
+
+		var lat = document.getElementById("geom.latitude");
+		var lon = document.getElementById("geom.longitude");
+		
+		var bbox = [ lat, lon, lat, lon];
+		bbox = bbox.join(",");
+		bbox = encodeURICompenent(bbox);
+
+		console.log("GOTO " + href);
+		return false;
+	    };
+
+	    return link;
 	},
 
 	'render_tgn_id': function(d, ctx){
