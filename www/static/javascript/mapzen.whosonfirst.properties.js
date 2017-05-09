@@ -227,24 +227,35 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_transitland_onestop_id': function(d, ctx){
 
-	    var href = "https://mapzen.com/mobility/explorer/#/?bbox=__BBOX__&onestop_id=" + encodeURICompenent(d);
+	    var href = "https://mapzen.com/mobility/explorer/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
 	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
 
 	    link.onclick = function(e){
 
-		var el = e.target;
-		var href = el.getAttribute("href");
+		try {
+		    var el = e.target;
+		    var parent = el.parentNode;
 
-		console.log("CLICK " + href);
+		    var href = parent.getAttribute("href");
+		    
+		    var lat = document.getElementById("geom.latitude");
+		    var lon = document.getElementById("geom.longitude");
+		    
+		    lat = lat.innerText;
+		    lon = lon.innerText;
+		    
+		    var bbox = [ lon, lat, lon, lat ];
+		    bbox = bbox.join(",");
+		    bbox = encodeURIComponent(bbox);
+		    
+		    href = href.replace("__BBOX__", bbox);
+		    location.href = href;
+		}
 
-		var lat = document.getElementById("geom.latitude");
-		var lon = document.getElementById("geom.longitude");
-		
-		var bbox = [ lat, lon, lat, lon];
-		bbox = bbox.join(",");
-		bbox = encodeURICompenent(bbox);
+		catch (e) {
+		    console.log("Failed to generate Transitland / Mobility Explore URL, because " + e);
+		}
 
-		console.log("GOTO " + href);
 		return false;
 	    };
 
