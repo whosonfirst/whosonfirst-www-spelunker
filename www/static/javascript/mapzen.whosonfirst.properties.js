@@ -30,6 +30,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.oa:id': self.render_ourairport_id,
 		'wof.concordances.faa:code': self.render_faa_code,
+		'wof.concordances.latimes:id': self.render_latimes_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
 		'wof.concordances.transitland:onestop_id': self.render_transitland_onestop_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
@@ -78,10 +79,12 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.gp:id': 'geoplanet',
 		'wof.concordances.icao:code': 'icao',
 		'wof.concordances.iata:code': 'iata',
+		'wof.concordances.latimes:id': 'los angeles times',
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
 		'wof.concordances.oa:id': 'ourairports',
 		'wof.concordances.qs:id': 'quattroshapes',
+		'wof.concordances.transitland:onestop_id': 'transitland',
 		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
@@ -285,6 +288,37 @@ mapzen.whosonfirst.properties = (function(){
 	'render_faa_code': function(d, ctx){
 	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_latimes_id': function(d, ctx){
+
+	    var link = "http://maps.latimes.com/neighborhoods/neighborhood/" + encodeURIComponent(d);
+	    var el = mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+
+	    el.onclick = function(e){ 
+
+		try {
+		    var el = e.target;
+		    var parent = el.parentNode;
+		    var href = parent.getAttribute("href");
+		    
+		    var pt = document.getElementById("wof.placetype");
+		    pt = pt.innerText;
+		    
+		    if (pt == "macrohood"){
+			href = href.replace("neighborhoods/neighborhood", "neighborhoods/region");
+		    }
+		    
+		    location.href = href;
+		    return false;
+		}
+
+		catch (e){
+		    console.log("failed to generate latimes:id link, because " + e);
+		}
+	    };
+
+	    return el;
 	},
 
 	'render_megacity': function(d, ctx){
