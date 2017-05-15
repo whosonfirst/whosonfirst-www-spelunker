@@ -197,7 +197,7 @@ mapzen.whosonfirst.enmapify = (function(){
 									
 			}
 			
-			if ((! parent_id) || (parent_id == -1)){
+			if ((! parent_id) || (parent_id < 0)){
 				mapzen.whosonfirst.net.fetch(child_url, on_child);
 			}
 			
