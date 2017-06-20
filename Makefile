@@ -43,6 +43,7 @@ tangram:
 
 refill:
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
+	curl -s -o www/static/tangram/themes/black.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/black.yaml
 	curl -s -o www/static/tangram/images/refill@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/refill%402x.png
 	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
 

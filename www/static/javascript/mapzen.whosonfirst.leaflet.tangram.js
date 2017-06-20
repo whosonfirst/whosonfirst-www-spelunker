@@ -6,10 +6,11 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
     	// See the way this is a relative path? Yeah, we assign abs_root_url
     	// below in the 'scenefile' method (20160201/thisisaaronland)
-
-	var _scenefile = 'static/tangram/refill.yaml'
-	var _key = 'mapzen-XXXXXXX';
-	var _cache = {};
+    
+    var _scenefile = 'static/tangram/refill.yaml'
+    var _key = 'mapzen-XXXXXXX';
+    var _tileurl = 'https://tile.mapzen.com/mapzen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _cache = {};
 
 	var self = {
 
@@ -61,11 +62,16 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
+		    console.log("SET TILE URL AS " + _tileurl);
+
 			var tangram = Tangram.leafletLayer({
 				scene: {
 					import: scenefile,
 					global: {
-						sdk_mapzen_api_key: _key
+					    sdk_mapzen_api_key: _key,
+					    sources: {
+						mapzen: { url: _tileurl }
+					    }
 					}
 				},
 				numWorkers: 2,
@@ -261,8 +267,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		},
 	    
 	    'set_tile_url': function(url){
-
-		console.log("PLEASE FIX ME");
+		_tileurl = url;
 	    },
 
 	};
