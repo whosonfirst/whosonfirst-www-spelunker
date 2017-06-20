@@ -62,25 +62,23 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
-		    console.log("SET TILE URL AS " + _tileurl);
-
 			var tangram = Tangram.leafletLayer({
-				scene: {
-					import: scenefile,
-					global: {
-					    sdk_mapzen_api_key: _key,
-					    sources: {
-						mapzen: { url: _tileurl }
-					    }
-					}
+			    scene: {
+				import: scenefile,
+				global: {
+				    sdk_mapzen_api_key: _key,
 				},
-				numWorkers: 2,
-				unloadInvisibleTiles: false,
-				updateWhenIdle: false,
-				attribution: attribution,
+				sources: {
+				    mapzen: { url: _tileurl }
+				}
+			    },
+			    numWorkers: 2,
+			    unloadInvisibleTiles: false,
+			    updateWhenIdle: false,
+			    attribution: attribution,
 			});
-			
-			return tangram;
+		    
+		    return tangram;
 		},
 
 		'scenefile': function(url){
