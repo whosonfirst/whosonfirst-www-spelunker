@@ -758,7 +758,8 @@ mapzen.whosonfirst.leaflet = (function(){
 			}
 
 			if (redraw){
-				map.fitBounds(bounds);
+			    var opts = { 'padding': [ 50, 50 ] };
+			    map.fitBounds(bounds, opts);
 			}
 		}
 	};
@@ -916,6 +917,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     	// below in the 'scenefile' method (20160201/thisisaaronland)
 
 	var _scenefile = 'static/tangram/refill.yaml'
+	var _key = 'mapzen-XXXXXXX';
 	var _cache = {};
 
 	var self = {
@@ -965,14 +967,18 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'tangram': function(scene){
 
 			var scenefile = self.scenefile();
-
 			var attributions = self.attributions();
 			var attribution = self.render_attributions(attributions);
 
 			var tangram = Tangram.leafletLayer({
-				scene: scenefile,
+				scene: {
+					import: scenefile,
+					global: {
+						sdk_mapzen_api_key: _key
+					}
+				},
 				numWorkers: 2,
-        			unloadInvisibleTiles: false,
+				unloadInvisibleTiles: false,
 				updateWhenIdle: false,
 				attribution: attribution,
 			});
@@ -1157,7 +1163,12 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
 		    mapzen.whosonfirst.net.fetch(url, on_fetch, on_fail);
 		    return false;
+		},
+
+		set_key: function(api_key) {
+			_key = api_key;
 		}
+
 	};
 
 	return self;
@@ -1184,10 +1195,27 @@ mapzen.whosonfirst.net = (function(){
 			return enc.join("&");
 		},
 
-		'fetch': function(url, on_success, on_fail, cache_ttl){
+		'fetch': function(url, on_success, on_fail, args){
 
-			if (! cache_ttl){
-				cache_ttl = default_cache_ttl;
+		    	if (typeof(args) == "undefined") {
+			    args = {};
+			}
+
+		    	// this is here for backwards compatibility
+		    	// (20170113/thisisaaronland)
+
+		    	else if (typeof(args) == "number") {
+			    args = { "cache_ttl": args };
+			}
+
+		    	else {}
+
+			if (args["cache_ttl"]){
+			    args["cache_ttl"] = default_cache_ttl;
+			}
+
+		        else {
+			     cache_ttl = default_cache_ttl;
 			}
 
 			var on_hit = function(data){
@@ -1199,15 +1227,19 @@ mapzen.whosonfirst.net = (function(){
 
 			var on_miss = function(){
 				mapzen.whosonfirst.log.debug("[xhr] fetch " + url);
-				self.fetch_with_xhr(url, on_success, on_fail);
+				self.fetch_with_xhr(url, on_success, on_fail, args);
 			};
 
 			if (! self.cache_get(url, on_hit, on_miss, cache_ttl)){
-				self.fetch_with_xhr(url, on_success, on_fail);
+				self.fetch_with_xhr(url, on_success, on_fail, args);
 			}
 		},
 
-		'fetch_with_xhr': function(url, on_success, on_fail){
+		'fetch_with_xhr': function(url, on_success, on_fail, args){
+
+			if (! args){
+			    args = {};
+			}
 
 			var req = new XMLHttpRequest();
 
@@ -1221,7 +1253,11 @@ mapzen.whosonfirst.net = (function(){
 					mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
 
 					if (on_fail){
-						on_fail();
+						on_fail({
+							url: url,
+							args: args,
+							xhr: req
+						});
 					}
 
 					return false;
@@ -1235,11 +1271,34 @@ mapzen.whosonfirst.net = (function(){
 			};
 
 			try {
+
+			    	if (args["cache-busting"]){
+
+				    var cb = Math.floor(Math.random() * 1000000);
+
+				    var tmp = document.createElement("a");
+				    tmp.href = url;
+
+				    if (tmp.search){
+					tmp.search += "&cb=" + cb;
+				    }
+
+				    else {
+					tmp.search = "?cb= " + cb;
+				    }
+
+				    url = tmp.href;
+				}
+
+			    	// console.log("ARGS " + args);
+			    	// console.log("URL " + url);
+
 				req.open("get", url, true);
 				req.send();
 			}
 
 			catch(e){
+
 				mapzen.whosonfirst.log.error("failed to fetch " + url + ", because ");
 				mapzen.whosonfirst.log.debug(e);
 
@@ -1528,7 +1587,7 @@ mapzen.whosonfirst.enmapify = (function(){
 									
 			}
 			
-			if ((! parent_id) || (parent_id == -1)){
+			if ((! parent_id) || (parent_id < 0)){
 				mapzen.whosonfirst.net.fetch(child_url, on_child);
 			}
 			
@@ -1577,7 +1636,9 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.oa:id': self.render_ourairport_id,
 		'wof.concordances.faa:code': self.render_faa_code,
+		'wof.concordances.latimes:id': self.render_latimes_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
+		'wof.concordances.transitland:onestop_id': self.render_transitland_onestop_id,
 		'wof.concordances.wd:id': self.render_wikidata_id,
 		'wof.concordances.wk:page': self.render_wikipedia_page,
 		'wof.lastmodified': mapzen.whosonfirst.yesnofix.render_timestamp,
@@ -1624,10 +1685,12 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.gp:id': 'geoplanet',
 		'wof.concordances.icao:code': 'icao',
 		'wof.concordances.iata:code': 'iata',
+		'wof.concordances.latimes:id': 'los angeles times',
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
 		'wof.concordances.oa:id': 'ourairports',
 		'wof.concordances.qs:id': 'quattroshapes',
+		'wof.concordances.transitland:onestop_id': 'transitland',
 		'wof.concordances.wk:page': 'wikipedia',
 		'wof.concordances.wd:id': 'wikidata',
 		// please build me on the fly using mz.wof.placetypes
@@ -1638,6 +1701,7 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.hierarchy.region_id': 'region',
 		'wof.hierarchy.campus_id': 'campus',
 		'wof.hierarchy.county_id': 'county',
+		'wof.hierarchy.intersection': 'intersection',
 		'wof.hierarchy.localadmin_id': 'local admin',
 		'wof.hierarchy.locality_id': 'locality',
 		'wof.hierarchy.macrohood_id': 'macro hood',
@@ -1770,6 +1834,53 @@ mapzen.whosonfirst.properties = (function(){
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
+	'render_transitland_onestop_id': function(d, ctx){
+
+	    var href = "https://mapzen.com/mobility/explorer/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
+	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
+
+	    link.onclick = function(e){
+
+		try {
+		    var el = e.target;
+		    var parent = el.parentNode;
+
+		    var href = parent.getAttribute("href");
+		    
+		    var lat = document.getElementById("geom.latitude");
+		    var lon = document.getElementById("geom.longitude");
+		    
+		    lat = parseFloat(lat.innerText);
+		    lon = parseFloat(lon.innerText);
+
+		    // this is cloned in to the spelunker repo but
+		    // https://github.com/davidwood/node-geopoint
+
+		    var gp = new GeoPoint(lat, lon, false);
+		    var bounds = gp.boundingCoordinates(.5);
+
+		    var bbox = [
+			bounds[0].longitude(), bounds[0].latitude(),
+			bounds[1].longitude(), bounds[1].latitude()
+		    ];
+
+		    bbox = bbox.join(",");
+		    bbox = encodeURIComponent(bbox);
+		    
+		    href = href.replace("__BBOX__", bbox);
+		    location.href = href;
+		}
+
+		catch (e) {
+		    console.log("Failed to generate Transitland / Mobility Explore URL, because " + e);
+		}
+
+		return false;
+	    };
+
+	    return link;
+	},
+
 	'render_tgn_id': function(d, ctx){
 	    var link = "http://vocab.getty.edu/tgn/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
@@ -1783,6 +1894,37 @@ mapzen.whosonfirst.properties = (function(){
 	'render_faa_code': function(d, ctx){
 	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_latimes_id': function(d, ctx){
+
+	    var link = "http://maps.latimes.com/neighborhoods/neighborhood/" + encodeURIComponent(d);
+	    var el = mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+
+	    el.onclick = function(e){ 
+
+		try {
+		    var el = e.target;
+		    var parent = el.parentNode;
+		    var href = parent.getAttribute("href");
+		    
+		    var pt = document.getElementById("wof.placetype");
+		    pt = pt.innerText;
+		    
+		    if (pt == "macrohood"){
+			href = href.replace("neighborhoods/neighborhood", "neighborhoods/region");
+		    }
+		    
+		    location.href = href;
+		    return false;
+		}
+
+		catch (e){
+		    console.log("failed to generate latimes:id link, because " + e);
+		}
+	    };
+
+	    return el;
 	},
 
 	'render_megacity': function(d, ctx){
@@ -2805,28 +2947,25 @@ mapzen.whosonfirst.spelunker = (function(){
 
 	var self = {
 
-	    // this is invoked by by mapzen.whosonfirst.spelunker.init.js
-	    // which is running code (20160202/thisisaaronland)
+		// this is invoked by by mapzen.whosonfirst.spelunker.init.js
+		// which is running code (20160202/thisisaaronland)
 
-	    'init': function(){
-		mapzen.whosonfirst.config.init();
-<<<<<<< HEAD
+		'init': function(){
+			mapzen.whosonfirst.config.init();
 
-		if (document.getElementById('map')) {
-			var m = mapzen.whosonfirst.leaflet.tangram.map('map');
-		}
-=======
->>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
-	    },
+			if (document.getElementById('map')) {
+				var m = mapzen.whosonfirst.leaflet.tangram.map('map');
+			}
+		},
 
-	    'abs_root_url': function(){
-		var body = document.body;
-		return body.getAttribute("data-abs-root-url");
-	    },
+		'abs_root_url': function(){
+			var body = document.body;
+			return body.getAttribute("data-abs-root-url");
+		},
 
-	    'draw_list': function(classname){
+		'draw_list': function(classname){
 
-		var locs = document.getElementsByClassName(classname);
+			var locs = document.getElementsByClassName(classname);
 			var count = locs.length;
 
 			var swlat = undefined;
@@ -2882,7 +3021,8 @@ mapzen.whosonfirst.spelunker = (function(){
 				var sw = [ bbox[0], bbox[1] ]
 				var ne = [ bbox[2], bbox[3] ]
 
-				map.fitBounds([ sw, ne ]);
+				var opts = { 'padding': [ 50, 50 ]};
+				map.fitBounds([ sw, ne ], opts);
 
 				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
 			    };
@@ -2964,315 +3104,6 @@ mapzen.whosonfirst.spelunker = (function(){
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
-<<<<<<< HEAD
-mapzen.whosonfirst.bundler = (function() {
-
-	var _queue = [];
-	var _handlers = {
-		on_success: null,
-		on_error: null,
-		on_progress: null
-	};
-	var _query = null;
-	var _features = [];
-	var _summary = [];
-	var _discard_next = null;
-
-	var self = {
-
-		set_handler: function(handler, callback) {
-			_handlers['on_' + handler] = callback;
-		},
-
-		enqueue_feature: function(id) {
-			_queue.push({
-				wof_id: id
-			});
-			if (! _query) {
-				self.process_queue();
-			}
-		},
-
-		enqueue_placetype: function(placetype, parent_id) {
-			_queue.push({
-				placetype: placetype,
-				parent_id: parent_id
-			});
-			if (! _query) {
-				self.process_queue();
-			}
-		},
-
-		dequeue_placetype: function(placetype) {
-			_queue = _queue.filter(function(q) {
-				return (q.placetype != placetype);
-			});
-			self.filter_features(placetype);
-			if (_query && _query.args.placetype == placetype) {
-				_query = null;
-				_discard_next = placetype;
-				self.process_queue();
-			}
-		},
-
-		filter_features: function(placetype) {
-
-			_features = _features.filter(function(item) {
-				return item.properties['wof:placetype'] != placetype;
-			});
-
-			_summary = _summary.filter(function(item) {
-				return item['wof:placetype'] != placetype;
-			});
-
-			if (_handlers.on_progress) {
-				_handlers.on_progress({
-					type: 'summary',
-					summary_count: _summary.length,
-					summary_size: self.get_summary_size()
-				});
-				_handlers.on_progress({
-					type: 'bundle',
-					bundle_count: _features.length,
-					bundle_size: self.get_bundle_size()
-				});
-			}
-
-			if (! _query && _queue.length == 0 && _handlers.on_success) {
-				var bundle = self.bundle_features();
-				_handlers.on_success(bundle);
-			}
-		},
-
-		bundle_features: function() {
-			var feature_collection = {
-				'type': 'FeatureCollection',
-				'features': _features,
-			};
-			return feature_collection;
-		},
-
-		summarize_features: function() {
-			var rows = [];
-			var keys = [];
-			var row;
-			for (var i in _summary) {
-				if (i == 0) {
-					keys = Object.keys(_summary[0]);
-					rows.push(keys);
-				}
-				row = [];
-				for (j in keys) {
-					var key = keys[j];
-					row.push(_summary[i][key]);
-				}
-				rows.push(row);
-			}
-			return rows;
-		},
-
-		process_queue: function() {
-			if (! _query && _queue.length > 0) {
-				_query = {
-					args: _queue.shift(),
-					page: 1
-				};
-				if (_query.args.wof_id) {
-					_query.results = [{
-						'wof:id': _query.args.wof_id
-					}];
-					_query.pages = 1;
-					self.download_feature();
-				} else {
-					self.query_wof_api();
-				}
-			} else if (_query &&
-			           _query.page < _query.pages) {
-				_query.page++;
-				self.query_wof_api();
-			} else if (_query &&
-			           _query.results &&
-			           _query.results.length > 0) {
-				self.download_feature();
-			} else if (_handlers.on_success) {
-				_query = null;
-				var bundle = self.bundle_features();
-				_handlers.on_success(bundle);
-			} else {
-				_query = null;
-				// Done! (But no on_success handler set.)
-			}
-		},
-
-		query_wof_api: function() {
-
-			var method = 'whosonfirst.places.getDescendants';
-			var data = {
-				id: _query.args.parent_id,
-				placetype: _query.args.placetype,
-				page: _query.page,
-				per_page: 500,
-				exclude: 'nullisland'
-			};
-
-			var on_success = function(rsp) {
-
-				_query.page = rsp.page;
-				_query.pages = rsp.pages;
-
-				if (! _query.results) {
-					_query.results = [];
-				}
-
-				_query.results.push.apply(_query.results, rsp.results);
-				_summary.push.apply(_summary, rsp.results);
-
-				if (_handlers.on_progress) {
-					_handlers.on_progress({
-						type: 'query',
-						placetype: _query.args.placetype,
-						page: _query.page,
-						pages: _query.pages
-					});
-					_handlers.on_progress({
-						type: 'summary',
-						summary_count: _summary.length,
-						summary_size: self.get_summary_size()
-					});
-				}
-
-				self.process_queue();
-			};
-
-			var on_error = function(rsp) {
-				if (_handlers.on_error) {
-					_handlers.on_error(rsp);
-				}
-			};
-
-			mapzen.whosonfirst.api.call(method, data, on_success, on_error);
-		},
-
-		download_feature: function() {
-
-			var result = _query.results.shift();
-			var wof_id = result['wof:id'];
-			var wof_url = mapzen.whosonfirst.uri.id2abspath(wof_id);
-
-			// If this was not from a WOF query (i.e., the container)
-			var summarize_feature = (! result['wof:placetype']);
-
-			var on_success = function(feature) {
-				if (_discard_next == feature.properties['wof:placetype']) {
-					_discard_next = null;
-					return;
-				}
-
-				_features.push(feature);
-				if (summarize_feature) {
-					_summary.push({
-						'wof:id': feature.properties['wof:id'],
-						'wof:name': feature.properties['wof:name'],
-						'wof:parent_id': feature.properties['wof:parent_id'],
-						'wof:placetype': feature.properties['wof:placetype'],
-						'wof:country': feature.properties['wof:country'],
-						'wof:repo': feature.properties['wof:repo']
-					});
-					if (_handlers.on_progress) {
-						_handlers.on_progress({
-							type: 'summary',
-							summary_count: _summary.length,
-							summary_size: self.get_summary_size()
-						});
-					}
-				}
-
-				if (_handlers.on_progress) {
-					_handlers.on_progress({
-						type: 'feature',
-						feature: feature,
-						bundle_count: _features.length
-					});
-					_handlers.on_progress({
-						type: 'bundle',
-						bundle_count: _features.length,
-						bundle_size: self.get_bundle_size()
-					});
-				}
-				self.process_queue();
-			};
-
-			var on_error = function(rsp) {
-				if (_handlers.on_error) {
-					_handlers.on_error(rsp);
-				}
-			};
-
-			mapzen.whosonfirst.net.fetch(wof_url, on_success, on_error);
-		},
-
-		get_bundle_blob: function() {
-			var bundle = self.bundle_features();
-			var json = JSON.stringify(bundle);
-			var args = {
-				type: "application/json"
-			};
-			var blob = new Blob([json], args);
-			return blob;
-		},
-
-		get_bundle_size: function() {
-			var blob = self.get_bundle_blob();
-			return blob.size;
-		},
-
-		save_bundle: function(filename) {
-			var blob = self.get_bundle_blob();
-			saveAs(blob, filename);
-		},
-
-		get_summary_blob: function(filename) {
-			var summary = self.summarize_features();
-			var process_row = function(row) {
-				var processed = '', value;
-				for (var i = 0; i < row.length; i++) {
-					value = (row[i] === null) ? '' : row[i].toString();
-					if (row[i] instanceof Date) {
-						value = row[i].toLocaleString();
-					}
-					value = value.replace(/"/g, '""');
-					if (value.search(/("|,|\n)/g) >= 0) {
-						value = '"' + value + '"';
-					}
-					if (i > 0) {
-						processed += ',';
-					}
-					processed += value;
-				}
-				return processed + '\n';
-			};
-
-			var csv = '';
-			for (var i = 0; i < summary.length; i++) {
-				csv += process_row(summary[i]);
-			}
-
-			var args = {
-				type: 'text/csv;charset=utf-8;'
-			};
-			var blob = new Blob([csv], args);
-			return blob;
-		},
-
-		get_summary_size: function() {
-			var blob = self.get_summary_blob();
-			return blob.size;
-		},
-
-		save_summary: function(filename) {
-			var blob = self.get_summary_blob();
-			saveAs(blob, filename);
-=======
 mapzen.whosonfirst.chrome = (function(){
 
 	var self = {
@@ -3294,19 +3125,13 @@ mapzen.whosonfirst.chrome = (function(){
 			host_el.appendChild(document.createTextNode(host));
 
 			document.body.insertBefore(host_el, document.body.childNodes[0]);
->>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
 		}
 	};
 
 	return self;
 })();
-<<<<<<< HEAD
-
-// last bundled at 2016-12-31T01:21:22 UTC
-=======
 window.addEventListener("load", function load(event){
 	mapzen.whosonfirst.chrome.init();
 });
 
-// last bundled at 2017-01-03T16:07:52 UTC
->>>>>>> 179609b1ab06d50a5ca2cd11251b51f1ac0bd1b7
+// last bundled at 2017-06-20T17:01:14 UTC

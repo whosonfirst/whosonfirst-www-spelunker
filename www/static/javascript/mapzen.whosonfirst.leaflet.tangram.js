@@ -256,9 +256,14 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		    return false;
 		},
 
-		set_key: function(api_key) {
-			_key = api_key;
-		}
+		'set_key': function(api_key) {
+		    _key = api_key;
+		},
+	    
+	    'set_tile_url': function(url){
+
+		console.log("PLEASE FIX ME");
+	    },
 
 	};
 

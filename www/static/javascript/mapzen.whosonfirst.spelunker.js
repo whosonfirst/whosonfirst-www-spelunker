@@ -79,7 +79,8 @@ mapzen.whosonfirst.spelunker = (function(){
 				var sw = [ bbox[0], bbox[1] ]
 				var ne = [ bbox[2], bbox[3] ]
 
-				map.fitBounds([ sw, ne ]);
+				var opts = { 'padding': [ 50, 50 ]};
+				map.fitBounds([ sw, ne ], opts);
 
 				mapzen.whosonfirst.enmapify.render_feature_outline(map, feature);
 			    };

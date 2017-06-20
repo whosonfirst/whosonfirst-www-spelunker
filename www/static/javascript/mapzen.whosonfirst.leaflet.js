@@ -134,7 +134,8 @@ mapzen.whosonfirst.leaflet = (function(){
 			}
 
 			if (redraw){
-				map.fitBounds(bounds);
+			    var opts = { 'padding': [ 50, 50 ] };
+			    map.fitBounds(bounds, opts);
 			}
 		}
 	};
