@@ -57,7 +57,7 @@
   {% endif %}
 
     {% if doc.properties['wof:tags']|length > 0 %}
-    <li>it is tagged {% for t in doc.properties['wof:tags'] %}<a href="{{ url_for('tag', tag=t) }}">{{ t|e }}</a>{% if loop.last %}{% elif loop.index == loop.length -1 %} and {% else %}, {% endif %}{% endfor %}</li>
+    <li>it is tagged {% for t in doc.properties['wof:tags'] %}{% if t %}<a href="{{ url_for('tag', tag=t) }}">{{ t|e }}</a>{% else %}<span class="hey-look">🚨 ack... this is an invalid tag</span>{% endif %}{% if loop.last %}{% elif loop.index == loop.length -1 %} and {% else %}, {% endif %}{% endfor %}</li>
     {% endif %}
 
   {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
