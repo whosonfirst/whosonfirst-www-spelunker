@@ -31,7 +31,6 @@ mapzen.whosonfirst.namify = (function() {
 	    var count = els.length;
 
 	    for (var i=0; i < count; i++){
-
 		self.namify_el(els[i], resolver);
 	    }
 	},

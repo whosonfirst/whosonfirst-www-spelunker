@@ -15,6 +15,8 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		var facets = self.render_facets(rsp, facet_url);
 		wrapper.appendChild(facets);
+
+		mapzen.whosonfirst.namify.namify_wof();
 	    };
 
 	    var on_fail = function(rsp){
@@ -99,17 +101,26 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		var detail = details[i];
 
+		var span = document.createElement("span");
+
+		if (label == "concordance"){
+		    span.appendChild(document.createTextNode(detail["fullname"]));
+		}
+
+		else {
+		    span.appendChild(document.createTextNode(detail["key"]));
+		}
+
+		if ((label == "locality_id") || (label == "region_id")){
+		    span.setAttribute("class", "wof-namify")
+		    span.setAttribute("data-wof-id", detail["key"]);
+		}
+
 		var link = document.createElement("a");
 		link.setAttribute("href", query_url + "&" + label + "=" + detail["key"]);
 		link.setAttribute("class", "facet_" + detail["key"] + "_" + detail["doc_count"]);
 
-		if (label == "concordance"){
-		    link.appendChild(document.createTextNode(detail["fullname"]));
-		}
-
-		else {
-		    link.appendChild(document.createTextNode(detail["key"]));
-		}
+		link.appendChild(span);
 
 		var count = document.createElement("small");
 		count.appendChild(document.createTextNode(detail['doc_count']));
