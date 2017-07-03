@@ -11,12 +11,14 @@ mapzen.whosonfirst.config = (function(){
 
 		'init': function(){
 
-			var root = document.body.getAttribute("data-abs-root-url");
-			var data = root + "data/";
+			var endpoint = document.body.getAttribute("data-wof-data-endpoint");
 
-			if (mapzen.whosonfirst.uri) {
-				mapzen.whosonfirst.uri.endpoint(data);
-			}
+	    		if (endpoint == ""){
+				var root = location.protocol + "//" + location.host;
+				endpoint = root + "/data/";
+	    		}
+
+			mapzen.whosonfirst.uri.endpoint(endpoint);
 
 			// You can probably turn this on safely but it is still technically
 			// a work in progress; the code is being merged with master now but

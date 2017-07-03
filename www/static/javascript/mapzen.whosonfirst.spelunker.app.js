@@ -915,10 +915,11 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 
     	// See the way this is a relative path? Yeah, we assign abs_root_url
     	// below in the 'scenefile' method (20160201/thisisaaronland)
-
-	var _scenefile = 'static/tangram/refill.yaml'
-	var _key = 'mapzen-XXXXXXX';
-	var _cache = {};
+    
+    var _scenefile = 'static/tangram/refill.yaml'
+    var _key = 'mapzen-XXXXXXX';
+    var _tileurl = 'https://tile.mapzen.com/mapzen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _cache = {};
 
 	var self = {
 
@@ -971,19 +972,22 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 			var attribution = self.render_attributions(attributions);
 
 			var tangram = Tangram.leafletLayer({
-				scene: {
-					import: scenefile,
-					global: {
-						sdk_mapzen_api_key: _key
-					}
+			    scene: {
+				import: scenefile,
+				global: {
+				    sdk_mapzen_api_key: _key,
 				},
-				numWorkers: 2,
-				unloadInvisibleTiles: false,
-				updateWhenIdle: false,
-				attribution: attribution,
+				sources: {
+				    mapzen: { url: _tileurl }
+				}
+			    },
+			    numWorkers: 2,
+			    unloadInvisibleTiles: false,
+			    updateWhenIdle: false,
+			    attribution: attribution,
 			});
-			
-			return tangram;
+		    
+		    return tangram;
 		},
 
 		'scenefile': function(url){
@@ -1165,9 +1169,13 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		    return false;
 		},
 
-		set_key: function(api_key) {
-			_key = api_key;
-		}
+		'set_key': function(api_key) {
+		    _key = api_key;
+		},
+	    
+	    'set_tile_url': function(url){
+		_tileurl = url;
+	    },
 
 	};
 
@@ -3134,4 +3142,4 @@ window.addEventListener("load", function load(event){
 	mapzen.whosonfirst.chrome.init();
 });
 
-// last bundled at 2017-06-20T17:01:14 UTC
+// last bundled at 2017-07-03T16:06:55 UTC
