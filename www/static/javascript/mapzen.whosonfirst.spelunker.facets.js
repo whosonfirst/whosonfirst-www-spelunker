@@ -83,6 +83,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    query_url = query_url.replace("facets/", "");	// hack...
 
 	    var facet = document.createElement("div");
+	    facet.setAttribute("class", "facet");
 
 	    var span = document.createElement("span");
 	    span.setAttribute("class", "hey-look");
@@ -96,7 +97,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    var count_details = details.length;
 
 	    var list = document.createElement("li");
-	    list.setAttribute("class", "list-inline");
+	    list.setAttribute("class", "list-inline facet-details-list");
 
 	    for (var i=0; i < count_details; i++){
 
@@ -132,7 +133,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		count.appendChild(document.createTextNode(detail['doc_count']));
 
 		var item = document.createElement("li");
-		item.setAttribute("class", "facet_" + label);
+		item.setAttribute("class", "facet_" + label + " facet-details-list-item");
 		item.setAttribute("data-value", detail["key"]);
 
 		item.appendChild(link);
@@ -143,7 +144,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    }
 
 	    var wrapper = document.createElement("div");
-	    wrapper.setAttribute("style", "max-height:200px;overflow:scroll;border-bottom:solid thin;margin-bottom:2em;");
+	    wrapper.setAttribute("class", "facet-details");
 
 	    wrapper.appendChild(list);
 

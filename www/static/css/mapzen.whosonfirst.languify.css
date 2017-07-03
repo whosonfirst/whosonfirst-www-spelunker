@@ -1,0 +1,29 @@
+.language {
+
+}
+
+.language-all {
+    font-weight: 700;
+}
+
+.language-preferred:after {
+    content: " pref.";
+    font-size:small;
+    color: #999;
+}
+
+.language-variant:after{
+    content: " var.";
+    font-size:small;
+    color: #999;
+}
+
+.language-colloquial:after {
+    content: " col.";
+    font-size:small;
+    color: #999;
+}
+
+.language-unparsed {
+    color:red;
+}

@@ -18,10 +18,13 @@ mapzen.whosonfirst.languify = (function() {
 
 		var el = els[i];
 
-		if (el){
-		    self.languify_el(els[i]);
+		if (! el){
+		    console.log("WTF MISSING " + i);
+		    console.log(els[i]);
+		    continue;
 		}
 
+		self.languify_el(els[i]);
 	    }
 
 	},
@@ -31,31 +34,39 @@ mapzen.whosonfirst.languify = (function() {
 	    var lang = el.getAttribute("data-language");
 
 	    if (! lang){
+		console.log("Missing language");
+		console.log(el);
 		return;
 	    }
 
 	    el.setAttribute("title", lang);
 
 	    var parts = lang.split("_x_");
+	    var count = parts.length;
 
-	    if (parts.length == 2){
+	    if (count == 1){
+
+		var str_lang = self.lang2string(lang);
+
+		el.setAttribute("class", el.getAttribute("class") + " language language-all");
+		el.innerText = str_lang;
+	    }
+	    
+	    else if (count == 2){
 
 		var major = parts[0];
 		var minor = parts[1];
 
 		var str_lang = self.lang2string(major);
 
-		el.setAttribute("class", "language-" + minor);
-		el.innerText = str_lang + " (" + minor + ")";
+		el.setAttribute("class", el.getAttribute("class") + " language language-" + minor);
+		el.innerText = str_lang;
 	    }
 
 	    else {
 
-		console.log(lang);
-		console.log(parts);
-
-		var str_lang = self.lang2string(lang);
-		el.innerText = str_lang + " (all)";		
+		el.setAttribute("class", el.getAttribute("class") + " language language-unparsed");
+		el.innerText = str_lang;
 	    }
 
 	    // console.log(lang + ", " + major + ", " + minor);
