@@ -19,6 +19,13 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 	    var on_fail = function(rsp){
 
+		console.log("FAILED TO FACET " + facet_url);
+		console.log(rsp);
+
+		var wrapper = document.getElementById("facets-wrapper");
+		wrapper.innerHTML = "";
+
+		wrapper.appendChild(document.createTextNode("Argh! There was a problem generating facets for " + facet_url));
 	    };
 	    
 	    var req = new XMLHttpRequest();
@@ -51,18 +58,23 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	'render_facets': function(rsp, url){
 
 	    var facets = document.createElement("div");
+	    facets.setAttribute("title", url);
 
-	    for (var k in rsp){
+	    for (var label in rsp){
 
-		var facet = self.render_facet(k, rsp[k], url);
-		facets.appendChild(facet);
+		var details = rsp[label];
+		var count = details.length;
+
+		if (count){
+		    var facet = self.render_facet(label, details, url);
+		    facets.appendChild(facet);
+		}
 	    }
 
 	    return facets;
 	},
 
 	'render_facet': function(label, details, facet_url){
-
 
 	    var query_url = facet_url;
 	    query_url = query_url.replace("facets/", "");	// hack...
