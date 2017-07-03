@@ -146,4 +146,4 @@ wof-es-index -s /usr/local/mapzen/whosonfirst-data/data -b
 ## See also
 
 * https://github.com/whosonfirst/vagrant-whosonfirst-www-spelunker
-* https://github.com/whosonfirst/vagrant-whosonfirst-www-spelunker
+* https://github.com/whosonfirst/py-mapzen-whosonfirst-search
