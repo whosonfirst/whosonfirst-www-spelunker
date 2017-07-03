@@ -2012,7 +2012,7 @@ def facetify(query):
                 'size': 0
             }
         },
-        'names': {
+        'translations': {
             'terms': {
                 'field': 'names',
                 'size': 0
@@ -2070,6 +2070,8 @@ def enfilterify(query):
 
     colloquial = get_str('colloquial')	# names_colloquial
     variant = get_str('variant')	# names_variant
+
+    translations = get_str('translations')
 
     country = get_int('country_id')
     region = get_int('region_id')
@@ -2150,6 +2152,19 @@ def enfilterify(query):
                 'wof:placetype': pts
             }})
 
+    if translations:
+
+        if len(translations) == 1:
+
+            filters.append({ 'term': {
+                'names': translations	// fix ES key
+            }})
+                    
+        else:
+
+            filters.append({ 'terms': {
+                'names': translations	// fix ES key
+            }})
 
     if iso:
 
