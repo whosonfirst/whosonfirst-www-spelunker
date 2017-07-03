@@ -70,7 +70,7 @@
 
     {% block head %}{% endblock %}
 </head>
-<body data-abs-root-url="{{ url_for('index') }}" data-wof-data-endpoint="">
+<body data-abs-root-url="{{ url_for('index', _external=True) }}" data-wof-data-endpoint="{{ g.data_root }}">
   <div id="nav" class="container">
 
     <ul class="list-inline pull-left" id="nav-links">
