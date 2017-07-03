@@ -17,6 +17,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		wrapper.appendChild(facets);
 
 		mapzen.whosonfirst.namify.namify_wof();
+		mapzen.whosonfirst.languify.languify();
 	    };
 
 	    var on_fail = function(rsp){
@@ -114,6 +115,11 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		if ((label == "locality_id") || (label == "region_id")){
 		    span.setAttribute("class", "wof-namify")
 		    span.setAttribute("data-wof-id", detail["key"]);
+		}
+
+		if (label == "translations"){
+		    span.setAttribute("class", "languify")
+		    span.setAttribute("data-language", detail["key"]);
 		}
 
 		var link = document.createElement("a");

@@ -2135,20 +2135,15 @@ def enfilterify(query):
 
             pts.append(p)
 
-            # placetype = pt.placetype(p)
-            # ids.append(placetype.id())
-
         if len(ids) == 1:
 
             filters.append({ 'term': {
-                # 'wof:placetype_id' : ids[0]
                 'wof:placetype': pts[0]
             }})
 
         else:
 
             filters.append({ 'terms': {
-                # 'wof:placetype_id' : ids
                 'wof:placetype': pts
             }})
 
@@ -2157,13 +2152,13 @@ def enfilterify(query):
         if len(translations) == 1:
 
             filters.append({ 'term': {
-                'names': translations	// fix ES key
+                'names': translations	# fix ES key
             }})
                     
         else:
 
             filters.append({ 'terms': {
-                'names': translations	// fix ES key
+                'names': translations	# fix ES key
             }})
 
     if iso:
