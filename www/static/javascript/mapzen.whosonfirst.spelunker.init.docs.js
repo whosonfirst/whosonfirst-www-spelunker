@@ -17,4 +17,13 @@ window.addEventListener("load", function load(event){
 	// gggggrrnnnnggnnngnhhhhhhh...
 	// el.innerHTML = String.fromCodePoint();
     }
+
+    var facets_wrapper = document.getElementById("facets-wrapper");
+    var facet_url = facets_wrapper.getAttribute("data-facet-url");
+
+    if (facet_url){
+	
+	mapzen.whosonfirst.spelunker.facets.get_facets(facet_url);
+    }
+
 });

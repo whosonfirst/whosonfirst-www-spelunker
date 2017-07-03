@@ -89,7 +89,11 @@
 
 </div>
 
-<div class="col-md-5">
+<div class="col-md-5" id="facets-wrapper" data-facet-url="{% if new_facet_url %}{{new_facet_url}}{% endif %}">
+
+{% if new_facet_url %}
+<span>loading facets</span>
+{% else %}
 
 {% if facets %}
 {% for k in facets.keys() %}
@@ -114,6 +118,7 @@
 {% endfor %}
 {% endif %}
 
+{% endif %}
 {% include "inc_log.html" %}
 
 </div>

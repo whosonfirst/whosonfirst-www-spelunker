@@ -1153,6 +1153,8 @@ def placetype(placetype):
     pagination_url = build_pagination_url()
     facet_url = pagination_url
 
+    new_facet_url = build_facet_url()
+
     template_args = {
         'es_query': body,
         'placetype': placetype,
@@ -1160,7 +1162,8 @@ def placetype(placetype):
         'pagination': pagination,
         'pagination_url': pagination_url,
         'facets': facets,
-        'facet_url': facet_url
+        'facet_url': facet_url,
+        'new_facet_url': new_facet_url
     }
 
     return flask.render_template('placetype.html', **template_args)
@@ -2330,6 +2333,13 @@ def build_pagination_url():
     url = url[0]
 
     return "%s?%s" % (url, qs)
+
+def build_facet_url():
+
+    pg_url = build_pagination_url()
+    path, query = pg_url.split("?")
+
+    return path + "facets/?" + query
 
 def get_by_id(id):
 
