@@ -50,6 +50,22 @@ server {
 
 		proxy_intercept_errors on;
 		recursive_error_pages on;
+		error_page 404 = @data_repod;
+        }
+
+	location @data_repod {
+
+		proxy_set_header       Authorization '';
+		proxy_hide_header      Set-Cookie;
+		proxy_ignore_headers   "Set-Cookie";
+
+	    	add_header 'Access-Control-Allow-Origin' '*';
+            	add_header 'Access-Control-Allow-Methods' 'GET';
+
+		proxy_pass http://localhost:8080$uri;
+
+		proxy_intercept_errors on;
+		recursive_error_pages on;
 		error_page 404 = @data_mapzen;
         }
 

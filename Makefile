@@ -18,13 +18,13 @@ setup-nginx:
 
 setup-local: setup-app setup-nginx
 	ubuntu/setup-elasticsearch.sh
-	ubuntu/setup-elasticsearch-mappings.sh
+	ubuntu/setup-elasticsearch-schema.sh
 
 data:
 	ubuntu/setup-data.sh $(data)
 
 index:
-	ubuntu/setup-index-elasticsearch.sh $(data)
+	ubuntu/setup-elasticsearch-index.sh $(data)
 
 mapzen: styleguide tangram refill yesnofix crosshairs wofjs wofcss
 
@@ -75,7 +75,8 @@ js-app:
 	echo "// last bundled at "`date "+%Y-%m-%dT%H:%M:%S %Z"` >> www/static/javascript/mapzen.whosonfirst.spelunker.app.js
 
 es:
-	curl -s -o elasticsearch/schema/mappings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/2.4/mappings.spelunker.json
+	curl -s -o elasticsearch/schema/m
+appings.spelunker.json https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/schema/2.4/mappings.spelunker.json
 	curl -s -o elasticsearch/synonyms/cldr-emoji-annotation-synonyms-en.txt https://raw.githubusercontent.com/whosonfirst/es-whosonfirst-schema/master/synonyms/cldr-emoji-annotation-synonyms-en.txt
 
 es-reload:
