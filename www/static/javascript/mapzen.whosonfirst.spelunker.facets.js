@@ -22,13 +22,42 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 	    var on_fail = function(rsp){
 
-		console.log("FAILED TO FACET " + facet_url);
-		console.log(rsp);
+		var url = rsp["url"];
 
 		var wrapper = document.getElementById("facets-wrapper");
+		// wrapper.setAttribute("class", "warning");
 		wrapper.innerHTML = "";
 
-		wrapper.appendChild(document.createTextNode("Argh! There was a problem generating facets for " + facet_url));
+		var list = document.createElement("ul");
+		list.setAttribute("class", "list-inline");
+
+		var code = document.createElement("code");
+		code.appendChild(document.createTextNode(url));
+
+		var item = document.createElement("li");
+		item.appendChild(document.createTextNode("There was a problem generating facets for "));
+		item.appendChild(code);
+
+		list.appendChild(item);
+
+		var xhr = rsp["xhr"];
+
+		if (xhr){
+
+		    var status = xhr["status"];
+		    var message = xhr["statusText"];
+		    
+		    var details = document.createElement("code");
+		    details.appendChild(document.createTextNode(status + " " + message));
+
+		    var item_details = document.createElement("li");
+		    item_details.appendChild(document.createTextNode("The robot monkeys report: "));
+		    item_details.appendChild(details);
+
+		    list.appendChild(item_details);
+		}
+
+		wrapper.appendChild(list);
 	    };
 	    
 	    var req = new XMLHttpRequest();
@@ -40,11 +69,12 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		}
 		
 		catch (e){
-		    mapzen.whosonfirst.log.error("failed to parse " + url + ", because " + e);
+
+		    mapzen.whosonfirst.log.error("failed to parse " + facet_url + ", because " + e);
 		    
 		    on_fail({
-			url: url,
-			args: args,
+			url: facet_url,
+			args: null,
 			xhr: req
 		    });
 		    
