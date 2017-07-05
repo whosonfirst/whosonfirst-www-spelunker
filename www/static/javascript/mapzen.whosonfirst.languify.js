@@ -23,8 +23,6 @@ mapzen.whosonfirst.languify = (function() {
 		var el = els[i];
 
 		if (! el){
-		    console.log("WTF MISSING " + i);
-		    console.log(els[i]);
 		    continue;
 		}
 
@@ -50,10 +48,7 @@ mapzen.whosonfirst.languify = (function() {
 
 	    if (count == 1){
 
-		var str_lang = self.lang2string(lang);
-
 		el.setAttribute("class", el.getAttribute("class") + " language language-all");
-		el.innerText = str_lang;
 	    }
 	    
 	    else if (count == 2){
@@ -61,28 +56,16 @@ mapzen.whosonfirst.languify = (function() {
 		var major = parts[0];
 		var minor = parts[1];
 
-		var str_lang = self.lang2string(major);
-
 		el.setAttribute("class", el.getAttribute("class") + " language language-" + minor);
-		el.innerText = str_lang;
 	    }
 
 	    else {
 
 		el.setAttribute("class", el.getAttribute("class") + " language language-unparsed");
-		el.innerText = str_lang;
 	    }
 
-	    // console.log(lang + ", " + major + ", " + minor);
 	},
 
-	'lang2string': function(lang){
-
-	    lang = lang.replace("_", "-");
-	    return lang;
-	    
-	}
-	
     };
 
     return self;

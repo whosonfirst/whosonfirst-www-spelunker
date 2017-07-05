@@ -2695,22 +2695,18 @@ def append_language_details_to_buckets(buckets):
 
     for b in buckets:
 
-        try:
-            prefix, key = b['key'].split(':')
-        except Exception, e:
-            logging.error("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
-            continue
+        tag = b["key"]
 
-        b["name"] = prefix
-        b["fullname"] = prefix
+        b["name"] = tag
+        b["fullname"] = tag
 
         try:
-            lang = mapzen.whosonfirst.languages.language(prefix)
+            lang = mapzen.whosonfirst.languages.language(tag)
             b["name"] = str(lang)
             b["fullname"] = b["name"]
 
         except Exception, e:
-            logging.warning("failed to parse language tag '%s' because %s" % (prefix, e))
+            logging.warning("failed to parse language tag '%s' because %s" % (tag, e))
 
 # please put me in a library somewhere...
 # please to be porting this at the same time...

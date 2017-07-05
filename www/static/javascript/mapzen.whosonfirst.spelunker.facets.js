@@ -132,10 +132,17 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    for (var i=0; i < count_details; i++){
 
 		var detail = details[i];
+		console.log(label);
+		console.log(detail);
 
 		var span = document.createElement("span");
 
 		if (label == "concordance"){
+		    span.appendChild(document.createTextNode(detail["fullname"]));
+		}
+
+		else if (label == "translations"){
+		    console.log("OK");
 		    span.appendChild(document.createTextNode(detail["fullname"]));
 		}
 
