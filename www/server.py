@@ -2163,6 +2163,8 @@ def enfilterify(query):
 
         if len(translations) == 1:
 
+            translations = translations[0]
+
             if translations.startswith("!"):
 
                 mustnot.append({ 'term': {
