@@ -325,6 +325,11 @@ def json(id):
 def lastmod_week():
     return lastmod_days(7)
 
+@app.route("/recent/facets", methods=["GET"])
+@app.route("/recent/facets/", methods=["GET"])
+def lastmod_week_facets():
+    return lastmod_days_facets(7)
+
 @app.route("/recent/<int:days>", methods=["GET"])
 @app.route("/recent/<int:days>/", methods=["GET"])
 def lastmod_days(days):
