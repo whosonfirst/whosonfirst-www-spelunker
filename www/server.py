@@ -32,6 +32,7 @@ import machinetag.elasticsearch.wildcard
 import machinetag.elasticsearch.hierarchy
 
 import mapzen.whosonfirst.elasticsearch
+import mapzen.whosonfirst.languages
 
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.placetypes as pt
@@ -2045,6 +2046,12 @@ def facetify(query):
         if k == 'concordance':
             append_source_details_to_buckets(results)
 
+        elif k == 'translations':
+            append_language_details_to_buckets(results)
+        
+        else:
+            pass
+
         facets[k] = results
 
     return facets
@@ -2683,6 +2690,27 @@ def append_source_details_to_buckets(buckets):
         else:
             b['fullname'] = prefix
             b['name'] = prefix
+
+def append_language_details_to_buckets(buckets):
+
+    for b in buckets:
+
+        try:
+            prefix, key = b['key'].split(':')
+        except Exception, e:
+            logging.error("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
+            continue
+
+        b["name"] = prefix
+        b["fullname"] = prefix
+
+        try:
+            lang = mapzen.whosonfirst.languages.language(prefix)
+            b["name"] = str(lang)
+            b["fullname"] = b["name"]
+
+        except Exception, e:
+            logging.warning("failed to parse language tag '%s' because %s" % (prefix, e))
 
 # please put me in a library somewhere...
 # please to be porting this at the same time...
