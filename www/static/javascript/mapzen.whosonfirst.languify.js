@@ -1,6 +1,10 @@
 var mapzen = mapzen || {};
 mapzen.whosonfirst = mapzen.whosonfirst || {};
 
+// https://tools.ietf.org/html/rfc5646
+// https://www.w3.org/International/articles/language-tags/
+// https://github.com/mattcg/language-tags
+
 mapzen.whosonfirst.languify = (function() {
 
     var self = {
