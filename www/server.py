@@ -2156,15 +2156,41 @@ def enfilterify(query):
 
         if len(translations) == 1:
 
-            filters.append({ 'term': {
-                'names': translations	# fix ES key
-            }})
+            if translations.startswith("!"):
+
+                mustnot.append({ 'term': {
+                    'translations': translations[1:]
+                }})
+
+            else:
+
+                filters.append({ 'term': {
+                    'translations': translations
+                }})
                     
         else:
 
-            filters.append({ 'terms': {
-                'names': translations	# fix ES key
-            }})
+            with_translations = []
+            without_translations = []
+
+            for t in translations:
+
+                if t.startswith("!"):
+                    without_translations.append(t[1:])
+                else:
+                    with_translations.append(t)
+
+            if len(with_translations):
+
+                filters.append({ 'terms': {
+                    'translations': with_translations
+                }})
+
+            if len(without_translations):
+
+                must_not.append({ 'terms': {
+                    'translations': without_translations
+                }})
 
     if iso:
 
