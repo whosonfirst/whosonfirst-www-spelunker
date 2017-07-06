@@ -12,9 +12,16 @@
 			{% endfor %}
 		</ul>
 		<div id="bundle-options">
-			<input type="checkbox" id="bundle-simple-props">
-			<label for="bundle-simple-props">Simple properties</label><br>
-			<small>Bundle a small subset of WOF properties</small>
+			<div class="form-group">
+				<input type="checkbox" id="bundle-simple-props">
+				<label for="bundle-simple-props">Simple properties</label><br>
+				<small>Bundle a small subset of WOF properties</small>
+			</div>
+			<div class="form-group">
+				<input type="checkbox" id="bundle-github-gist">
+				<label for="bundle-github-gist">Save as GitHub gist</label><br>
+				<small>Requires that you have a GitHub account</small>
+			</div>
 		</div>
 		<div id="bundle-controls">
 			<span id="selected-count"></span> <a href="#" id="cancel-download" class="hidden">Cancel download</a>
@@ -52,6 +59,7 @@
 	</div>
 </div>
 
+<script src="{{ url_for('static', filename='javascript/localforage.min.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/FileSaver.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.bundler.js') }}"></script>
 <script src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.download.js') }}"></script>

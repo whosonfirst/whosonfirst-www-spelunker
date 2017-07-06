@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" 🌐>
+<head>
+    <title>Who's On First Spelunker | {% block title %}{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/localforage.min.js') }}"></script>
+</head>
+<body>
+    <script>
+    localforage.setItem('github_access_token', '{{ access_token |e }}').then(function() {
+        window.close();
+    });
+    </script>
+<body>

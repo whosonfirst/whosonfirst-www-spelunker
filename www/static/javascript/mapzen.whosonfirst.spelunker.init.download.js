@@ -331,4 +331,18 @@ window.addEventListener("load", function load(event){
 			return (bytes / (1024 * 1024)).toFixed(precision) + ' MB';
 		}
 	}
+
+	var gist_toggle = document.getElementById('bundle-github-gist');
+	gist_toggle.addEventListener('change', function(e) {
+		if (gist_toggle.checked) {
+			localforage.getItem('github_access_token').then(function(rsp) {
+				if (! rsp) {
+					window.open(root + 'auth', 'auth', 'width=640,height=480');
+				} else {
+					console.log('access_token: ', rsp);
+				}
+			});
+		}
+	});
+
 });

@@ -6,6 +6,7 @@ import logging
 import urlparse
 import urllib
 import codecs
+import requests
 
 import flask
 import werkzeug
@@ -128,6 +129,11 @@ def init():
 
     flask.g.enable_feature_bundler = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER', 0))
     flask.g.enable_feature_staticmaps = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_STATICMAPS', 0))
+
+    flask.g.github_client_id = os.environ.get('SPELUNKER_GITHUB_CLIENT_ID', '')
+    flask.g.github_client_secret = os.environ.get('SPELUNKER_GITHUB_CLIENT_SECRET', '')
+    flask.g.github_redirect_uri = os.environ.get('SPELUNKER_GITHUB_REDIRECT_URI', '')
+    flask.g.github_state = os.environ.get('SPELUNKER_GITHUB_STATE', '')
 
 @app.template_filter()
 def country_name(code):
@@ -344,11 +350,11 @@ def lastmod_days(days):
     query = {
         'range': {
             'wof:lastmodified': { 'gte': then, 'lte': now }
-        }    
+        }
     }
 
     query = enfilterify(query)
-    
+
     sort = [
         { 'wof:lastmodified': { 'order': 'desc', 'mode': 'max' } }
     ]
@@ -400,7 +406,7 @@ def current():
     }
 
     query = enfilterify(query)
-    
+
     sort = [
         { 'wof:lastmodified': { 'order': 'desc', 'mode': 'max' } }
     ]
@@ -1617,7 +1623,7 @@ def searchify():
 
         if get_by_id(id):
             location = flask.url_for('info', id=id, _external=True)
-            return flask.redirect(location, code=303)        
+            return flask.redirect(location, code=303)
 
     try:
         query, params, rsp = do_search()
@@ -1674,6 +1680,38 @@ def searchify():
     }
 
     return flask.render_template('search_results.html', **template_args)
+
+@app.route("/auth", methods=["GET"])
+@app.route("/auth/", methods=["GET"])
+def auth():
+    code = get_str('code')
+    if not code:
+        url = "http://github.com/login/oauth/authorize?" + urllib.urlencode({
+            'client_id': flask.g.github_client_id,
+            'redirect_uri': flask.g.github_redirect_uri,
+            'state': flask.g.github_state,
+            'scope': 'gist'
+        })
+        return flask.redirect(url, code=302)
+    else:
+        r = requests.post("https://github.com/login/oauth/access_token", {
+            'client_id': flask.g.github_client_id,
+            'client_secret': flask.g.github_client_secret,
+            'code': code,
+            'redirect_uri': flask.g.github_redirect_uri,
+            'state': flask.g.github_state
+        })
+        rsp = dict(urlparse.parse_qsl(r.text))
+        if 'access_token' not in rsp:
+            return "Error: could not sign you into GitHub (no access token)"
+
+        if not re.match('^[a-f0-9]+$', rsp['access_token']):
+            return "Error: could not sign you into GitHub (invalid access token)"
+
+        template_args = {
+            'access_token': rsp['access_token']
+        }
+        return flask.render_template('auth.html', **template_args)
 
 def do_search():
 

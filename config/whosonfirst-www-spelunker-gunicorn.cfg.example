@@ -32,5 +32,10 @@ os.environ['SPELUNKER_STATIC_ROOT'] = cfg.get('spelunker', 'static_root')
 os.environ['SPELUNKER_ENABLE_FEATURE_BUNDLER'] = cfg.get('spelunker', 'enable_feature_bundler')
 os.environ['SPELUNKER_ENABLE_FEATURE_STATICMAPS'] = cfg.get('spelunker', 'enable_feature_staticmaps')
 
+os.environ['SPELUNKER_GITHUB_CLIENT_ID'] = cfg.get('spelunker', 'github_client_id')
+os.environ['SPELUNKER_GITHUB_CLIENT_SECRET'] = cfg.get('spelunker', 'github_client_secret')
+os.environ['SPELUNKER_GITHUB_REDIRECT_URI'] = cfg.get('spelunker', 'github_redirect_uri')
+os.environ['SPELUNKER_GITHUB_STATE'] = cfg.get('spelunker', 'github_state')
+
 bind = '%s:%s' % (spelunker_host, spelunker_port)
 chdir = spelunker_root
