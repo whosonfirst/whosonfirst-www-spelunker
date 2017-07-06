@@ -1860,7 +1860,14 @@ def searchify():
 
     return flask.render_template('search_results.html', **template_args)
 
-def do_search():
+@app.route("/search/facets", methods=["GET"])
+@app.route("/search/facets/", methods=["GET"])
+def search_facets():
+
+    query = search_query()
+    return send_facets(query)
+
+def search_query():
 
     q = get_str('q')
     q = get_single(q)
@@ -1948,6 +1955,12 @@ def do_search():
         }
     }
 
+    return query_scored
+
+def do_search():
+
+    query = search_query()
+
     # 4. sorting
 
     sort = [
@@ -1958,7 +1971,7 @@ def do_search():
     ]
 
     body = {
-        'query': query_scored,
+        'query': query,
         'sort': sort,
     }
 
