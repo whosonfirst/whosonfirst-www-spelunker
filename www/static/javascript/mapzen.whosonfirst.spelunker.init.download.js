@@ -27,6 +27,18 @@ window.addEventListener("load", function load(event){
 	var summary_stats = document.getElementById('summary-stats');
 	var bundle_stats = document.getElementById('bundle-stats');
 	var preview_toggle = document.getElementById('preview-bundle');
+	var simple_props_toggle = document.getElementById('bundle-simple-props');
+
+	var root = document.body.getAttribute("data-abs-root-url");
+	var simple_props_lookup = null;
+	var simple_props_url = root + 'static/meta/simple_properties.json';
+	var onsuccess = function(rsp) {
+		simple_props_lookup = rsp;
+	};
+	var onerror = function() {
+		mapzen.whosonfirst.log.error("failed to load simple_properties.json");
+	};
+	mapzen.whosonfirst.net.fetch(simple_props_url, onsuccess, onerror);
 
 	var bbox = bundler.getAttribute("data-wof-bbox");
 	bbox = bbox.split(",");
@@ -76,6 +88,24 @@ window.addEventListener("load", function load(event){
 		if (preview_toggle.checked) {
 			render_feature(update.feature);
 		}
+		var ret = update.feature;
+		if (simple_props_toggle.checked &&
+		    simple_props_lookup) {
+			ret = {
+				id: update.feature.id,
+				type: update.feature.type,
+				properties: {},
+				bbox: update.feature.bbox,
+				geometry: update.feature.geometry
+			};
+			for (prop in simple_props_lookup) {
+				if (typeof update.feature.properties[prop] != 'undefined') {
+					var simple_prop = simple_props_lookup[prop];
+					ret.properties[simple_prop] = update.feature.properties[prop];
+				}
+			}
+		}
+		return ret;
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('bundle_ready', function(update) {
@@ -161,8 +191,10 @@ window.addEventListener("load", function load(event){
 				document.getElementById('selected-count').innerHTML += '<br><i>Please note that you currently cannot download more than ' + mapzen.whosonfirst.bundler.feature_count_limit.toLocaleString() + ' features of a given placetype at a time. This is not by design, and we are working to remove the limit.</i><br>';
 			}
 			document.getElementById('start-btn').className = '';
+			document.getElementById('bundle-controls').className = 'active';
 		} else {
 			document.getElementById('start-btn').className = 'hidden';
+			document.getElementById('bundle-controls').className = '';
 		}
 	};
 
@@ -178,6 +210,7 @@ window.addEventListener("load", function load(event){
 		}, false);
 		checkboxes[i].removeAttribute('disabled');
 	}
+	simple_props_toggle.removeAttribute('disabled');
 
 	btn_start.addEventListener('click', function(e) {
 		status.innerHTML = 'Preparing to bundle';
@@ -186,6 +219,7 @@ window.addEventListener("load", function load(event){
 		for (var i = 0; i < checkboxes.length; i++) {
 			checkboxes[i].setAttribute('disabled', 'disabled');
 		}
+		simple_props_toggle.setAttribute('disabled', 'disabled');
 		document.getElementById('cancel-download').className = '';
 		document.getElementById('output').className = '';
 	});
@@ -205,7 +239,8 @@ window.addEventListener("load", function load(event){
 			return;
 		}
 		var types = get_chosen_types().join('-');
-		var filename = 'wof_bundle_' + parent_id + '_' + types + '.geojson';
+		var simple = simple_props_toggle.checked ? '_simple' : '';
+		var filename = 'wof_bundle_' + parent_id + '_' + types + simple + '.geojson';
 		mapzen.whosonfirst.bundler.save_bundle(filename);
 	}, false);
 

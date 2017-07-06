@@ -249,6 +249,21 @@ pre {
     margin-bottom: 0;
 }
 
+#bundle-options,
+#bundle-controls.active {
+    border-top: 1px solid #ccc;
+    margin-top: 1em;
+    padding-top: 1em;
+}
+
+.bundle-option {
+    padding-top: 5px;
+}
+
+#bundle-options label {
+    font-weight: bold;
+}
+
 #start-btn, #bundle-btns {
     padding-top: 0.5em;
 }

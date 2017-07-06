@@ -250,7 +250,14 @@ mapzen.whosonfirst.bundler = (function() {
 					return;
 				}
 
+				if (_handlers.on_feature_download) {
+					feature = _handlers.on_feature_download({
+						feature: feature,
+						bundle_count: _features.length
+					});
+				}
 				_features.push(feature);
+
 				if (summarize_feature) {
 					_summary.push({
 						'wof:id': feature.properties['wof:id'],
@@ -259,13 +266,6 @@ mapzen.whosonfirst.bundler = (function() {
 						'wof:placetype': feature.properties['wof:placetype'],
 						'wof:country': feature.properties['wof:country'],
 						'wof:repo': feature.properties['wof:repo']
-					});
-				}
-
-				if (_handlers.on_feature_download) {
-					_handlers.on_feature_download({
-						feature: feature,
-						bundle_count: _features.length
 					});
 				}
 
