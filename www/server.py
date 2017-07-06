@@ -795,6 +795,27 @@ def for_concordance(who):
 
     return has_concordance(lookup, fullname)
 
+@app.route("/concordances/<string:who>/facets", methods=["GET"])
+@app.route("/concordances/<string:who>/facets/", methods=["GET"])
+def for_concordances_facets(who):
+
+    who = sanitize_str(who)
+    source = None
+
+    if not source:
+        source = src.get_source_by_name(who)
+
+    if not source:
+        source = src.get_source_by_prefix(who)
+
+    if not source:
+        flask.abort(404)
+
+    lookup = source.lookup_key()
+    fullname = source.details['fullname']
+
+    return has_concordance_facets(lookup, fullname)
+
 @app.route("/geonames/", methods=["GET"])
 @app.route("/gn/", methods=["GET"])
 def for_geonames():
@@ -2502,7 +2523,7 @@ def has_concordance_facets(src, label):
     query = has_concordance_query(src)
     return send_facets(query)
 
-def has_concordance_query():
+def has_concordance_query(src):
 
     concordance = "wof:concordances.%s" % src
 
