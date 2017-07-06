@@ -2054,7 +2054,7 @@ def facetify(query):
         },
         'translations': {
             'terms': {
-                'field': 'names',
+                'field': 'translations',
                 'size': 0
             }
         }
