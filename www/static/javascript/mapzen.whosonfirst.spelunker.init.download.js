@@ -104,6 +104,13 @@ window.addEventListener("load", function load(event){
 					ret.properties[simple_prop] = update.feature.properties[prop];
 				}
 			}
+			if (update.feature.properties['wof:hierarchy'] &&
+			    update.feature.properties['wof:hierarchy'].length == 1) {
+				var hier = update.feature.properties['wof:hierarchy'][0];
+				ret.properties.country_id = hier.country_id;
+				ret.properties.region_id = hier.region_id;
+				ret.properties.locality_id = hier.locality_id;
+			}
 		}
 		return ret;
 	});
