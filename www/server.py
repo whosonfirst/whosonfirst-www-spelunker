@@ -371,11 +371,8 @@ def lastmod_days(days):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-    # facet_url = pagination_url
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'days': days,
@@ -383,9 +380,7 @@ def lastmod_days(days):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        # 'facets': facets,
-        # 'facet_url': facet_url
-        'new_facet_url': new_facet_url
+        'facet_url': facet_url
     }
 
     return flask.render_template('recent.html', **template_args)
@@ -452,20 +447,15 @@ def current():
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'es_query': body,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        # 'facets': facets,
-        # 'facet_url': facet_url
-        'new_facet_url': new_facet_url
+        'facet_url': facet_url
     }
 
     return flask.render_template('current.html', **template_args)
@@ -609,11 +599,8 @@ def brand(id):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    # facet_url = pagination_url
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'es_query': body,
@@ -621,9 +608,7 @@ def brand(id):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        # 'facets': facets,
-        # 'facet_url': facet_url
-        'new_facet_url': new_facet_url
+        'facet_url': facet_url
     }
 
     return flask.render_template('brand.html', **template_args)
@@ -668,7 +653,7 @@ def download(id):
     }
 
     query = enfilterify(query)
-    facets = facetify(query)
+    facets = facetify(query)	# is this necessary (20170706/thisisaaronland)
 
     template_args = {
         'doc': doc,
@@ -956,20 +941,15 @@ def descendants(id):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    # facet_url = pagination_url
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'doc': doc,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
         'es_query': body,
     }
 
@@ -1029,18 +1009,13 @@ def megacities():
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    # facet_url = pagination_url
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
         'pagination': pagination,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
         'pagination_url': pagination_url,
         'es_query': body,
     }
@@ -1089,20 +1064,15 @@ def nullisland():
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    # facet_url = pagination_url
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('nullisland.html', **template_args)
@@ -1187,12 +1157,10 @@ def placetype(placetype):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
     facet_url = pagination_url
 
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'es_query': body,
@@ -1200,9 +1168,7 @@ def placetype(placetype):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url
+        'facet_url': facet_url
     }
 
     return flask.render_template('placetype.html', **template_args)
@@ -1382,11 +1348,8 @@ def machinetag_places(field, mt):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    # facet_url = pagination_url
-    new_facet_url = build_facet_url()
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -1394,9 +1357,7 @@ def machinetag_places(field, mt):
         'pagination_url': pagination_url,
         'src': mt.as_string(),
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('machinetag_places.html', **template_args)
@@ -1589,11 +1550,8 @@ def tag(tag):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -1601,9 +1559,7 @@ def tag(tag):
         'pagination_url': pagination_url,
         'tag': tag,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('tag.html', **template_args)
@@ -1653,11 +1609,8 @@ def category(category):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -1665,9 +1618,7 @@ def category(category):
         'pagination_url': pagination_url,
         'category': category,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('category.html', **template_args)
@@ -1724,12 +1675,8 @@ def code(code):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -1737,9 +1684,7 @@ def code(code):
         'pagination_url': pagination_url,
         'postcode': code,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('postcode.html', **template_args)
@@ -1860,12 +1805,8 @@ def searchify():
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query['query'])
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -1874,9 +1815,7 @@ def searchify():
         'query': q,
         'query_string': query_string,
         'es_query': query,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('search_results.html', **template_args)
@@ -2499,12 +2438,8 @@ def has_concordance(src, label):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-    
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-        
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
         
     template_args = {
         'docs': docs,
@@ -2512,14 +2447,11 @@ def has_concordance(src, label):
         'pagination_url': pagination_url,
         'src': label,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     return flask.render_template('concordance.html', **template_args)
 
-# routing?
 def has_concordance_facets(src, label):
 
     src = sanitize_str(src)
@@ -2592,12 +2524,8 @@ def has_language(lang, spoken=False):
 
     docs = docs_to_geojson(docs)
 
-    # facets = facetify(query)
-
     pagination_url = build_pagination_url()
-    new_facet_url = build_facet_url()
-
-    # facet_url = pagination_url
+    facet_url = build_facet_url()
 
     template_args = {
         'docs': docs,
@@ -2608,7 +2536,7 @@ def has_language(lang, spoken=False):
         'es_query': body,
         # 'facets': facets,
         # 'facet_url': facet_url,
-        'new_facet_url': new_facet_url,
+        'facet_url': facet_url,
     }
 
     template = "has_language_official.html"
