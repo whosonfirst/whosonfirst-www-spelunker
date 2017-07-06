@@ -2012,6 +2012,12 @@ def facetify(query):
                 'field': 'translations',
                 'size': 0
             }
+        },
+        'is_current': {
+            'terms': {
+                'field': 'mz:is_current',
+                'size': 0
+            }
         }
 
     }
@@ -2076,6 +2082,9 @@ def enfilterify(query):
     variant = get_str('variant')	# names_variant
 
     translations = get_str('translations')
+
+    is_current = get_int('is_current')
+    is_current = get_single(is_current)
 
     country = get_int('country_id')
     region = get_int('region_id')
@@ -2150,6 +2159,12 @@ def enfilterify(query):
             filters.append({ 'terms': {
                 'wof:placetype': pts
             }})
+
+    if is_current in (-1, 0, 1):
+
+        filters.append({ 'term': {
+            'mz:is_current': is_current
+        }})
 
     if translations:
 

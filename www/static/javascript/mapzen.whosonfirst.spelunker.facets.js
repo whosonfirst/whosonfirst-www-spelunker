@@ -131,7 +131,11 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 	    var pretty_label = label;
 
-	    if (label == "locality_id"){
+	    if (label == "is_current"){
+		pretty_label = "is \"current\" -ness";
+	    }
+
+	    else if (label == "locality_id"){
 		pretty_label = "locality";
 	    }
 
@@ -169,6 +173,21 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		    span.appendChild(document.createTextNode(detail["fullname"]));
 		}
 
+		else if (label == "is_current"){
+
+		    if (detail["key"] == 1){
+			span.appendChild(document.createTextNode("current"));
+		    }
+
+		    else if (detail["key"] == 0){
+			span.appendChild(document.createTextNode("not current"));
+		    }
+
+		    else {
+			span.appendChild(document.createTextNode("unknown"));
+		    }
+		}
+		
 		else if (label == "iso"){
 
 		    span.appendChild(document.createTextNode(detail["fullname"]));
