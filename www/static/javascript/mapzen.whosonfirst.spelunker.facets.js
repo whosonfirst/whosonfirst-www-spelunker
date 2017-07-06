@@ -42,6 +42,8 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		wrapper.innerHTML = "";
 
+		// wrapper.appendChild(document.createTextNode("what"));
+
 		var list = document.createElement("ul");
 		list.setAttribute("class", "list-inline");
 

@@ -232,7 +232,7 @@ q {
 }
 
 .warning:before {
-    content: "⚠";
+    content: "🚨";
     padding-right: .5em;    
 }
 

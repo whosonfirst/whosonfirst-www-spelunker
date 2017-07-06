@@ -728,12 +728,25 @@ def languages(spoken=False):
 def for_lang_official(lang):
     return has_language(lang)
 
+@app.route("/languages/<string:lang>/facets", methods=["GET"])
+@app.route("/languages/<string:lang>/facets/", methods=["GET"])
+def for_lang_official_facets(lang):
+    return has_language_facets(lang)
+
+
 @app.route("/languages/spoken/<string:lang>", methods=["GET"])
 @app.route("/languages/spoken/<string:lang>/", methods=["GET"])
 @app.route("/languages/<string:lang>/spoken", methods=["GET"])
 @app.route("/languages/<string:lang>/spoken/", methods=["GET"])
 def for_lang_spoken(lang):
     return has_language(lang, True)
+
+@app.route("/languages/spoken/<string:lang>/facets", methods=["GET"])
+@app.route("/languages/spoken/<string:lang>/facets/", methods=["GET"])
+@app.route("/languages/<string:lang>/spoken/facets", methods=["GET"])
+@app.route("/languages/<string:lang>/spoken/facets/", methods=["GET"])
+def for_lang_spoken_facets(lang):
+    return has_language_facets(lang, True)
 
 @app.route("/concordances/", methods=["GET"])
 @app.route("/concordances/", methods=["GET"])
@@ -2534,7 +2547,7 @@ def get_by_concordance(id, src):
 def has_language(lang, spoken=False):
 
     lang = sanitize_str(lang)
-    query = has_language_query(lang, spoken)
+    lang_common, query = has_language_query(lang, spoken)
 
     body = {
          'query': query
@@ -2579,10 +2592,11 @@ def has_language(lang, spoken=False):
 
 # routing?
 
-def has_language_facets(lang, spoken):
+def has_language_facets(lang, spoken=False):
 
     lang = sanitize_str(lang)
-    query = has_language_query(lang, spoken)
+
+    lang_common, query = has_language_query(lang, spoken)
     return send_facets(query)
 
 def has_language_query(lang, spoken):
@@ -2639,7 +2653,7 @@ def has_language_query(lang, spoken):
             }
     }
 
-    return query
+    return lang_common, query
 
 def inflate_hierarchy(doc):
 
