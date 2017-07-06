@@ -161,8 +161,15 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    var count_details = details.length;
 
 	    var list = document.createElement("li");
-	    list.setAttribute("class", "list-inline facet-details-list");
 
+	    if (label == "translations"){
+		list.setAttribute("class", "list facet-details-list");
+	    } 
+
+	    else {
+		list.setAttribute("class", "list-inline facet-details-list");
+	    }
+	    
 	    for (var i=0; i < count_details; i++){
 
 		var detail = details[i];
@@ -225,11 +232,29 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		var item = document.createElement("li");
 		item.setAttribute("class", "facet_" + label + " facet-details-list-item");
-		item.setAttribute("data-value", detail["key"]);
+		item.setAttribute("data-value", detail["key"]);		
 
 		item.appendChild(link);
 		item.appendChild(document.createTextNode(" "));
 		item.appendChild(count);
+
+		if (label == "translations"){
+
+		    var link = document.createElement("a");
+		    link.appendChild(document.createTextNode("without a translation"));
+
+		    link.setAttribute("href", query_url + "&" + label + "=!" + detail["key"]);
+		    link.setAttribute("class", "facet_" + detail["key"] + "_" + detail["doc_count"]);
+
+		    var without = document.createElement("div");
+		    without.setAttribute("class", "translations-missing");
+
+		    without.appendChild(document.createTextNode("filter by records "));
+		    without.appendChild(link);
+		    without.appendChild(document.createTextNode(" for " + detail["key"]));
+
+		    item.appendChild(without);
+		}
 
 		list.appendChild(item);
 	    }

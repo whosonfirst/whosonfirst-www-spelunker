@@ -221,6 +221,12 @@ q {
     padding-left: .5em;
 }
 
+.translations-missing {
+    font-size:small !important;
+    color: #333;
+    margin-bottom:.75em;
+}
+
 .warning {
     
 }
