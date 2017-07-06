@@ -1486,7 +1486,7 @@ def tags():
     aggrs = {
         'placetypes': {
             'terms': {
-                'field': 'tags_all',
+                'field': 'wof:tags',
                 'size': 0,
             }
         }
@@ -1590,7 +1590,7 @@ def tag_query(tag):
     esc_tag = flask.g.search_idx.escape(tag)
 
     query = {
-        'match': { 'tags_all': esc_tag }
+        'match': { 'wof:tags': esc_tag }
     }
 
     return enfilterify(query)
@@ -1979,7 +1979,7 @@ def facetify(query):
         },
         'tag': {
             'terms': {
-                'field': 'tags_all',
+                'field': 'wof:tags',
                 'size': 0,
             }
         },
@@ -2208,7 +2208,7 @@ def enfilterify(query):
             esc_tag = flask.g.search_idx.escape(tag)
 
             filters.append({ 'query': { 'match': {
-                'tags_all': esc_tag,
+                'wof:tags': esc_tag,
             }}})
 
         else:
@@ -2218,7 +2218,7 @@ def enfilterify(query):
             if len(esc_tags) == 1:
 
                 filters.append({ 'term': {
-                    'tags_all' : esc_tags[0],
+                    'wof:tags' : esc_tags[0],
                 }})
 
             else:
@@ -2226,7 +2226,7 @@ def enfilterify(query):
                 must = []
 
                 for t in esc_tags:
-                    must.append({ 'term': { 'tags_all': t }})
+                    must.append({ 'term': { 'wof:tags': t }})
 
                 filters.append({ 'bool': {
                     'must': must
