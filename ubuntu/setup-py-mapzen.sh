@@ -15,5 +15,6 @@ sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-search/tar
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-utils/tarball/master --process-dependency-links
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes/tarball/master --process-dependency-links
 sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-sources/tarball/master --process-dependency-links
+sudo pip install https://github.com/whosonfirst/py-mapzen-whosonfirst-languages/tarball/master --process-dependency-links
 
 exit 0
