@@ -210,6 +210,17 @@ q {
     padding-right: .5em;
 }
 
+.timings-right {
+    float:right;
+    font-size:small;
+    color: #777;
+}
+
+.timings-right:after {
+    content: "⏳";
+    padding-left: .5em;
+}
+
 .warning {
     
 }

@@ -375,8 +375,10 @@ def lastmod_days(days):
     facet_url = build_facet_url()
 
     template_args = {
+        'timing': rsp.get("timing", None),
         'days': days,
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
@@ -451,7 +453,9 @@ def current():
     facet_url = build_facet_url()
 
     template_args = {
+        'timing': rsp.get("timing", None),
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
@@ -603,7 +607,9 @@ def brand(id):
     facet_url = build_facet_url()
 
     template_args = {
+        'timing': rsp.get("timing", None),
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'brand': brand_id,
         'docs': docs,
         'pagination': pagination,
@@ -945,12 +951,14 @@ def descendants(id):
     facet_url = build_facet_url()
 
     template_args = {
+        'timing': rsp.get("timing", None),
         'doc': doc,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
         'facet_url': facet_url,
         'es_query': body,
+        'timing': rsp.get("timing", None),
     }
 
     return flask.render_template('descendants.html', **template_args)
@@ -1018,6 +1026,7 @@ def megacities():
         'facet_url': facet_url,
         'pagination_url': pagination_url,
         'es_query': body,
+        'timing': rsp.get("timing", None),
     }
 
     return flask.render_template('megacities.html', **template_args)
@@ -1073,6 +1082,7 @@ def nullisland():
         'pagination_url': pagination_url,
         'es_query': body,
         'facet_url': facet_url,
+        'timing': rsp.get("timing", None),
     }
 
     return flask.render_template('nullisland.html', **template_args)
@@ -1164,6 +1174,7 @@ def placetype(placetype):
 
     template_args = {
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'placetype': placetype,
         'docs': docs,
         'pagination': pagination,
@@ -1357,6 +1368,7 @@ def machinetag_places(field, mt):
         'pagination_url': pagination_url,
         'src': mt.as_string(),
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -1559,6 +1571,7 @@ def tag(tag):
         'pagination_url': pagination_url,
         'tag': tag,
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -1618,6 +1631,7 @@ def category(category):
         'pagination_url': pagination_url,
         'category': category,
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -1684,6 +1698,7 @@ def code(code):
         'pagination_url': pagination_url,
         'postcode': code,
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -1815,6 +1830,7 @@ def searchify():
         'query': q,
         'query_string': query_string,
         'es_query': query,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -2447,6 +2463,7 @@ def has_concordance(src, label):
         'pagination_url': pagination_url,
         'src': label,
         'es_query': body,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
@@ -2534,8 +2551,7 @@ def has_language(lang, spoken=False):
         'lang': lang,
         'lang_common': lang_common,
         'es_query': body,
-        # 'facets': facets,
-        # 'facet_url': facet_url,
+        'timing': rsp.get("timing", None),
         'facet_url': facet_url,
     }
 
