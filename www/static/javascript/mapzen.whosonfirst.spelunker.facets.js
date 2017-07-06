@@ -249,9 +249,14 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		    var without = document.createElement("div");
 		    without.setAttribute("class", "translations-missing");
 
+		    var span = document.createElement("span");
+		    span.setAttribute("class", "hey-look");
+		    span.appendChild(document.createTextNode(detail["key"]));
+
 		    without.appendChild(document.createTextNode("filter by records "));
 		    without.appendChild(link);
-		    without.appendChild(document.createTextNode(" for " + detail["key"]));
+		    without.appendChild(document.createTextNode(" for "));
+		    without.appendChild(span);
 
 		    item.appendChild(without);
 		}
