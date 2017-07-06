@@ -154,6 +154,13 @@ q {
 #wof-id {
 }
 
+.iso-country:after {
+    font-size:.6em;
+    color: #ccc;
+    content: attr(data-iso-code);
+    padding-left: .5em;
+    text-transform: uppercase;
+}
 .italic {
     font-style:italic;
 }

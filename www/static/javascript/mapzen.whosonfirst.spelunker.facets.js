@@ -115,9 +115,25 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    var facet = document.createElement("div");
 	    facet.setAttribute("class", "facet");
 
+	    var pretty_label = label;
+
+	    if (label == "locality_id"){
+		pretty_label = "locality";
+	    }
+
+	    else if (label == "region_id"){
+		pretty_label = "region";
+	    }
+
+	    else if (label == "iso"){
+		pretty_label = "country (ISO code)";
+	    }
+
+	    else {}
+
 	    var span = document.createElement("span");
 	    span.setAttribute("class", "hey-look");
-	    span.appendChild(document.createTextNode(label));
+	    span.appendChild(document.createTextNode(pretty_label));
 
 	    var header = document.createElement("h4");
 	    header.appendChild(document.createTextNode("filter by "));
@@ -141,9 +157,20 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		    span.appendChild(document.createTextNode(detail["fullname"]));
 		}
 
-		else if (label == "translations"){
-		    console.log("OK");
+		else if (label == "iso"){
+
 		    span.appendChild(document.createTextNode(detail["fullname"]));
+
+		    if (detail["fullname"] != detail["key"]){
+			span.setAttribute("class", "iso-country")
+			span.setAttribute("data-iso-code", detail["key"]);
+		    }
+		}
+
+		else if (label == "translations"){
+		    span.appendChild(document.createTextNode(detail["fullname"]));
+		    span.setAttribute("class", "languify")
+		    span.setAttribute("data-language", detail["key"]);
 		}
 
 		else {
@@ -152,12 +179,8 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		if ((label == "locality_id") || (label == "region_id")){
 		    span.setAttribute("class", "wof-namify")
+		    span.setAttribute("title", "Who's On First ID " + detail["key"]);
 		    span.setAttribute("data-wof-id", detail["key"]);
-		}
-
-		if (label == "translations"){
-		    span.setAttribute("class", "languify")
-		    span.setAttribute("data-language", detail["key"]);
 		}
 
 		var link = document.createElement("a");

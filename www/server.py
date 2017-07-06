@@ -2080,6 +2080,9 @@ def facetify(query):
         if k == 'concordance':
             append_source_details_to_buckets(results)
 
+        elif k == 'iso':
+            append_country_details_to_buckets(results)
+
         elif k == 'translations':
             append_language_details_to_buckets(results)
         
@@ -2743,6 +2746,26 @@ def append_language_details_to_buckets(buckets):
 
         except Exception, e:
             logging.warning("failed to parse language tag '%s' because %s" % (tag, e))
+
+def append_country_details_to_buckets(buckets):
+
+    for b in buckets:
+
+        code = b["key"]
+
+        b["name"] = code
+        b["fullname"] = code
+
+        try:
+            
+            c = pycountry.countries.get(alpha2=code.upper())
+            name = c.name
+
+            b["name"] = name
+            b["fullname"] = name
+
+        except Exception, e:
+            logging.warning("failed to parse country code '%s' because %s" % (code, e))
 
 # please put me in a library somewhere...
 # please to be porting this at the same time...
