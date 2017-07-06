@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Download {{ doc.properties.get("wof:name") |e }} Descendants{% endblock %}
 {% block content %}
-<div class="row" id="wof-bundler" data-parent-id="{{ parent_id |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}">
+<div class="row" id="wof-bundler" data-parent-id="{{ parent_id |e }}" data-wof-bbox="{{ doc.bbox.1|e }},{{ doc.bbox.0|e }},{{ doc.bbox.3|e }},{{ doc.bbox.2|e }}" data-parent-name="{{ doc.properties.get("wof:name") | e }}">
 	<div class="col-md-6">
 		<h3>Download descendants of <a href="{{ url_for('info', id=parent_id) | e }}">{{ doc.properties.get("wof:name") | e }}</a></h3>
 		<small>Choose each placetype you wish to download.</small>

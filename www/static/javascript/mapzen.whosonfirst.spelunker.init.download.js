@@ -247,7 +247,10 @@ window.addEventListener("load", function load(event){
 		}
 		var types = get_chosen_types().join('-');
 		var simple = simple_props_toggle.checked ? '_simple' : '';
-		var filename = 'wof_bundle_' + parent_id + '_' + types + simple + '.geojson';
+		var parent_name = bundler.getAttribute('data-parent-name');
+		parent_name = parent_name.toLowerCase();
+		parent_name = parent_name.replace(/\W+/, '-');
+		var filename = 'wof_bundle_' + parent_name + '_' + parent_id + '_' + types + simple + '.geojson';
 		mapzen.whosonfirst.bundler.save_bundle(filename);
 	}, false);
 
