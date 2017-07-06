@@ -8,7 +8,12 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 	'get_facets': function(facet_url){
 
+	    var t1 = new Date();
+
 	    var on_success = function(rsp){
+
+		var t2 = new Date();
+		var secs = (t2 - t1) / 1000;
 
 		var wrapper = document.getElementById("facets-wrapper");
 		wrapper.innerHTML = "";
@@ -16,8 +21,16 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		var facets = self.render_facets(rsp, facet_url);
 		wrapper.appendChild(facets);
 
-		mapzen.whosonfirst.namify.namify_wof();
-		mapzen.whosonfirst.languify.languify();
+		var div = document.createElement("div");
+		div.setAttribute("class", "timings");
+		div.appendChild(document.createTextNode("time to load facets: " + secs + " seconds"));
+		wrapper.appendChild(div);
+
+		setTimeout(function(){
+		    mapzen.whosonfirst.namify.namify_wof();
+		    mapzen.whosonfirst.languify.languify();
+		}, 200);
+
 	    };
 
 	    var on_fail = function(rsp){
@@ -25,7 +38,8 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		var url = rsp["url"];
 
 		var wrapper = document.getElementById("facets-wrapper");
-		// wrapper.setAttribute("class", "warning");
+		wrapper.setAttribute("class", "warning");
+
 		wrapper.innerHTML = "";
 
 		var list = document.createElement("ul");
@@ -148,8 +162,6 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 	    for (var i=0; i < count_details; i++){
 
 		var detail = details[i];
-		console.log(label);
-		console.log(detail);
 
 		var span = document.createElement("span");
 

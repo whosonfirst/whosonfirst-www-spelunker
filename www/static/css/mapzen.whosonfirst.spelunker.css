@@ -161,6 +161,7 @@ q {
     padding-left: .5em;
     text-transform: uppercase;
 }
+
 .italic {
     font-style:italic;
 }
@@ -188,6 +189,34 @@ q {
 
 .noslash:before {
     content:"" !important;
+}
+
+.loading {
+
+}
+
+.loading:before {
+    content: "⏳";
+    padding-right: .5em;
+}
+
+.timings {
+    font-size:small;
+    color: #777;
+}
+
+.timings:before {
+    content: "⏳";
+    padding-right: .5em;
+}
+
+.warning {
+    
+}
+
+.warning:before {
+    content: "⚠";
+    padding-right: .5em;    
 }
 
 #props-toggle {
