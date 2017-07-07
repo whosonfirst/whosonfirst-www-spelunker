@@ -145,16 +145,21 @@ window.addEventListener("load", function load(event){
 		var files = {};
 
 		var filename = get_filename();
-		files[filename] = {
+		var csv_filename = filename.replace(/\.geojson$/, '.csv');
+		files['1_' + filename] = {
 			content: JSON.stringify(mapzen.whosonfirst.bundler.bundle_features())
+		};
+		files['2_' + csv_filename] = {
+			content: mapzen.whosonfirst.bundler.get_summary_csv()
 		};
 
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4 && xhr.status == 201) {
 				var done = document.getElementById('bundle-github-done');
 				var rsp = JSON.parse(xhr.responseText);
-				var gist_url = rsp.files[filename].raw_url;
-				done.innerHTML = '<strong><a href="' + mapzen.whosonfirst.php.htmlspecialchars(gist_url) + '">Your GitHub Gist is ready</a></strong>';
+				var gist_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.html_url);
+				var raw_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.files[filename].raw_url);
+				done.innerHTML = '<strong><a href="' + gist_url + '">Your GitHub Gist is ready</a></strong> (<a href="' + raw_url + '">raw GeoJSON</a>)';
 				github.className = 'done';
 			}
 		}

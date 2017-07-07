@@ -301,7 +301,7 @@ mapzen.whosonfirst.bundler = (function() {
 			saveAs(blob, filename);
 		},
 
-		get_summary_blob: function(filename) {
+		get_summary_csv: function() {
 			var summary = self.summarize_features();
 			var process_row = function(row) {
 				var processed = '', value;
@@ -327,6 +327,11 @@ mapzen.whosonfirst.bundler = (function() {
 				csv += process_row(summary[i]);
 			}
 
+			return csv;
+		},
+
+		get_summary_blob: function(filename) {
+			var csv = self.get_summary_csv();
 			var args = {
 				type: 'text/csv;charset=utf-8;'
 			};
