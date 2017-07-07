@@ -19,14 +19,14 @@
 			</div>
 			<div class="form-group">
 				<input type="checkbox" id="bundle-github-gist">
-				<label for="bundle-github-gist">Save as GitHub gist</label><br>
+				<label for="bundle-github-gist">Save as GitHub Gist</label><br>
 				<small>Requires that you have a GitHub account</small>
 			</div>
 		</div>
 		<div id="bundle-controls">
-			<span id="selected-count"></span> <a href="#" id="cancel-download" class="hidden">Cancel download</a>
-			<div id="start-btn" class="hidden">
-				<a id="btn-start" class="btn btn-mapzen btn-primary">Start download</a>
+			<span id="selected-count">You have selected <strong>0</strong> features.</span> <a href="#" id="cancel-download" class="hidden">Cancel download</a>
+			<div id="start-btn">
+				<a id="btn-start" class="btn btn-mapzen btn-primary disabled">Start download</a>
 			</div>
 			<div id="output">
 				<div id="bundle-btns" class="hidden">
@@ -38,6 +38,12 @@
 					<div id="summary-stats"></div>
 				</div>
 				<div id="bundle-status"></div>
+				<div id="bundle-github" class="hidden">
+					<div id="bundle-github-login"><a href="#" id="github-login" class="hey-look">Authorize with GitHub</a> (popup) to save results as a Gist.</div>
+					<div id="bundle-github-logout">You are authorized with GitHub (<a href="#" id="github-logout">logout</a>), <strong>your results will be saved as a Gist</strong>.</div>
+					<div id="bundle-github-uploading"><strong>Uploading your results</strong> to a GitHub Gist, please wait...</div>
+					<div id="bundle-github-done"></div>
+				</div>
 				<div id="bundle-warning"></div>
 			</div>
 		</div>

@@ -250,7 +250,7 @@ pre {
 }
 
 #bundle-options,
-#bundle-controls.active {
+#bundle-controls {
     border-top: 1px solid #ccc;
     margin-top: 1em;
     padding-top: 1em;
@@ -272,8 +272,23 @@ pre {
     margin-bottom: 1em;
 }
 
-#bundle-status {
+#bundle-status,
+#bundle-github {
     margin-top: 0.5em;
+}
+
+#bundle-github-login,
+#bundle-github-logout,
+#bundle-github-uploading,
+#bundle-github-done {
+    display: none;
+}
+
+#bundle-github.login #bundle-github-login,
+#bundle-github.logout #bundle-github-logout,
+#bundle-github.uploading #bundle-github-uploading,
+#bundle-github.done #bundle-github-done {
+    display: block;
 }
 
 #bundle-status {
