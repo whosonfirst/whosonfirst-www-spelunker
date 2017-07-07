@@ -159,7 +159,7 @@ window.addEventListener("load", function load(event){
 				var rsp = JSON.parse(xhr.responseText);
 				var gist_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.html_url);
 				var raw_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.files[filename].raw_url);
-				done.innerHTML = '<strong><a href="' + gist_url + '">Your GitHub Gist is ready</a></strong> (<a href="' + raw_url + '">raw GeoJSON</a>)';
+				done.innerHTML = '<strong><a href="' + gist_url + '" target="_blank">Your GitHub Gist is ready</a></strong> (<a href="' + raw_url + '" target="_blank">raw GeoJSON</a>)';
 				github.className = 'done';
 			}
 		}
