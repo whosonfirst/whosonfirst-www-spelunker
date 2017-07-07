@@ -7,7 +7,7 @@
 		var footer = document.getElementById("footer");
 		var script = document.createElement("script");
 		script.setAttribute("type", "text/javascript");
-		script.setAttribute("src", "https://whosonfirst.mapzen.com/javascript/whosonfirst.www.js");
+                script.setAttribute("src", "{{ url_for('static', filename='javascript/whosonfirst.www.js',  _external=True) }}");
 
 		footer.appendChild(script);
         });
