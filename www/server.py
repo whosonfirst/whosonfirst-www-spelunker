@@ -2217,7 +2217,7 @@ def enfilterify(query):
 
             if len(without_translations):
 
-                must_not.append({ 'terms': {
+                mustnot.append({ 'terms': {
                     'translations': without_translations
                 }})
 
