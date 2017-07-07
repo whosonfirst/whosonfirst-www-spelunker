@@ -144,12 +144,12 @@ window.addEventListener("load", function load(event){
 
 		var files = {};
 
-		var filename = get_filename();
-		var csv_filename = filename.replace(/\.geojson$/, '.csv');
-		files['1_' + filename] = {
+		var filename = '1_' + get_filename();
+		var csv_filename = '2_' + filename.replace(/\.geojson$/, '.csv');
+		files[filename] = {
 			content: JSON.stringify(mapzen.whosonfirst.bundler.bundle_features())
 		};
-		files['2_' + csv_filename] = {
+		files[csv_filename] = {
 			content: mapzen.whosonfirst.bundler.get_summary_csv()
 		};
 

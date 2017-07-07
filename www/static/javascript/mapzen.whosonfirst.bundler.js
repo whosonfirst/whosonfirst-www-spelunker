@@ -306,6 +306,9 @@ mapzen.whosonfirst.bundler = (function() {
 			var process_row = function(row) {
 				var processed = '', value;
 				for (var i = 0; i < row.length; i++) {
+					if (typeof row[i] == 'undefined') {
+						row[i] = '';
+					}
 					value = (row[i] === null) ? '' : row[i].toString();
 					if (row[i] instanceof Date) {
 						value = row[i].toLocaleString();
