@@ -1,15 +1,1 @@
 	<div class="pull-right">this is a <a href="https://whosonfirst.mapzen.com/" class="hey-look">who's on first</a> gig which is a <a href="https://mapzen.com/" class="hey-look">mapzen</a> gig / you can <span class="hey-look">read all the details</span> on the handy <a href="{{ url_for('about') }}" class="hey-look">about</a> page / see also <a href="https://twitter.com/alloftheplaces" class="hey-look" target="twitter">@alloftheplaces</a></div>
-
-	<script type="text/javascript">
-
-	window.addEventListener("load", function load(event){
-
-		var footer = document.getElementById("footer");
-		var script = document.createElement("script");
-		script.setAttribute("type", "text/javascript");
-                script.setAttribute("src", "{{ url_for('static', filename='javascript/whosonfirst.www.js',  _external=True) }}");
-
-		footer.appendChild(script);
-        });
-
-	</script>
