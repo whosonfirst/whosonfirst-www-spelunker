@@ -30,6 +30,7 @@ os.environ['SPELUNKER_DATA_ROOT'] = cfg.get('spelunker', 'data_root')
 os.environ['SPELUNKER_STATIC_ROOT'] = cfg.get('spelunker', 'static_root')
 
 os.environ['SPELUNKER_ENABLE_FEATURE_BUNDLER'] = cfg.get('spelunker', 'enable_feature_bundler')
+os.environ['SPELUNKER_ENABLE_FEATURE_BUNDLER_GISTS'] = cfg.get('spelunker', 'enable_feature_bundler_gists')
 os.environ['SPELUNKER_ENABLE_FEATURE_STATICMAPS'] = cfg.get('spelunker', 'enable_feature_staticmaps')
 
 os.environ['SPELUNKER_GITHUB_CLIENT_ID'] = cfg.get('spelunker', 'github_client_id')

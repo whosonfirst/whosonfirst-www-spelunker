@@ -200,7 +200,7 @@ window.addEventListener("load", function load(event){
 		} else {
 			status.innerHTML = '';
 		}
-		if (gist_toggle.checked) {
+		if (gist_toggle && gist_toggle.checked) {
 			if (github_access_token) {
 				upload_bundle_to_gist();
 			} else if (! github_interval) {
@@ -315,7 +315,7 @@ window.addEventListener("load", function load(event){
 		document.getElementById('cancel-download').className = '';
 		document.getElementById('output').className = '';
 
-		if (gist_toggle.checked) {
+		if (gist_toggle && gist_toggle.checked) {
 			var github = document.getElementById('bundle-github');
 			localforage.getItem('github_access_token').then(function(rsp) {
 				if (! rsp) {

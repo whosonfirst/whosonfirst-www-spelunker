@@ -11,6 +11,7 @@ slow_query_log=/tmp/slow-query.log
 data_root=https://whosonfirst.mapzen.com/data
 static_root=https://whosonfirst.mapzen.com/static
 enable_feature_bundler=0
+enable_feature_bundler_gists=0
 enable_feature_staticmaps=0
 github_client_id=YOUR-GITHUB-API-CLIENT-ID-GOES-HERE
 github_client_secret=YOUR-GITHUB-API-CLIENT-SECRET-GOES-HERE

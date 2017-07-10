@@ -15,13 +15,15 @@
 			<div class="form-group">
 				<input type="checkbox" id="bundle-simple-props">
 				<label for="bundle-simple-props">Simple properties</label><br>
-				<small>Bundle a small subset of WOF properties</small>
+				<small>Bundle a subset of <a href="https://github.com/whosonfirst/whosonfirst-properties/blob/master/aliases/simple_properties.json">simplified WOF properties</a></small>
 			</div>
+			{% if g.enable_feature_bundler_gists %}
 			<div class="form-group">
 				<input type="checkbox" id="bundle-github-gist">
 				<label for="bundle-github-gist">Save as GitHub Gist</label><br>
-				<small>Requires that you have a GitHub account</small>
+				<small>Requires that you have a <a href="https://github.com/join">GitHub account</a></small>
 			</div>
+			{% endif %}
 		</div>
 		<div id="bundle-controls">
 			<span id="selected-count">You have selected <strong>0</strong> features.</span> <a href="#" id="cancel-download" class="hidden">Cancel download</a>
