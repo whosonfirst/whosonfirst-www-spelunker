@@ -89,33 +89,13 @@
 
 </div>
 
-<div class="col-md-5">
+<div class="col-md-5" id="facets-wrapper" data-facet-url="{% if facet_url %}{{facet_url}}{% endif %}">
 
-{% if facets %}
-{% for k in facets.keys() %}
-<h4>filter by <span class="hey-look">{{ k|e }}</span></h4>
-
-<div style="max-height:200px;overflow:scroll;border-bottom:solid thin;margin-bottom:2em;">
-<ul class="list-inline">
-{% for f in facets[ k ] %}
-{% if k == 'concordance' %}
-
-<li class="facet_{{ k | e }}"  data-value="{{ f.key | e }}"><a href="{{ facet_url}}&{{k|e}}={{ f.key |e}}" class="facet_{{ k | e }}_{{ f.key|e}}">{{ f.fullname | e }}</a> <small>{{ f.doc_count |number_format|e }}</small></li>
-
-{% else %}
-
-<li class="facet_{{ k | e }}"  data-value="{{ f.key | e }}"><a href="{{ facet_url}}&{{k|e}}={{ f.key |e}}" class="facet_{{ k | e }}_{{ f.key|e}}">{{ f.key | e }}</a> <small>{{ f.doc_count |number_format|e }}</small></li>
-
-{% endif %}
-{% endfor %}
-</ul>
-</div>
-
-{% endfor %}
+{% if facet_url %}
+<div class="loading" id="loading-facets">loading facets from the sky</div>
 {% endif %}
 
 {% include "inc_log.html" %}
-
 </div>
 
 </div>

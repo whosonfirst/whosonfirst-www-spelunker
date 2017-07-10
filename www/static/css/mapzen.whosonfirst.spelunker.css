@@ -109,6 +109,23 @@ q {
     margin-bottom:.75em;
 }
 
+.facet {
+
+}
+
+.facet-details {
+    max-height:200px;
+    overflow:scroll;
+    border-bottom:solid thin;
+    margin-bottom:2em;
+}
+
+.facet-details-list-item {
+    color: darkslategrey;
+    line-height:1.6em !important;
+}
+
+
 .facetbox {
     border:none;
     float:right;
@@ -135,6 +152,14 @@ q {
 }
 
 #wof-id {
+}
+
+.iso-country:after {
+    font-size:.6em;
+    color: #ccc;
+    content: attr(data-iso-code);
+    padding-left: .5em;
+    text-transform: uppercase;
 }
 
 .italic {
@@ -164,6 +189,51 @@ q {
 
 .noslash:before {
     content:"" !important;
+}
+
+.loading {
+
+}
+
+.loading:before {
+    content: "⏳";
+    padding-right: .5em;
+}
+
+.timings {
+    font-size:small;
+    color: #777;
+}
+
+.timings:before {
+    content: "⏳";
+    padding-right: .5em;
+}
+
+.timings-right {
+    float:right;
+    font-size:small;
+    color: #777;
+}
+
+.timings-right:after {
+    content: "⏳";
+    padding-left: .5em;
+}
+
+.translations-missing {
+    font-size:small !important;
+    color: #666;
+    margin-bottom:.75em;
+}
+
+.warning {
+    
+}
+
+.warning:before {
+    content: "🚨";
+    padding-right: .5em;    
 }
 
 #props-toggle {

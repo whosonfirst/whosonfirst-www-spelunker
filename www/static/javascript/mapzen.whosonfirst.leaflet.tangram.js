@@ -40,9 +40,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				var map = L.map(id);
 				map.scrollWheelZoom.disable();
 
-			    	if (L.Hash){
-			    	    var hash = new L.Hash(map);
-				}
+			        // if (L.Hash){
+			    	//     var hash = new L.Hash(map);
+				// }
 
 			        var scale = L.control.scale();
 				scale.addTo(map);
