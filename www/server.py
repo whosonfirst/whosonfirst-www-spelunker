@@ -129,7 +129,7 @@ def init():
     flask.g.static_root = static_root
 
     flask.g.enable_feature_bundler = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER', 0))
-	flask.g.enable_feature_bundler_gists = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER_GISTS', 0))
+    flask.g.enable_feature_bundler_gists = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_BUNDLER_GISTS', 0))
     flask.g.enable_feature_staticmaps = int(os.environ.get('SPELUNKER_ENABLE_FEATURE_STATICMAPS', 0))
 
     flask.g.github_client_id = os.environ.get('SPELUNKER_GITHUB_CLIENT_ID', '')
