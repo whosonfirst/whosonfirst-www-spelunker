@@ -228,12 +228,12 @@ q {
 }
 
 .warning {
-    
+
 }
 
 .warning:before {
     content: "🚨";
-    padding-right: .5em;    
+    padding-right: .5em;
 }
 
 #props-toggle {
@@ -349,15 +349,19 @@ pre {
 
 #bundle-github-login,
 #bundle-github-logout,
+#bundle-github-waiting,
 #bundle-github-uploading,
-#bundle-github-done {
+#bundle-github-done,
+#bundle-github-error {
     display: none;
 }
 
 #bundle-github.login #bundle-github-login,
 #bundle-github.logout #bundle-github-logout,
+#bundle-github.waiting #bundle-github-waiting,
 #bundle-github.uploading #bundle-github-uploading,
-#bundle-github.done #bundle-github-done {
+#bundle-github.done #bundle-github-done,
+#bundle-github.error #bundle-github-error {
     display: block;
 }
 
@@ -367,6 +371,27 @@ pre {
 
 #bundle-warning {
     margin-top: 0.5em;
+}
+
+#bundle-github-done {
+    margin-top: 1.5em;
+}
+
+#bundle-github-done a {
+    display: inline-block;
+    margin-top: 3px;
+}
+
+#gist-raw-url {
+    border: 1px solid #ccc;
+    padding: 5px 7px;
+    display: block;
+    width: 300px;
+    margin-top: 5px;
+}
+
+#gist-raw-url:focus {
+    border: 1px solid #666;
 }
 
 .preview-controls {
@@ -405,4 +430,9 @@ pre {
 
 .inc-docs-meta li:last-child:after {
     content: "" !important;
+}
+
+#gist-status {
+	margin-top: 10px;
+	font-size: small;
 }

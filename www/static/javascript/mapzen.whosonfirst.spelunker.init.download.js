@@ -24,14 +24,14 @@ window.addEventListener("load", function load(event){
 	var btn_start = document.getElementById('btn-start');
 	var btn_bundle = document.getElementById('btn-bundle');
 	var btn_summary = document.getElementById('btn-summary');
+	var btn_gist = document.getElementById('btn-gist');
 	var summary_stats = document.getElementById('summary-stats');
 	var bundle_stats = document.getElementById('bundle-stats');
 	var preview_toggle = document.getElementById('preview-bundle');
 	var simple_props_toggle = document.getElementById('bundle-simple-props');
-	var gist_toggle = document.getElementById('bundle-github-gist');
 
 	var github_access_token = null;
-	var bundle_is_ready = false;
+	var github_interval = null;
 
 	var root = document.body.getAttribute("data-abs-root-url");
 	var simple_props_lookup = null;
@@ -129,68 +129,6 @@ window.addEventListener("load", function load(event){
 		return filename;
 	}
 
-	var github_interval = null;
-	function upload_bundle_to_gist() {
-
-		var github = document.getElementById('bundle-github');
-		github.className = 'uploading';
-
-		var xhr = new XMLHttpRequest();
-		var url = "https://api.github.com/gists";
-		xhr.open("POST", url, true);
-		xhr.setRequestHeader("Content-type", "application/json");
-		xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
-		xhr.setRequestHeader("Authorization", "token " + github_access_token);
-
-		var files = {};
-
-		var filename = '1_' + get_filename();
-		var csv_filename = '2_' + filename.replace(/\.geojson$/, '.csv');
-		files[filename] = {
-			content: JSON.stringify(mapzen.whosonfirst.bundler.bundle_features())
-		};
-		files[csv_filename] = {
-			content: mapzen.whosonfirst.bundler.get_summary_csv()
-		};
-
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState == 4 && xhr.status == 201) {
-				var done = document.getElementById('bundle-github-done');
-				var rsp = JSON.parse(xhr.responseText);
-				var gist_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.html_url);
-				var raw_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.files[filename].raw_url);
-				done.innerHTML = '<strong><a href="' + gist_url + '" target="_blank">Your GitHub Gist is ready</a></strong> (<a href="' + raw_url + '" target="_blank">raw GeoJSON</a>)';
-				github.className = 'done';
-			}
-		}
-
-		var req = JSON.stringify({
-			"description": "WOF bundle: " + get_chosen_types().join(', ') + ' descendants of ' + bundler.getAttribute('data-parent-name'),
-			"public": true,
-			"files": files
-		});
-		xhr.send(req);
-	}
-
-	function wait_for_github_login() {
-		if (! github_interval) {
-			github_interval = setInterval(function() {
-				localforage.getItem('github_access_token').then(function(rsp) {
-					if (rsp) {
-						var github = document.getElementById('bundle-github');
-						github.className = 'logout';
-						github_access_token = rsp;
-						clearInterval(github_interval);
-						github_interval = null;
-						if (bundle_is_ready) {
-							upload_bundle_to_gist();
-						}
-					}
-				});
-			}, 1000);
-		}
-	}
-
 	mapzen.whosonfirst.bundler.set_handler('bundle_ready', function(update) {
 		document.getElementById('bundle-btns').className = '';
 		document.getElementById('stats').className = '';
@@ -200,14 +138,12 @@ window.addEventListener("load", function load(event){
 		} else {
 			status.innerHTML = '';
 		}
-		if (gist_toggle && gist_toggle.checked) {
-			if (github_access_token) {
-				upload_bundle_to_gist();
-			} else if (! github_interval) {
-				wait_for_github_login(upload_bundle_to_gist);
-			}
+		var github = document.getElementById('bundle-github');
+		if (github_access_token) {
+			github.className = 'logout';
+		} else {
+			github.className = 'login';
 		}
-		bundle_is_ready = true;
 	});
 
 	mapzen.whosonfirst.bundler.set_handler('error', function(details) {
@@ -314,18 +250,6 @@ window.addEventListener("load", function load(event){
 		simple_props_toggle.setAttribute('disabled', 'disabled');
 		document.getElementById('cancel-download').className = '';
 		document.getElementById('output').className = '';
-
-		if (gist_toggle && gist_toggle.checked) {
-			var github = document.getElementById('bundle-github');
-			localforage.getItem('github_access_token').then(function(rsp) {
-				if (! rsp) {
-					github.className = 'login';
-				} else {
-					github_access_token = rsp;
-					github.className = 'logout';
-				}
-			});
-		}
 	});
 
 	document.getElementById('cancel-download').addEventListener('click', function(e) {
@@ -337,14 +261,104 @@ window.addEventListener("load", function load(event){
 		document.getElementById('output').className = 'hidden';
 	}, false);
 
-	document.getElementById('github-login').addEventListener('click', function(e) {
+	localforage.getItem('github_access_token').then(function(rsp) {
+		if (rsp) {
+			github_access_token = rsp;
+		}
+	});
+
+	function upload_bundle_to_gist() {
+
+		var github = document.getElementById('bundle-github');
+		github.className = 'uploading';
+
+		var xhr = new XMLHttpRequest();
+		var url = "https://api.github.com/gists";
+		xhr.open("POST", url, true);
+		xhr.setRequestHeader("Content-type", "application/json");
+		xhr.setRequestHeader("Accept", "application/vnd.github.v3+json");
+		xhr.setRequestHeader("Authorization", "token " + github_access_token);
+
+		var files = {};
+
+		var filename = '1_' + get_filename();
+		var csv_filename = '2_' + filename.replace(/\.geojson$/, '.csv');
+		files[filename] = {
+			content: JSON.stringify(mapzen.whosonfirst.bundler.bundle_features())
+		};
+		files[csv_filename] = {
+			content: mapzen.whosonfirst.bundler.get_summary_csv()
+		};
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && xhr.status == 201) {
+				var done = document.getElementById('bundle-github-done');
+				var rsp = JSON.parse(xhr.responseText);
+				var description = mapzen.whosonfirst.php.htmlspecialchars(rsp.description);
+				var gist_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.html_url);
+				var raw_url = mapzen.whosonfirst.php.htmlspecialchars(rsp.files[filename].raw_url);
+				done.innerHTML = '<div class="form-group"><strong>GitHub Gist</strong><br><a href="' + gist_url + '" target="_blank">' + description + '</a></div><div class="form-group"><label for="gist-raw-url">Raw GeoJSON URL</label><input type="text" name="raw-url" id="gist-raw-url" value="' + raw_url + '"></div>';
+				github.className = 'done';
+				document.getElementById('gist-raw-url').addEventListener('focus', function(e) {
+					e.target.select();
+				});
+			}
+		}
+
+		var req = JSON.stringify({
+			"description": "WOF bundle: " + get_chosen_types().join(', ') + ' descendants of ' + bundler.getAttribute('data-parent-name'),
+			"public": true,
+			"files": files
+		});
+		xhr.send(req);
+	}
+
+	function wait_for_github_login() {
+		if (! github_interval) {
+			github_interval = setInterval(function() {
+				localforage.getItem('github_access_token').then(function(rsp) {
+					if (rsp) {
+						github_access_token = rsp;
+						clearInterval(github_interval);
+						github_interval = null;
+						upload_bundle_to_gist();
+					} else {
+						github.className = 'error';
+					}
+				});
+			}, 1000);
+		}
+	}
+
+	btn_gist.addEventListener('click', function(e) {
 		e.preventDefault();
-		window.open(root + 'auth', 'auth', 'width=640,height=480');
-		wait_for_github_login();
+		if (btn_gist.className.indexOf('disabled') != -1) {
+			return;
+		}
+		btn_gist.className = btn_gist.className + ' disabled';
+		var github = document.getElementById('bundle-github');
+		if (github_access_token) {
+			github.className = 'uploading';
+			upload_bundle_to_gist();
+		} else {
+			github.className = 'waiting';
+			window.open(root + 'auth', 'auth', 'width=640,height=480');
+			wait_for_github_login(upload_bundle_to_gist);
+		}
+	});
+
+	document.getElementById('github-cancel').addEventListener('click', function(e) {
+		e.preventDefault();
+		btn_gist.className = btn_gist.className.replace('disabled', '');
+		if (github_interval) {
+			clearInterval(github_interval);
+			github_interval = null;
+		}
 	}, false);
 
 	document.getElementById('github-logout').addEventListener('click', function(e) {
 		e.preventDefault();
+		github_access_token = null;
 		var github = document.getElementById('bundle-github');
 		github.className = 'login';
 		localforage.removeItem('github_access_token');
