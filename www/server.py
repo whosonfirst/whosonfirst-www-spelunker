@@ -2070,8 +2070,13 @@ def facetify(query):
                 'field': 'mz:is_current',
                 'size': 0
             }
+        },
+        'geometry': {
+            'terms': {
+                'field': 'geom:type',
+                'size': 0
+            }
         }
-
     }
 
     body = {
@@ -2137,6 +2142,8 @@ def enfilterify(query):
 
     is_current = get_int('is_current')
     is_current = get_single(is_current)
+
+    geom = get_str('geometry')
 
     country = get_int('country_id')
     region = get_int('region_id')
@@ -2267,6 +2274,7 @@ def enfilterify(query):
 
         filters.append(simple_enfilter('iso:country', iso))
 
+        
     if tag:
 
         if len(tag) == 1:
@@ -2327,6 +2335,9 @@ def enfilterify(query):
             filters.append({'regexp':{
                 machinetag_field : machinetag_filter
             }})
+
+    if geom:
+        filters.append(simple_enfilter('geom:type', geom))
 
     if names:
         filters.append(simple_enfilter('names_all', names))
