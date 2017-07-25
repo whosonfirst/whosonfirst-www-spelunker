@@ -28,6 +28,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 		setTimeout(function(){
 		    mapzen.whosonfirst.namify.namify_wof();
+		    mapzen.whosonfirst.namify.namify_brands();
 		    mapzen.whosonfirst.languify.languify();
 		}, 200);
 
@@ -133,7 +134,11 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 
 	    var pretty_label = label;
 
-	    if (label == "is_current"){
+	    if (label == "brand_id"){
+		pretty_label = "#brand";
+	    }
+
+	    else if (label == "is_current"){
 		pretty_label = "is \"current\" -ness";
 	    }
 
@@ -222,6 +227,14 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		    span.setAttribute("title", "Who's On First ID " + detail["key"]);
 		    span.setAttribute("data-wof-id", detail["key"]);
 		}
+
+		else if (label == "brand_id"){
+		    span.setAttribute("class", "wof-namify-brand")
+		    span.setAttribute("title", "Who's On First brand ID " + detail["key"]);
+		    span.setAttribute("data-wof-id", detail["key"]);
+		}
+
+		else {}
 
 		var link = document.createElement("a");
 		link.setAttribute("href", query_url + "&" + label + "=" + detail["key"]);

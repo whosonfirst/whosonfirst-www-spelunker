@@ -2076,6 +2076,12 @@ def facetify(query):
                 'field': 'geom:type',
                 'size': 0
             }
+        },
+        'brand_id': {
+            'terms': {
+                'field': 'wof:brand_id',
+                'size': 0
+            }
         }
     }
 
@@ -2144,6 +2150,7 @@ def enfilterify(query):
     is_current = get_single(is_current)
 
     geom = get_str('geometry')
+    brand = get_str('brand_id')
 
     country = get_int('country_id')
     region = get_int('region_id')
@@ -2338,6 +2345,9 @@ def enfilterify(query):
 
     if geom:
         filters.append(simple_enfilter('geom:type', geom))
+
+    if brand:
+        filters.append(simple_enfilter('wof:brand_id', brand))
 
     if names:
         filters.append(simple_enfilter('names_all', names))
