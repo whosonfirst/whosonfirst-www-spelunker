@@ -562,6 +562,8 @@ def random_place_query():
 @app.route("/brands/", methods=["GET"])
 def brands():
 
+    flask.abort(404)
+    
     aggrs = {
         'brands': {
             'terms': {
@@ -617,7 +619,7 @@ def brand(id):
         'timing': rsp.get("timing", None),
         'es_query': body,
         'timing': rsp.get("timing", None),
-        'brand': brand_id,
+        'brand': id,
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,

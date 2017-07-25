@@ -65,6 +65,7 @@ mapzen.whosonfirst.namify = (function() {
 	    var url = resolver(wofid);
 
 	    var on_hit = function(feature){
+		// console.log("NAMIFY FROM CACHE");
 		self.apply_namification(el, feature);
 	    };
 	    
@@ -105,12 +106,28 @@ mapzen.whosonfirst.namify = (function() {
 		    props = feature;
 		}
 
-	    	// console.log(props);
+	        // console.log(props);
 	    
 		var label = props['wof:label'];
 
 		if ((! label) || (label == '')){
-		    label = props['wof:name'];
+
+		    var possible = [
+			'wof:name',
+			'wof:brand_name'
+		    ];
+
+		    var count = possible.length;
+
+		    for (var i = 0; i < count; i++) {
+
+			var k = possible[i];
+
+			if (props[k]){
+			    label = props[k];
+			    break;
+			}
+		    }
 		}
 
 		var enc_label = mapzen.whosonfirst.php.htmlspecialchars(label);
