@@ -237,7 +237,7 @@ mapzen.whosonfirst.spelunker.facets = (function(){
 		else {}
 
 		var link = document.createElement("a");
-		link.setAttribute("href", query_url + "&" + label + "=" + detail["key"]);
+		link.setAttribute("href", query_url + "&" + label + "=" + encodeURIComponent(detail["key"]));
 		link.setAttribute("class", "facet_" + detail["key"] + "_" + detail["doc_count"]);
 
 		link.appendChild(span);
