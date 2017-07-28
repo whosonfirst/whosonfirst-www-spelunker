@@ -25,6 +25,7 @@ mapzen.whosonfirst.properties = (function(){
 		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.4sq:id': self.render_foursquare_id,
+		'wof.concordances.companieshouse:number': self.render_companieshouse_number,
 		'wof.concordances.gn:id': self.render_geonames_id,
 		'wof.concordances.gp:id': self.render_woedb_id,
 		'wof.concordances.woe:id': self.render_woedb_id,
@@ -287,6 +288,11 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_faa_code': function(d, ctx){
 	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_companieshouse_number': function(d, ctx){
+	    var link = "http://data.companieshouse.gov.uk/doc/company/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
