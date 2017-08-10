@@ -17,6 +17,9 @@ mapzen.whosonfirst.config = (function(){
 				var root = location.protocol + "//" + location.host;
 				endpoint = root + "/data/";
 	    		}
+			else if (endpoint.substr(-1) != "/"){
+				endpoint += "/";
+			}
 
 			mapzen.whosonfirst.uri.endpoint(endpoint);
 
@@ -36,7 +39,7 @@ mapzen.whosonfirst.config = (function(){
 			var api_key = 'XXXXXXXX';
 
 			if (mapzen.whosonfirst.leaflet.tangram) {
-				mapzen.whosonfirst.leaflet.tangram.set_api_key(api_key);
+				mapzen.whosonfirst.leaflet.tangram.set_key('mapzen-' + api_key);
 			}
 
 			// You may want to change this to whosonfirst-api.dev.mapzen.com
