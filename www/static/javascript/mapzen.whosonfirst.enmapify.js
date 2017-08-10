@@ -37,18 +37,22 @@ mapzen.whosonfirst.enmapify = (function(){
 			
 			var props = feature['properties'];
 			
+			var child_name = props['wof:name'];
 			var child_id = props['wof:id'];
 			var parent_id = props['wof:parent_id'];
 			
 			var child_url = mapzen.whosonfirst.uri.id2abspath(child_id);
 			var parent_url = mapzen.whosonfirst.uri.id2abspath(parent_id);
+
+			var alt_geom_sources = props['src:geom_alt'];
+			var parent_layer = null;
 			
 			var on_parent = function(parent_feature){
 				
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
 
 				parent_feature['properties']['lflt:label_text'] = parent_feature['properties']['wof:name'];
-				mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
+				parent_layer = mapzen.whosonfirst.leaflet.draw_poly(map, parent_feature, mapzen.whosonfirst.leaflet.styles.parent_polygon());
 
 				var on_fail = function(){
 					mapzen.whosonfirst.log.error("failed to render " + parent_url);
@@ -57,8 +61,61 @@ mapzen.whosonfirst.enmapify = (function(){
 
 				mapzen.whosonfirst.net.fetch(child_url, on_child, on_fail);
 			};
-			
+
 			var on_child = function(child_feature){
+
+				render_child(child_feature);
+
+				if (alt_geom_sources && alt_geom_sources.length > 0){
+					render_geometry_control(child_feature);
+				}
+				else {
+					var geom_sel_el = document.getElementById('geom-select');
+					geom_sel_el.innerHTML = 'consensus geometry (' + child_feature['properties']['src:geom'] + ')';
+				}
+			};
+
+			var render_geometry_control = function(child_feature){
+
+				var source = child_feature['properties']['src:geom'];
+
+				// hold these features in mem for the onchange event handler
+				var features = {};
+				features[source] = child_feature;
+
+				var onchange = function(evt){
+
+					var selected_source = evt.target.value;
+					var selected_feature = features[selected_source];
+
+					mapzen.whosonfirst.leaflet.clear_geom_layers(map, [parent_layer]);
+					render_child(selected_feature);
+				};
+
+				var select_el = document.createElement('select');
+				select_el.innerHTML = '<option value="' + source + '">consensus geometry (' + source + ')</option>';
+				select_el.onchange = onchange;
+				document.getElementById('geom-select').appendChild(select_el);
+
+				var on_alt_fetch = function(alt_feature){
+
+					var alt_source = alt_feature['properties']['src:geom'];
+					features[alt_source] = alt_feature;
+
+					var option_el = document.createElement('option');
+					option_el.setAttribute('value', alt_source);
+					option_el.innerHTML = 'alternate geometry (' + alt_source + ')';
+					select_el.appendChild(option_el);
+				};
+
+				for (var i=0; i < alt_geom_sources.length; i++){
+					var alt_source = alt_geom_sources[i];
+					var alt_url = mapzen.whosonfirst.uri.id2abspath(child_id, {alt: true, source: alt_source});
+					mapzen.whosonfirst.net.fetch(alt_url, on_alt_fetch);
+				}
+			};
+
+			var render_child = function(child_feature){
 
 				var props = child_feature['properties'];
 				var geom = child_feature['geometry'];
@@ -77,9 +134,7 @@ mapzen.whosonfirst.enmapify = (function(){
 
 				if (geom['type'] == 'Point'){
 
-					var name = props['wof:name'];
-
-					var label_text = name;
+					var label_text = child_name;
 					label_text += ', whose geom centroid is ';
 					label_text += lat + ", " + lon;
 
@@ -98,8 +153,13 @@ mapzen.whosonfirst.enmapify = (function(){
 				child_feature['properties']['lflt:label_text'] = "";
 				mapzen.whosonfirst.leaflet.draw_bbox(map, child_feature, mapzen.whosonfirst.leaflet.styles.bbox());
 
-				child_feature['properties']['lflt:label_text'] = child_feature['properties']['wof:name'];
+				child_feature['properties']['lflt:label_text'] = child_name;
 				mapzen.whosonfirst.leaflet.draw_poly(map, child_feature, mapzen.whosonfirst.leaflet.styles.consensus_polygon());
+
+				// if we're rendering an alternate geometry, stop here
+				if (! child_feature['properties']['wof:name']){
+					return;
+				}
 
 				// we're defining this as a local function to ensure that it gets called
 				// after any breaches are drawn (20150909/thisisaaronland)
@@ -171,9 +231,6 @@ mapzen.whosonfirst.enmapify = (function(){
 						var breach_style = mapzen.whosonfirst.leaflet.styles.breach_polygon();
 						
 						var on_fetch = function(breach_feature){
-							
-							var child_props = child_feature['properties'];
-							var child_name = child_props['wof:name'];
 							
 							var breach_props = breach_feature['properties'];
 							var breach_name = breach_props['wof:name'];
