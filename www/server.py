@@ -2901,7 +2901,7 @@ def doc_to_geojson(doc):
 
     if not properties.get('wof:alt_paths', False):
         alt_paths = {}
-        for source in properties["src:geom_alt"]:
+        for source in properties.get("src:geom_alt", []):
 	    alt_paths[source] = mapzen.whosonfirst.uri.id2relpath(id, alt=True, source=source)
         properties['wof:alt_paths'] = alt_paths
 
