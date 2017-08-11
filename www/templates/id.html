@@ -85,6 +85,7 @@
 
 <div class="row">
 <div class="col-md-12" id="map"></div>
+<div id="map-status">The map is displaying the <span id="geom-select"></span> and is centered at <span id="slippymap-coords"></span></div>
 </div>
 
 <div class="row"><small>
@@ -161,7 +162,10 @@
 {% if g.enable_feature_bundler %}<li><a href="{{ url_for('index') }}download/{{ doc.properties.get("wof:id") | e }}/?exclude=nullisland">Download descendants of {{ doc.properties.get("wof:name") | e }}</a></li>{% endif %}
 {% endif %}
 
-<li><a href="/data/{{ doc.properties.get("wof:path") |e }}" target="data">Raw data (GeoJSON)</a></li>
+<li><a href="/data/{{ doc.properties.get("wof:path") | e }}" target="data">Raw GeoJSON{% if doc.properties.get("wof:alt_paths") %} for consensus geometry: {{ doc.properties.get("src:geom") | e}}{% endif %}</a></li>
+{% for source, alt_path in doc.properties.get("wof:alt_paths").items() %}
+<li><a href="/data/{{ alt_path | e }}" target="data">Raw GeoJSON for alternate geometry: {{ source }}</a></li>
+{% endfor %}
 
 </ul>
 

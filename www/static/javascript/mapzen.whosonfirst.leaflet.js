@@ -81,6 +81,32 @@ mapzen.whosonfirst.leaflet = (function(){
 			return self.draw_poly(map, bbox_geojson, style);
 		},
 
+		'clear_geom_layers': function(map, layers_to_exclude){
+
+			// to exclude a LayerGroup, we have to exclude it's children too
+			// which may be LayerGroups themselves
+			var all_exclusions = [];
+			var add_to_exclusion_list = function(layers){
+				all_exclusions = all_exclusions.concat(layers);
+				for (var i = 0; i < layers.length; i++) {
+					var child_layers = Object.values(layers[i]._layers || {});
+					add_to_exclusion_list(child_layers);
+				}
+			};
+			add_to_exclusion_list(layers_to_exclude);
+
+			map.eachLayer(function (layer){
+				// leave the title layer
+				if (layer instanceof L.TileLayer){
+					return;
+				}
+				if (all_exclusions.indexOf(layer) != -1){
+					return;
+				}
+				map.removeLayer(layer);
+			});
+		},
+
 		'fit_map': function(map, geojson, force){
 
 			var bbox = mapzen.whosonfirst.geojson.derive_bbox(geojson);
