@@ -83,14 +83,17 @@ mapzen.whosonfirst.leaflet = (function(){
 
 		'clear_geom_layers': function(map, layers_to_exclude){
 
-			// to exclude a LayerGroup, we have to exclude all it's childern too
-			var all_exclusions = layers_to_exclude;
-			for (var i = 0; i < layers_to_exclude.length; i++) {
-				var childern = layers_to_exclude[i]._layers;
-				if (childern){
-					all_exclusions = all_exclusions.concat(Object.values(childern));
+			// to exclude a LayerGroup, we have to exclude it's children too
+			// which may be LayerGroups themselves
+			var all_exclusions = [];
+			var add_to_exclusion_list = function(layers){
+				all_exclusions = all_exclusions.concat(layers);
+				for (var i = 0; i < layers.length; i++) {
+					var child_layers = Object.values(layers[i]._layers || {});
+					add_to_exclusion_list(child_layers);
 				}
-			}
+			};
+			add_to_exclusion_list(layers_to_exclude);
 
 			map.eachLayer(function (layer){
 				// leave the title layer
