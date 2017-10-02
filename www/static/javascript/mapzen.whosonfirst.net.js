@@ -4,6 +4,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 mapzen.whosonfirst.net = (function(){
 
 	var default_cache_ttl = 30000; // ms
+    	var disable_cache = false;
 
 	var self = {
 
@@ -176,7 +177,11 @@ mapzen.whosonfirst.net = (function(){
 		'cache_set': function(key, value){
 
 			if (typeof(localforage) != 'object'){
-				return false;
+			    return false;
+			}
+
+		    	if (disable_cache){
+			    return false;
 			}
 
 			var dt = new Date();
@@ -189,7 +194,17 @@ mapzen.whosonfirst.net = (function(){
 
 			key = self.cache_prep_key(key);
 
-			localforage.setItem(key, wrapper);
+			localforage.setItem(key, wrapper).then(function(v){
+			    // woo woo
+			}).catch(function(err){
+			    
+			    // https://github.com/whosonfirst/whosonfirst-www-spelunker/issues/126
+
+			    if (err['code'] == 4){
+				disable_cache = true;
+			    }
+			});
+
 			return true;
 		},
 

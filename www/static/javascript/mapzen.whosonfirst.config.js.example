@@ -36,18 +36,18 @@ mapzen.whosonfirst.config = (function(){
 			// Set this to the key you got from https://mapzen.com/developers
 			// (20170111/dphiffer)
 
-			var api_key = 'XXXXXXXX';
+			var api_key = 'mapzen-xxxxxx';
 
 			if (mapzen.whosonfirst.leaflet.tangram) {
-				mapzen.whosonfirst.leaflet.tangram.set_key('mapzen-' + api_key);
+				mapzen.whosonfirst.leaflet.tangram.set_key(api_key);
 			}
 
-			// You may want to change this to whosonfirst-api.dev.mapzen.com
+			// You may want to change this to places.dev.mapzen.com
 			// if this is a dev thing and not a prod thing.
-			var api_host = 'whosonfirst-api.mapzen.com';
+			var api_host = 'places.mapzen.com';
 
 			if (mapzen.whosonfirst.api) {
-				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + '/');
+				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + '/v1');
 				mapzen.whosonfirst.api.set_key(api_key);
 			}
 		}
