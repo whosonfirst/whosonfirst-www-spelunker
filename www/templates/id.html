@@ -161,7 +161,10 @@
 {% if g.enable_feature_bundler %}<li><a href="{{ url_for('index') }}download/{{ doc.properties.get("wof:id") | e }}/?exclude=nullisland">Download descendants of {{ doc.properties.get("wof:name") | e }}</a></li>{% endif %}
 {% endif %}
 
-<li><a href="/data/{{ doc.properties.get("wof:path") |e }}" target="data">Raw data (GeoJSON)</a></li>
+<li><a href="/data/{{ doc.properties.get("wof:path") | e }}" target="data">Raw GeoJSON{% if doc.properties.get("wof:alt_geom_paths") %} for consensus geometry: {{ doc.properties.get("src:geom") | e}}{% endif %}</a></li>
+{% for source, alt_geom_path in doc.properties.get("wof:alt_geom_paths").items() %}
+<li><a href="/data/{{ alt_geom_path | e }}" target="data">Raw GeoJSON for alternate geometry: {{ source }}</a></li>
+{% endfor %}
 
 </ul>
 

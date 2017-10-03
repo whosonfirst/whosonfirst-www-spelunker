@@ -2899,6 +2899,12 @@ def doc_to_geojson(doc):
         path = mapzen.whosonfirst.uri.id2relpath(id)
         properties['wof:path'] = path
 
+    if not properties.get('wof:alt_geom_paths', False):
+        alt_geom_paths = {}
+        for source in properties.get("src:geom_alt", []):
+	    alt_geom_paths[source] = mapzen.whosonfirst.uri.id2relpath(id, alt=True, source=source)
+        properties['wof:alt_geom_paths'] = alt_geom_paths
+
     if properties.get('geom:bbox', False):
         bbox = properties['geom:bbox']
         bbox = bbox.split(",")
