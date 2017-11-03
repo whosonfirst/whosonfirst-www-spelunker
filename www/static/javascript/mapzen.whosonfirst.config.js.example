@@ -13,10 +13,13 @@ mapzen.whosonfirst.config = (function(){
 
 			var endpoint = document.body.getAttribute("data-wof-data-endpoint");
 
-	    		if (endpoint == ""){
+			if (endpoint == ""){
 				var root = location.protocol + "//" + location.host;
 				endpoint = root + "/data/";
-	    		}
+			}
+			else if (endpoint.substr(-1) != "/"){
+				endpoint += "/";
+			}
 
 			mapzen.whosonfirst.uri.endpoint(endpoint);
 
@@ -33,18 +36,22 @@ mapzen.whosonfirst.config = (function(){
 			// Set this to the key you got from https://mapzen.com/developers
 			// (20170111/dphiffer)
 
-			var api_key = 'XXXXXXXX';
+			// Heads up, api_key is used in two different places down
+			// below. (20171002/dphiffer)
+
+			var api_key = 'mapzen-xxxxxx';
 
 			if (mapzen.whosonfirst.leaflet.tangram) {
-				mapzen.whosonfirst.leaflet.tangram.set_api_key(api_key);
+				mapzen.whosonfirst.leaflet.tangram.set_key(api_key);
 			}
 
-			// You may want to change this to whosonfirst-api.dev.mapzen.com
+			// You may want to change this to places.dev.mapzen.com
 			// if this is a dev thing and not a prod thing.
-			var api_host = 'whosonfirst-api.mapzen.com';
+			var api_host = 'places.mapzen.com';
+			var api_path = '/v1';
 
 			if (mapzen.whosonfirst.api) {
-				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + '/');
+				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + api_path);
 				mapzen.whosonfirst.api.set_key(api_key);
 			}
 		}

@@ -3,7 +3,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.api = (function(){
 
-	var _endpoint = 'https://whosonfirst-api.mapzen.com/';
+	var _endpoint = 'https://places.mapzen.com/v1';
 	var _api_key = null;
 	var _access_token = null;
 
