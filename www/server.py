@@ -783,6 +783,7 @@ def concordances():
     buckets = results.get('buckets', [])
 
     append_source_details_to_buckets(buckets)
+
     count_concordances = len(buckets)
 
     return flask.render_template('concordances.html', concordances=buckets, count_concordances=count_concordances)
@@ -804,8 +805,12 @@ def for_concordance(who):
         flask.abort(404)
 
     lookup = source.lookup_key()
-    fullname = source.details['fullname']
 
+    if not lookup or lookup == "":
+        logging.error("unabled to determine lookup key for %s" % who)
+        flask.abort(500)
+
+    fullname = source.details['fullname']
     return has_concordance(lookup, fullname)
 
 @app.route("/concordances/<string:who>/facets", methods=["GET"])

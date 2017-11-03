@@ -21,7 +21,7 @@ There are <span class="hey-look">{{ count_concordances |number_format|e }} diffe
 {% for b in concordances %}
 <li style="color:#666;">
   <small>{% if b.doc_count == 1 %}<span class="italic">one place</span> that holds hands w {% else %}<span class="italic">{{ b.doc_count |number_format|e }} places </span> that hold hands with {% endif %}</small>
-  <a href="{{ url_for('for_concordance', who=b.name) }}" class="hey-look">{{ b.fullname|e }}</a>
+  <a href="{{ url_for('for_concordance', who=b.prefix) }}" class="hey-look">{{ b.fullname|e }}</a>
 </li>
 {% endfor %}
 </ul>
