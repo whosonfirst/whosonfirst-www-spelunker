@@ -240,6 +240,32 @@ def page_not_found(e):
 def server_error(e):
     return flask.render_template('500.html'), 404
 
+@app.route("/lieu", methods=["GET"])
+@app.route("/lieu/", methods=["GET"])
+
+def lieu():
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    query = {
+        'match_all': {}
+    }
+
+    body = {
+        'query': query,
+    }
+
+    params = {}
+
+    rsp = idx.query(body=body, params=params)
+    rsp = idx.standard_rsp(rsp, **params)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    return flask.render_template('lieu.html', docs=docs, pagination=pagination)
+
 @app.route("/500", methods=["GET"])
 @app.route("/500/", methods=["GET"])
 def server_error():
