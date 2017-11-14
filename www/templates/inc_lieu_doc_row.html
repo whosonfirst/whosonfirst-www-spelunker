@@ -32,7 +32,7 @@
   {% endfor %}
   {% endif %}
 
-  {% if doc._source.same_as %}
+  {% if doc._source.possibly_same_as %}
   {% for match in doc._source.possibly_same_as %}
 
   <tr class="lieu-result-possibly lieu-classification-{{ match.classification | e }}" id="{{ match.object.properties.get("lieu:guid") | e }}" data-lieu-latitude="{{ match.object.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ match.object.geometry.coordinates.0 | e }}">
