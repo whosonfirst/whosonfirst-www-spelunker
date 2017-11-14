@@ -258,13 +258,48 @@ def lieu():
 
     params = {}
 
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        params['page'] = page
+
     rsp = idx.query(body=body, params=params)
     rsp = idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
 
-    return flask.render_template('lieu.html', docs=docs, pagination=pagination)
+    pagination_url = build_pagination_url()
+
+    return flask.render_template('lieu.html', docs=docs, pagination=pagination, pagination_url=pagination_url)
+
+@app.route("/lieu/id/<id>", methods=["GET"])
+@app.route("/lieu/id/<id>/", methods=["GET"])
+
+def lieu_by_id(id):
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    # perversely... this will make ES cry... I don't
+    # know anymore... (20171113/thisisaaronland)
+    # id = flask.g.search_idx.escape(id)
+
+    query = {
+        'ids': {
+            'values': [id]
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    rsp = idx.query(body=body)
+    doc = rsp["hits"]["hits"][0]
+
+    return flask.render_template('lieu_single.html', doc=doc)
 
 @app.route("/500", methods=["GET"])
 @app.route("/500/", methods=["GET"])

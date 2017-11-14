@@ -1,0 +1,38 @@
+<div>
+
+{% if feature.properties.type == "node" %}
+
+  <strong>{{ feature.properties.name | e }}</strong> ({{ feature.properties.type | e }})<br />
+  OSM ID <a href="">{{ feature.properties.id | e }}</a><br /><br />
+
+  <!-- lieu ID {{ feature.properties.get("lieu:guid") | e }})<br /> -->
+
+  {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
+  <code>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</code></br />
+  <br />
+
+{% elif feature.properties.type == "way" %}
+
+  <strong>{{ feature.properties.name | e }}</strong> ({{ feature.properties.type | e }})<br />
+  OSM ID <a href="">{{ feature.properties.id | e }}</a><br /><br />
+
+  {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
+  <code>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</code></br />
+  <br />
+
+{% elif feature.properties.get("wof:placetype") %}
+
+  <strong>{{ feature.properties.get("wof:name") | e }}</strong> ({{ feature.properties.get("wof:placetype") | e }})<br />
+  WOF ID <a href="">{{ feature.properties.get("wof:id") | e }}</a><br /><br />
+
+  {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
+  <code>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</code></br />
+  <br />
+
+{% else %}
+<pre>{{ feature.properties | pprint | e }}
+{% endif %}
+
+<br />
+
+</div>

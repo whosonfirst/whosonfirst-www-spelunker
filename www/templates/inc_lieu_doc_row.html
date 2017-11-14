@@ -1,0 +1,30 @@
+  <tr>
+    <th style="padding:1em;">ID</th>
+    <th style="padding:1em;">Principal</th>
+    <th style="padding:1em;">Duplicate</th>
+    <th style="padding:1em;">Same as</th>
+    <th style="padding:1em;">Same as (possibly)</th>
+  </tr>
+
+  <tr>
+    <td style="vertical-align:top;padding:1em;"><a href="{{ url_for('lieu_by_id', id=doc._id) }}">{{ doc._id | e }}</a></td>
+    <td style="vertical-align:top;padding:1em;">
+      {% set feature = doc._source.object %}
+      {% include "inc_lieu_meta.html" %}
+    </td>
+    <td style="vertical-align:top;padding:1em;">{{ doc._source.is_dupe | e }}</td>
+    <td style="vertical-align:top;padding:1em;">
+      {% if doc._source.same_as %}
+      {% for match in doc._source.same_as %}
+      {% include "inc_lieu_match.html" %}
+      {% endfor %}
+      {% endif %}
+    </td>
+    <td style="vertical-align:top;padding:1em;">
+      {% if doc._source.possibly_same_as %}
+      {% for match in doc._source.possibly_same_as %}      
+      {% include "inc_lieu_match.html" %}
+      {% endfor %}
+      {% endif %}
+    </td>
+    </tr>

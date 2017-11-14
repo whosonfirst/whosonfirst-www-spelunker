@@ -2,70 +2,21 @@
 {% block title %}lieu{% endblock %}
 
 {% block content %}
+
+</style>
+
 <div class="row">
 
 <table border="1">
 
 {% for doc in docs %}
-
-  <tr>
-    <th>ID</th>
-    <th>GUID</th>
-    <th>Is dupe</th>
-    <th>Same as</th>
-    <th>Same as (possibly)</th>
-  </tr>
-
-  <tr>
-    <td style="vertical-align:top;">{{ doc._id | e }}</td>
-    <td style="vertical-align:top;">{{ doc._source.object.properties.get("lieu:guid") | e }}
-      <pre>{{ doc._source.object.properties | pprint | e }}</pre>
-    </td>
-    <td style="vertical-align:top;">{{ doc._source.is_dupe | e }}</td>
-    <td style="vertical-align:top;">
-      {% if doc._source.same_as %}
-      <ol>
-      {% for o in doc._source.same_as %}
-      <li style="list-style-type:decimal;">
-	<ul>
-	  <li>classification: {{ o.classification | e }}</li>
-	  <li>similarity: {{ o.similarity | e }}</li>
-	  <li>is canonical: {{ o.is_canonical | e }}</li>
-	  <li>name dupe threshold: {{ o.explain.name_dupe_threshold | e }}</li>
-	  <li>name_review_threshold: {{ o.explain.name_review_threshold | e }}</li>
-	  <li>type: {{ o.explain.type | e }}</li>
-	  <li>with_unit: {{ o.explain.with_unit | e }}</li>
-	</ul>
-	<pre>{{ o.object.properties | pprint | e }}</pre>
-      </li>
-      {% endfor %}
-      </ol>
-      {% endif %}
-    </td>
-    <td style="vertical-align:top;">
-      {% if doc._source.possibly_same_as %}
-      <ol>
-      {% for o in doc._source.possibly_same_as %}
-      <li style="list-style-type:decimal;">
-	<ul>
-	  <li>classification: {{ o.classification | e }}</li>
-	  <li>similarity: {{ o.similarity | e }}</li>
-	  <li>is canonical: {{ o.is_canonical | e }}</li>
-	  <li>name dupe threshold: {{ o.explain.name_dupe_threshold | e }}</li>
-	  <li>name_review_threshold: {{ o.explain.name_review_threshold | e }}</li>
-	  <li>type: {{ o.explain.type | e }}</li>
-	  <li>with_unit: {{ o.explain.with_unit | e }}</li>
-	  </ul>
-	<pre>{{ o.object.properties | pprint | e }}</pre>
-	</li>
-      {% endfor %}
-      </ol>
-      {% endif %}      
-    </td>
-    </tr>
-
+{% include "inc_lieu_doc_row.html" %}
 {% endfor %}
 
   </table>
+
+<div class="row">
+{% include "inc_pagination.html" %}
+</div>
 
 {% endblock %}

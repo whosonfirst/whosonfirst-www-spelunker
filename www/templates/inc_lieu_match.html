@@ -1,0 +1,18 @@
+{% set feature=match.object %}
+{% include "inc_lieu_meta.html" %}
+
+<div style="margin-bottom:1em;">
+  <table>
+    <tr><th>classification</th><td>{{ match.classification | e }}</td></tr>
+    <tr><th>similarity</th><td>{{ match.similarity | e }}</td></tr>
+    <tr><th>is canonical</th><td>{{ match.is_canonical | e }}</td></tr>
+    <tr><th>name match threshold</th><td>{{ match.explain.name_match_threshold | e }}</td></tr>
+    <tr><th>name_review_threshold</th><td>{{ match.explain.name_review_threshold | e }}</td></tr>
+    <tr><th>type</th><td>{{ match.explain.type | e }}</td></tr>
+    <tr><th>with_unit</th><td>{{ match.explain.with_unit | e }}</td></tr>
+  </table>
+</div>
+
+<div style="display:none">
+  <pre>{{ match.object.properties | pprint | e }}</pre>
+</div>
