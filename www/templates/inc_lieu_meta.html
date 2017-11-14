@@ -1,11 +1,12 @@
 <div>
 
+   {{ feature.properties.get("lieu:guid") | e }}<br /><br />
+
 {% if feature.properties.type == "node" %}
 
-  <strong>{{ feature.properties.name | e }}</strong> ({{ feature.properties.type | e }})<br />
-  OSM ID <a href="">{{ feature.properties.id | e }}</a><br /><br />
-
-  <!-- lieu ID {{ feature.properties.get("lieu:guid") | e }})<br /> -->
+  <strong>{{ feature.properties.name | e }}</strong><br />
+  OSM ID <a href="">{{ feature.properties.id | e }}  ({{ feature.properties.type | e }})
+  </a><br /><br />
 
   {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
   <small>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</small></br />
@@ -13,8 +14,9 @@
 
 {% elif feature.properties.type == "way" %}
 
-  <strong>{{ feature.properties.name | e }}</strong> ({{ feature.properties.type | e }})<br />
-  OSM ID <a href="">{{ feature.properties.id | e }}</a><br /><br />
+  <strong>{{ feature.properties.name | e }}</strong><br />
+  OSM ID <a href="">{{ feature.properties.id | e }}</a>  ({{ feature.properties.type | e }})
+  <br /><br />
 
   {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
   <small>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</small></br />
@@ -22,22 +24,31 @@
 
 {% elif feature.properties.get("wof:placetype") %}
 
-  <strong>{{ feature.properties.get("wof:name") | e }}</strong> ({{ feature.properties.get("wof:placetype") | e }})<br />
-  WOF ID <a href="{{ url_for('info', id=feature.properties.get("wof:id")) }}">{{ feature.properties.get("wof:id") | e }}</a><br /><br />
+  <strong>{{ feature.properties.get("wof:name") | e }}</strong><br />
+  WOF ID <a href="{{ url_for('info', id=feature.properties.get("wof:id")) }}">{{ feature.properties.get("wof:id") | e }}</a> ({{ feature.properties.get("wof:placetype") | e }})
+  <br /><br />
 
   {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
   <small>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</small></br />
   <br />
 
   {% if feature.properties.get("mz:is_current") %}
+
+  {% if feature.properties.get("mz:is_current") == 1 %}
+  <div style="background-color:red;">is current: {{ feature.properties.get("mz:is_current") | e }}</div>
+  {% else %}
   is current: {{ feature.properties.get("mz:is_current") | e }}
+  {% endif %}
+
   {% else %}
   is current: -1
   {% endif %}
 
   <br />
 
-  <small>last modified {{ feature.properties.get("wof:lastmodified") | format_timestamp("%Y-%m-%dT%H:%m:%S") | e }}</small>
+  <small>
+    last modified {{ feature.properties.get("wof:lastmodified") | format_timestamp("%Y-%m-%dT%H:%m:%S") | e }}<br />
+  </small>
 
 {% else %}
 <pre>{{ feature.properties | pprint | e }}</pre>

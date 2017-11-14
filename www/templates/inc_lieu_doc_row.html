@@ -1,4 +1,4 @@
-  <tr style="background-color:#ccc;">
+  <tr style="background-color:#ccc;" class="lieu-result" id="{{ doc._source.object.properties.get("lieu:guid") | e }}" data-lieu-latitude="{{ doc._source.object.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ doc._source.object.geometry.coordinates.0 | e }}">
     <th style="padding:1em;">ID</th>
     <th style="padding:1em;">Principal</th>
     <th style="padding:1em;">Duplicate</th>
@@ -10,7 +10,7 @@
   {% if doc._source.same_as %}
   {% for match in doc._source.same_as %}
 
-  <tr style="font-weight:700; background-color:#b0c4de;">
+  <tr style="font-weight:700; background-color:#b0c4de;" class="lieu-result-same-as" id="{{ match.object.properties.get("lieu:guid") | e }}" data-lieu-latitude="{{ match.object.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ match.object.geometry.coordinates.0 | e }}">
 
     <td style="vertical-align:top;padding:1em;"><a href="{{ url_for('lieu_by_id', id=doc._id) }}">{{ doc._id | e }}</a></td>
     <td style="vertical-align:top;padding:1em;background-color:#b0c4de !important;">
@@ -35,7 +35,7 @@
   {% if doc._source.same_as %}
   {% for match in doc._source.possibly_same_as %}
 
-  <tr>
+  <tr class="lieu-result-possibly" id="{{ match.object.properties.get("lieu:guid") | e }}" data-lieu-latitude="{{ match.object.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ match.object.geometry.coordinates.0 | e }}">
     <td style="vertical-align:top;padding:1em;"><a href="{{ url_for('lieu_by_id', id=doc._id) }}">{{ doc._id | e }}</a></td>
     <td style="vertical-align:top;padding:1em;background-color:#b0c4de !important;">
       {% set feature = doc._source.object %}
@@ -55,3 +55,4 @@
 
   {% endfor %}
   {% endif %}
+

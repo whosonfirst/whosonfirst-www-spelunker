@@ -3,8 +3,6 @@
 
 {% block content %}
 
-</style>
-
 <div class="row" style="margin-bottom:1em;">
 
 <table border="1" width="100%">
@@ -16,11 +14,21 @@
     <th style="padding:1em;">Needs review</th>
   </tr>
   <tr>
-    <td style="padding:1em;"><a href="">{{ stats.is_dupe | number_format | e }}</a></td>
-    <td style="padding:1em;"><a href="">{{ stats.not_dupe | number_format | e }}</a></td>
-    <td style="padding:1em;"><a href="">{{ stats.exact_dupe | number_format | e }}</a></td>
-    <td style="padding:1em;"><a href="">{{ stats.likely_dupe | number_format | e }}</a></td>
-    <td style="padding:1em;"><a href="">{{ stats.needs_review | number_format | e }}</a></td>
+    <td style="padding:1em;">
+      {% if stats.is_dupe %}<a href="{{ pagination_url }}&is_dupe=1">{{ stats.is_dupe | number_format | e }}</a>{% else %}&#8212;{% endif %}
+    </td>
+    <td style="padding:1em;">
+      {% if stats.not_dupe %}<a href="{{ pagination_url }}&not_dupe=1">{{ stats.not_dupe | number_format | e }}</a>{% else %}&#8212;{% endif %}
+    </td>
+    <td style="padding:1em;">
+      {% if stats.exact_dupe %}<a href="{{ pagination_url }}&exact_dupes=1">{{ stats.exact_dupe | number_format | e }}</a>{% else %}&#8212;{% endif %}
+    </td>
+    <td style="padding:1em;">
+      {% if stats.likely_dupe %}<a href="{{ pagination_url }}&likely_dupes=1">{{ stats.likely_dupe | number_format | e }}</a>{% else %}&#8212;{% endif %}
+    </td>
+    <td style="padding:1em;">
+      {% if stats.needs_review %}<a href="{{ pagination_url }}&needs_review=1">{{ stats.needs_review | number_format | e }}</a>{% else %}&#8212;{% endif %}
+    </td>
   </tr>
 </table>
 
@@ -33,7 +41,6 @@
 {% for doc in docs %}
 {% include "inc_lieu_doc_row.html" %}
 {% endfor %}
-
   </table>
 
 <div class="row">

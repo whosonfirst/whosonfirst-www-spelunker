@@ -289,22 +289,72 @@ def lieu():
 
     # {'is_dupe': 268738, 'not_dupe': 140705, u'needs_review': 152707, u'exact_dupe': 200818, u'likely_dupe': 71857}
 
-
     is_dupe = get_str('is_dupe')
     is_dupe = get_single(is_dupe)
+
+    if is_dupe:
+
+        filters.append({ 'term': {
+            'is_dupe': True
+        }})
 
     not_dupe = get_str('not_dupe')
     not_dupe = get_single(not_dupe)
 
-    exact_dupe = get_str('exact_dupe')
-    exact_dupe = get_single(exact_dupe)
+    if not_dupe:
 
-    likely_dupe = get_str('likely_dupe')
-    likely_dupe = get_single(likely_dupe)
+        filters.append({ 'term': {
+            'is_dupe': False
+        }})
+        
+    exact_dupes = get_str('exact_dupes')
+    exact_dupes = get_single(exact_dupes)
+
+    if exact_dupes:
+
+        should = [
+            { 'term': { 'same_as.classification': 'exact_dupe' }},
+            { 'term': { 'possibly_same_as.classification': 'exact_dupe' }},
+        ]
+
+        filters.append({ 'bool': { 'should': should } })
+ 
+    likely_dupes = get_str('likely_dupes')
+    likely_dupes = get_single(likely_dupes)
+
+    if likely_dupes:
+
+        should = [
+            { 'term': { 'same_as.classification': 'likely_dupe' }},
+            { 'term': { 'possibly_same_as.classification': 'likely_dupe' }},
+        ]
+
+        filters.append({ 'bool': { 'should': should } })
 
     needs_review = get_str('needs_review')
     needs_review = get_single(needs_review)
     
+    if needs_review:
+
+        should = [
+            { 'term': { 'same_as.classification': 'needs_review' }},
+            { 'term': { 'possibly_same_as.classification': 'needs_review' }},
+        ]
+
+        filters.append({ 'bool': { 'should': should } })
+
+    # please make mz:is_current filters work... (20171114/thisisaaronland)
+
+    """
+    is_current = False
+
+    if is_current:
+
+        filters.append({ 'match': {
+            'mz:is_current': -1
+        }})
+    """
+
     query = {
         'function_score': {
             'query': {
@@ -319,6 +369,8 @@ def lieu():
             }
         }
     }	# oh ES... you so... curly (20171114/thisisaaronland)
+
+    # print pprint.pformat(query)
 
     sort_order = 'desc'
 
@@ -364,8 +416,6 @@ def lieu():
             v = b['doc_count']
             
             stats[ k ] = stats.get(k, 0) + v
-
-    print stats
 
     rsp = idx.standard_rsp(rsp, **params)
 
