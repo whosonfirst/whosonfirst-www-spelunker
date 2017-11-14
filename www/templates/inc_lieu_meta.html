@@ -23,7 +23,7 @@
 {% elif feature.properties.get("wof:placetype") %}
 
   <strong>{{ feature.properties.get("wof:name") | e }}</strong> ({{ feature.properties.get("wof:placetype") | e }})<br />
-  WOF ID <a href="">{{ feature.properties.get("wof:id") | e }}</a><br /><br />
+  WOF ID <a href="{{ url_for('info', id=feature.properties.get("wof:id")) }}">{{ feature.properties.get("wof:id") | e }}</a><br /><br />
 
   {{ feature.properties.get("addr:housenumber") | e }} {{ feature.properties.get("addr:street") | e }}<br />
   <code>{{ feature.geometry.coordinates.1 | e }}, {{ feature.geometry.coordinates.0 | e }}</code></br />
@@ -32,7 +32,5 @@
 {% else %}
 <pre>{{ feature.properties | pprint | e }}
 {% endif %}
-
-<br />
 
 </div>

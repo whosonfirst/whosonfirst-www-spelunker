@@ -1,10 +1,39 @@
-  <tr>
+  <tr style="background-color:#ccc;">
     <th style="padding:1em;">ID</th>
     <th style="padding:1em;">Principal</th>
     <th style="padding:1em;">Duplicate</th>
+    <th style="padding:1em;">Confidence</th>
     <th style="padding:1em;">Same as</th>
     <th style="padding:1em;">Same as (possibly)</th>
   </tr>
+
+  {% if doc._source.same_as %}
+  {% for match in doc._source.same_as %}
+
+  <tr style="font-weight:700; background-color:#F5F5F5;">
+
+    <td style="vertical-align:top;padding:1em;"><a href="{{ url_for('lieu_by_id', id=doc._id) }}">{{ doc._id | e }}</a></td>
+    <td style="vertical-align:top;padding:1em;">
+      {% set feature = doc._source.object %}
+      {% include "inc_lieu_meta.html" %}
+    </td>
+    <td style="vertical-align:top;padding:1em;">{{ doc._source.is_dupe | e }}</td>
+    <td style="vertical-align:top;padding:1em;">same as</td>
+    <td style="vertical-align:top;padding:1em;{% if match.classification=="exact_dupe" %}background-color:#8fbc8f;{% elif match.classification=="likely_dupe" %}background-color:#fafad2;{% else %}{% endif %}">
+      {% set feature=match.object %}
+      {% include "inc_lieu_meta.html" %}
+    </td>
+    <td style="vertical-align:top;padding:1em;{% if match.classification=="exact_dupe" %}background-color:#8fbc8f;{% elif match.classification=="likely_dupe" %}background-color:#fafad2;{% else %}{% endif %}">
+      {% set feature=match.object %}
+      {% include "inc_lieu_match.html" %}
+    </td>
+  </tr>
+
+  {% endfor %}
+  {% endif %}
+
+  {% if doc._source.same_as %}
+  {% for match in doc._source.possibly_same_as %}
 
   <tr>
     <td style="vertical-align:top;padding:1em;"><a href="{{ url_for('lieu_by_id', id=doc._id) }}">{{ doc._id | e }}</a></td>
@@ -13,18 +42,16 @@
       {% include "inc_lieu_meta.html" %}
     </td>
     <td style="vertical-align:top;padding:1em;">{{ doc._source.is_dupe | e }}</td>
-    <td style="vertical-align:top;padding:1em;">
-      {% if doc._source.same_as %}
-      {% for match in doc._source.same_as %}
-      {% include "inc_lieu_match.html" %}
-      {% endfor %}
-      {% endif %}
+    <td style="vertical-align:top;padding:1em;">possibly same as</td>
+    <td style="vertical-align:top;padding:1em;{% if match.classification=="exact_dupe" %}background-color:#8fbc8f;{% elif match.classification=="likely_dupe" %}background-color:#fafad2;{% else %}{% endif %}">
+      {% set feature=match.object %}
+      {% include "inc_lieu_meta.html" %}
     </td>
-    <td style="vertical-align:top;padding:1em;">
-      {% if doc._source.possibly_same_as %}
-      {% for match in doc._source.possibly_same_as %}      
+    <td style="vertical-align:top;padding:1em;{% if match.classification=="exact_dupe" %}background-color:#8fbc8f;{% elif match.classification=="likely_dupe" %}background-color:#fafad2;{% else %}{% endif %}">
+      {% set feature=match.object %}
       {% include "inc_lieu_match.html" %}
-      {% endfor %}
-      {% endif %}
     </td>
-    </tr>
+  </tr>
+
+  {% endfor %}
+  {% endif %}
