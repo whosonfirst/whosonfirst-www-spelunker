@@ -248,12 +248,90 @@ def lieu():
     host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
+    aggrs = {
+        'dupes': {
+            'terms': {
+                'field': 'is_dupe',
+                'size': 0
+            }
+        },
+
+        # how do I make stats (20171114/thisisaaronland)
+        #
+        #'similarity': {
+        #    'terms': {
+        #        'field': 'same_as.similarity',
+        #        'size': 0,
+        #    }
+        #},
+
+        'same_as_classifications': {
+            'terms': {
+                'field': 'same_as.classification',	# see the way we skip the array index _and_ the 'explain' prefix
+                					# I have no idea... ES is weird that way (20171114/thisisaaronland)
+                'size': 0,
+            }
+        },
+
+        'possibly_classifications': {
+            'terms': {
+                'field': 'possibly_same_as.classification',
+                'size': 0,
+            }
+        },
+    }    
+
     query = {
         'match_all': {}
     }
 
+    filters = []
+
+    # {'is_dupe': 268738, 'not_dupe': 140705, u'needs_review': 152707, u'exact_dupe': 200818, u'likely_dupe': 71857}
+
+
+    is_dupe = get_str('is_dupe')
+    is_dupe = get_single(is_dupe)
+
+    not_dupe = get_str('not_dupe')
+    not_dupe = get_single(not_dupe)
+
+    exact_dupe = get_str('exact_dupe')
+    exact_dupe = get_single(exact_dupe)
+
+    likely_dupe = get_str('likely_dupe')
+    likely_dupe = get_single(likely_dupe)
+
+    needs_review = get_str('needs_review')
+    needs_review = get_single(needs_review)
+    
+    query = {
+        'function_score': {
+            'query': {
+                'filtered': {
+                    'query': query,
+                    'filter': {
+                        'and': [
+                            { 'bool': { 'must': filters } }
+                        ]
+                    }
+                }
+            }
+        }
+    }	# oh ES... you so... curly (20171114/thisisaaronland)
+
+    sort_order = 'desc'
+
+    sort = [
+        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
+        { 'same_as.similarity' : { 'order': sort_order, 'mode': 'max' } },
+        { 'possibly_same_as.similarity' : { 'order': sort_order, 'mode': 'max' } }
+    ]
+
     body = {
         'query': query,
+        'aggregations': aggrs,
+        'sort': sort,
     }
 
     params = {}
@@ -265,6 +343,30 @@ def lieu():
         params['page'] = page
 
     rsp = idx.query(body=body, params=params)
+
+    aggrs = rsp.get('aggregations', {})
+    stats = {}
+
+    for b in aggrs['dupes']['buckets']:
+
+        # {u'key_as_string': u'true', u'key': 1, u'doc_count': 268738}
+
+        if b['key'] == 1:
+            stats['is_dupe'] = b['doc_count']
+        else:
+            stats['not_dupe'] = b['doc_count']
+
+    for a in ('same_as_classifications', 'possibly_classifications'):
+
+        for b in aggrs[a]['buckets']:
+
+            k = b['key']
+            v = b['doc_count']
+            
+            stats[ k ] = stats.get(k, 0) + v
+
+    print stats
+
     rsp = idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
@@ -272,7 +374,7 @@ def lieu():
 
     pagination_url = build_pagination_url()
 
-    return flask.render_template('lieu.html', docs=docs, pagination=pagination, pagination_url=pagination_url)
+    return flask.render_template('lieu.html', docs=docs, stats=stats, pagination=pagination, pagination_url=pagination_url)
 
 @app.route("/lieu/id/<id>", methods=["GET"])
 @app.route("/lieu/id/<id>/", methods=["GET"])

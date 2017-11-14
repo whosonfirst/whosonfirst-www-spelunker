@@ -5,6 +5,27 @@
 
 </style>
 
+<div class="row" style="margin-bottom:1em;">
+
+<table border="1" width="100%" style="background-color:#ccc;">
+  <tr>
+    <th style="padding:1em;">Dupes</th>
+    <th style="padding:1em;">Not dupes</th>
+    <th style="padding:1em;">Exact dupes</th>
+    <th style="padding:1em;">Likely dupes</th>
+    <th style="padding:1em;">Needs review</th>
+  </tr>
+  <tr>
+    <td style="padding:1em;"><a href="">{{ stats.is_dupe | number_format | e }}</a></td>
+    <td style="padding:1em;"><a href="">{{ stats.not_dupe | number_format | e }}</a></td>
+    <td style="padding:1em;"><a href="">{{ stats.exact_dupe | number_format | e }}</a></td>
+    <td style="padding:1em;"><a href="">{{ stats.likely_dupe | number_format | e }}</a></td>
+    <td style="padding:1em;"><a href="">{{ stats.needs_review | number_format | e }}</a></td>
+  </tr>
+</table>
+
+</div>
+
 <div class="row">
 
 <table border="1">
