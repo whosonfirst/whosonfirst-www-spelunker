@@ -258,6 +258,15 @@ def lieu():
         { 'term': { '_type': 'rollup' } }
     ]
 
+    include_all = get_str('all')
+    include_all = get_single(include_all)
+
+    if not include_all:
+        
+        filters.append({ 'bool': { 'must_not': {
+            'term': { 'classification': 'exact_dupe' }
+        }}})
+
     lieu_hash = get_str('id')
     lieu_hash = get_single(lieu_hash)
 
@@ -306,14 +315,73 @@ def lieu():
         params['page'] = page
 
     rsp = idx.query(body=body, params=params)
-
-    aggrs = rsp.get('aggregations', {})
-    stats = {}
-
     rsp = idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
     docs = rsp['rows']
+
+    buckets, records = lieu_docs_to_buckets_and_records(idx, docs)
+
+    #
+
+    pagination_url = build_pagination_url()
+    
+    return flask.render_template('lieu_rollups.html', buckets=buckets, records=records, pagination=pagination, pagination_url=pagination_url)
+
+@app.route("/lieu/pairs/<id>", methods=["GET"])
+@app.route("/lieu/pairs/<id>/", methods=["GET"])
+
+def lieu_pair(id):
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    query = {
+        'ids': {
+            'values': [id]
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    params = {}
+
+    rsp = idx.query(body=body, params=params)
+    rsp = idx.standard_rsp(rsp, **params)
+
+    docs = rsp['rows']
+    pair = docs[0]
+
+    buckets, records = lieu_docs_to_buckets_and_records(idx, docs)
+
+    return flask.render_template('lieu_pair.html', pair=pair, records=records)
+
+@app.route("/lieu/record/<guid>", methods=["GET"])
+@app.route("/lieu/record/<guid>/", methods=["GET"])
+
+def lieu_record(guid):
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    query = {
+        'ids': {
+            'values': [guid]
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    rsp = idx.query(body=body)
+    doc = rsp["hits"]["hits"][0]
+
+    return flask.render_template('lieu_record.html', doc=doc)
+
+def lieu_docs_to_buckets_and_records(idx, docs):
 
     guids = []
     tmp = {}
@@ -352,34 +420,7 @@ def lieu():
         guid = r["_id"]
         records[ guid ] = r["_source"]
 
-    #
-
-    pagination_url = build_pagination_url()
-    
-    return flask.render_template('lieu_rollups.html', buckets=buckets, records=records, stats=stats, pagination=pagination, pagination_url=pagination_url)
-
-@app.route("/lieu/record/<guid>", methods=["GET"])
-@app.route("/lieu/record/<guid>/", methods=["GET"])
-
-def lieu_record(guid):
-
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
-    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
-
-    query = {
-        'ids': {
-            'values': [guid]
-        }
-    }
-
-    body = {
-        'query': query
-    }
-
-    rsp = idx.query(body=body)
-    doc = rsp["hits"]["hits"][0]
-
-    return flask.render_template('lieu_record.html', doc=doc)
+    return buckets, records
 
 def lieu_old():
 

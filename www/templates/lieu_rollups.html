@@ -3,38 +3,7 @@
 
 {% block content %}
 
-<style type="text/css">
-
-.lieu-rollups {
-font-size: small;
-}
-
-.lieu-rollups th {
-background-color: #f5f5f5;
-}
-
-.lieu-rollups td, th {
-	padding: .5em;
-	vertical-align: top;
-}
-
-.lieu-classification-exact_dupe {
-	background-color: #8fbc8f;
-}
-
-.lieu-classification-likely_dupe {
-	background-color: #fafad2;
-}
-
-.lieu-record-principal {
-	background-color: #b0c4de;
-}
-
-.lieu-record-summary {
-	margin-top:.5em;
-}
-
-</style>
+{% include "inc_lieu_css.html" %}
 
 <div class="row">
 
@@ -42,44 +11,12 @@ background-color: #f5f5f5;
 
 {% for docs in buckets %}
 
-  <tr>
-    <th>ID</th>
-    <th>Rollup</th>
-    <th>Principal</th>
-    <th>Other</th>
-    <th>Is dupe</th>
-    <th>Rel</th>
-    <th>Classification</th>
-    <th>Similarity</th>
-   </tr>
+{% include "inc_lieu_rollup_header.html" %}
 
 {% for doc in docs %}
-  <tr class="lieu-classification-{{ doc._source.classification | e }}">
-    <td><a href="">{{ doc._id | e }}</a></td>
-    <td><a href="{{ url_for('lieu') }}?id={{ doc._source.get("lieu:hash") | e }}">{{ doc._source.get("lieu:hash") | e }}</a></td>
-    <td class="lieu-record-principal">
-      {% set guid=doc._source.get("lieu:principal") %}
-      {% set feature=records.get(guid) %}
-      <a href="{{ url_for('lieu_record', guid=guid) }}">{{ doc._source.get("lieu:principal") | e }}</a>
-      {% if feature %}
-      {% include "inc_lieu_record_summary.html" %}
-      {% endif %}
-    </td>
-    <td>
-      {% set guid=doc._source.get("lieu:other") %}
-      {% set feature=records.get(guid) %}
-      <a href="{{ url_for('lieu_record', guid=guid) }}">{{ doc._source.get("lieu:other") | e }}</a>
-      {% if feature %}
-      {% include "inc_lieu_record_summary.html" %}
-      {% endif %}
-    </td>
-    <td>{{ doc._source.is_dupe | e }}</td>
-    <td>{{ doc._source.get("lieu:rel") | e }}</td>
-    <td>{{ doc._source.classification | e }}</td>
-    <td>{{ doc._source.similarity | e }}</td>
-  </tr>
-
+{% include "inc_lieu_rollup_row.html" %}
 {% endfor %}
+
 {% endfor %}
 
 </table>
