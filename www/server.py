@@ -248,6 +248,85 @@ def lieu():
     host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
+    query = {
+        'match_all': {}
+    }
+
+    # valid types are 'rollup' and 'record'
+
+    filters = [
+        { 'term': { '_type': 'rollup' } }
+    ]
+
+    query = {
+        'function_score': {
+            'query': {
+                'filtered': {
+                    'query': query,
+                    'filter': {
+                        'and': [
+                            { 'bool': { 'must': filters } }
+                        ]
+                    }
+                }
+            }
+        }
+    }	# oh ES... you so... curly (20171114/thisisaaronland)
+
+    # print pprint.pformat(query)
+
+    sort_order = 'desc'
+
+    sort = [
+        { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
+        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
+        { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
+    ]
+
+    body = {
+        'query': query,
+        'sort': sort,
+    }
+
+    params = {}
+
+    page = get_int('page')
+    page = get_single(page)
+
+    if page:
+        params['page'] = page
+
+    rsp = idx.query(body=body, params=params)
+
+    aggrs = rsp.get('aggregations', {})
+    stats = {}
+
+    rsp = idx.standard_rsp(rsp, **params)
+
+    pagination = rsp['pagination']
+    docs = rsp['rows']
+
+    buckets = []
+    tmp = {}
+
+    for doc in docs:
+
+        lieu_hash = doc["_source"]["lieu:hash"]
+        candidates = tmp.get(lieu_hash, [])
+        candidates.append(doc)
+        tmp[lieu_hash] = candidates
+
+    buckets = tmp.values()
+
+    pagination_url = build_pagination_url()
+    
+    return flask.render_template('lieu_rollups.html', buckets=buckets, stats=stats, pagination=pagination, pagination_url=pagination_url)
+
+def lieu_old():
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
     aggrs = {
         'dupes': {
             'terms': {

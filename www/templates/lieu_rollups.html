@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}lieu{% endblock %}
+
+{% block content %}
+
+<style type="text/css">
+
+.lieu-rollups {
+font-size: small;
+}
+
+.lieu-rollups th {
+background-color: #ccc;
+}
+
+.lieu-rollups td, th {
+padding: .5em;
+}
+
+</style>
+
+<div class="row">
+
+<table border="1" class="lieu-rollups">
+
+{% for docs in buckets %}
+
+  <tr>
+    <th>ID</th>
+    <th>Rollup</th>
+    <th>Principal</th>
+    <th>Other</th>
+    <th>Is dupe</th>
+    <th>Rel</th>
+    <th>Classification</th>
+    <th>Similarity</th>
+   </tr>
+
+{% for doc in docs %}
+  <tr>
+    <td>{{ doc._id | e }}</td>
+    <td>{{ doc._source.get("lieu:hash") | e }}</td>
+    <td>{{ doc._source.get("lieu:principal") | e }}</td>
+    <td>{{ doc._source.get("lieu:other") | e }}</td>
+    <td>{{ doc._source.is_dupe | e }}</td>
+    <td>{{ doc._source.get("lieu:rel") | e }}</td>
+    <td>{{ doc._source.classification | e }}</td>
+    <td>{{ doc._source.similarity | e }}</td>
+  </tr>
+
+{% endfor %}
+{% endfor %}
+
+</table>
+
+<pre>{{ docs | pprint | e }}</pre>
+
+</div>
+{% endblock %}
