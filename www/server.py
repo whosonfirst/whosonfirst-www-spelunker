@@ -258,6 +258,15 @@ def lieu():
         { 'term': { '_type': 'rollup' } }
     ]
 
+    lieu_hash = get_str('id')
+    lieu_hash = get_single(lieu_hash)
+
+    if lieu_hash:
+
+        filters.append({ 'term': {
+            'lieu:hash': lieu_hash
+        }})
+
     query = {
         'function_score': {
             'query': {
@@ -330,7 +339,6 @@ def lieu():
     query = { "ids": { "values" : guids } }
 
     params = {
-        # "path": "_mget",
         "per_page": len(guids),
     }
 
@@ -349,6 +357,29 @@ def lieu():
     pagination_url = build_pagination_url()
     
     return flask.render_template('lieu_rollups.html', buckets=buckets, records=records, stats=stats, pagination=pagination, pagination_url=pagination_url)
+
+@app.route("/lieu/record/<guid>", methods=["GET"])
+@app.route("/lieu/record/<guid>/", methods=["GET"])
+
+def lieu_record(guid):
+
+    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    query = {
+        'ids': {
+            'values': [guid]
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    rsp = idx.query(body=body)
+    doc = rsp["hits"]["hits"][0]
+
+    return flask.render_template('lieu_record.html', doc=doc)
 
 def lieu_old():
 
