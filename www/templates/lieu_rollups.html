@@ -10,11 +10,28 @@ font-size: small;
 }
 
 .lieu-rollups th {
-background-color: #ccc;
+background-color: #f5f5f5;
 }
 
 .lieu-rollups td, th {
-padding: .5em;
+	padding: .5em;
+	vertical-align: top;
+}
+
+.lieu-classification-exact_dupe {
+	background-color: #8fbc8f;
+}
+
+.lieu-classification-likely_dupe {
+	background-color: #fafad2;
+}
+
+.lieu-record-principal {
+	background-color: #b0c4de;
+}
+
+.lieu-record-summary {
+	margin-top:.5em;
 }
 
 </style>
@@ -37,11 +54,25 @@ padding: .5em;
    </tr>
 
 {% for doc in docs %}
-  <tr>
-    <td>{{ doc._id | e }}</td>
-    <td>{{ doc._source.get("lieu:hash") | e }}</td>
-    <td>{{ doc._source.get("lieu:principal") | e }}</td>
-    <td>{{ doc._source.get("lieu:other") | e }}</td>
+  <tr class="lieu-classification-{{ doc._source.classification | e }}">
+    <td><a href="">{{ doc._id | e }}</a></td>
+    <td><a href="">{{ doc._source.get("lieu:hash") | e }}</a></td>
+    <td class="lieu-record-principal">
+      {{ doc._source.get("lieu:principal") | e }}
+      {% set guid=doc._source.get("lieu:principal") %}
+      {% set feature=records.get(guid) %}
+      {% if feature %}
+      {% include "inc_lieu_record_summary.html" %}
+      {% endif %}
+    </td>
+    <td>
+      {{ doc._source.get("lieu:other") | e }}
+      {% set guid=doc._source.get("lieu:principal") %}
+      {% set feature=records.get(guid) %}
+      {% if feature %}
+      {% include "inc_lieu_record_summary.html" %}
+      {% endif %}
+    </td>
     <td>{{ doc._source.is_dupe | e }}</td>
     <td>{{ doc._source.get("lieu:rel") | e }}</td>
     <td>{{ doc._source.classification | e }}</td>
@@ -53,7 +84,10 @@ padding: .5em;
 
 </table>
 
-<pre>{{ docs | pprint | e }}</pre>
-
 </div>
+
+<div class="row">
+{% include "inc_pagination.html" %}
+</div>
+
 {% endblock %}

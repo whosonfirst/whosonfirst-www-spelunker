@@ -306,21 +306,49 @@ def lieu():
     pagination = rsp['pagination']
     docs = rsp['rows']
 
-    buckets = []
+    guids = []
     tmp = {}
 
     for doc in docs:
 
         lieu_hash = doc["_source"]["lieu:hash"]
+        lieu_principal = doc["_source"]["lieu:principal"]
+        lieu_other = doc["_source"]["lieu:other"]
+
+        for lieu_guid in (lieu_principal, lieu_other):
+            if not lieu_guid in guids:
+                guids.append(lieu_guid)
+
         candidates = tmp.get(lieu_hash, [])
         candidates.append(doc)
         tmp[lieu_hash] = candidates
 
     buckets = tmp.values()
 
+    # now fetch all the records (so we can see the actual details)
+
+    query = { "ids": { "values" : guids } }
+
+    params = {
+        # "path": "_mget",
+        "per_page": len(guids),
+    }
+
+    body = { "query": query }
+    rsp2 = idx.query(body=body, params=params)
+
+    records = {}
+
+    for r in rsp2["hits"]["hits"]:
+
+        guid = r["_id"]
+        records[ guid ] = r["_source"]
+
+    #
+
     pagination_url = build_pagination_url()
     
-    return flask.render_template('lieu_rollups.html', buckets=buckets, stats=stats, pagination=pagination, pagination_url=pagination_url)
+    return flask.render_template('lieu_rollups.html', buckets=buckets, records=records, stats=stats, pagination=pagination, pagination_url=pagination_url)
 
 def lieu_old():
 
