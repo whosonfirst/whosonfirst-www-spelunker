@@ -374,14 +374,18 @@ def lieu_pair_bookend(idx, pair, rel):
 
     # valid types are 'rollup' and 'record'
 
+    sortorder = 'desc'
+
     filters = [
         { 'term': { '_type': 'rollup' } },
     ]
 
     if rel == "next":
         filters.append({ 'range': { 'lieu:timestamp': { 'gt': ts } } })
+        sortorder = 'asc'
     else:
         filters.append({ 'range': { 'lieu:timestamp': { 'lt': ts } } })
+        sortorder = 'desc'
 
     query = {
         'function_score': {
@@ -399,7 +403,7 @@ def lieu_pair_bookend(idx, pair, rel):
     }	# oh ES... you so... curly (20171114/thisisaaronland)
 
     sort = [
-        { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
+        { 'lieu:timestamp' : { 'order': sortorder, 'mode': 'max' } },
     ]
 
     body = {
