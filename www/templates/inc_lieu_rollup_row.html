@@ -1,0 +1,28 @@
+  <tr class="lieu-rollup lieu-classification-{{ doc._source.classification | e }}" data-lieu-classification="{{ doc._source.classification | e }}">
+    <td><a href="{{ url_for('lieu_pair', id=doc._id) }}">{{ doc._id | e }}</a></td>
+    <td><a href="{{ url_for('lieu') }}?id={{ doc._source.get("lieu:hash") | e }}">{{ doc._source.get("lieu:hash") | e }}</a></td>
+
+    {% set guid=doc._source.get("lieu:principal") %}
+    {% set feature=records.get(guid) %}
+
+    <td class="lieu-record-principal lieu-record" data-lieu-latitude="{{ feature.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ feature.geometry.coordinates.0 | e }}" id="{{ guid | e }}">
+      <a href="{{ url_for('lieu_record', guid=guid) }}">{{ doc._source.get("lieu:principal") | e }}</a>
+      {% if feature %}
+      {% include "inc_lieu_record_summary.html" %}
+      {% endif %}
+    </td>
+
+    {% set guid=doc._source.get("lieu:other") %}
+    {% set feature=records.get(guid) %}
+
+    <td class="lieu-record-other lieu-record" data-lieu-latitude="{{ feature.geometry.coordinates.1 | e }}" data-lieu-longitude="{{ feature.geometry.coordinates.0 | e }}" id="{{ guid | e }}" data-lieu-classification="{{ doc._source.classification | e }}">
+      <a href="{{ url_for('lieu_record', guid=guid) }}">{{ doc._source.get("lieu:other") | e }}</a>
+      {% if feature %}
+      {% include "inc_lieu_record_summary.html" %}
+      {% endif %}
+    </td>
+    <td>{{ doc._source.is_dupe | e }}</td>
+    <td>{{ doc._source.get("lieu:rel") | e }}</td>
+    <td>{{ doc._source.classification | e }}</td>
+    <td>{{ doc._source.similarity | e }}</td>
+  </tr>
