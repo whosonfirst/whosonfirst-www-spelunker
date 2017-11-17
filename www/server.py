@@ -245,7 +245,7 @@ def server_error(e):
 
 def lieu():
 
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
     query = {
@@ -336,7 +336,7 @@ def lieu():
 
 def lieu_pair(id):
 
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
     query = {
@@ -427,12 +427,39 @@ def lieu_pair_bookend(idx, pair, rel):
 
     return rsp['hits']['hits'][0]
 
+@app.route("/lieu/wof/<wofid>", methods=["GET"])
+@app.route("/lieu/wof/<wofid>/", methods=["GET"])
+
+def lieu_wof(wofid):
+
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
+    idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
+
+    query = {
+        'term': {
+            'properties.wof:id': wofid
+        }
+    }
+
+    body = {
+        'query': query
+    }
+
+    rsp = idx.query(body=body)
+
+    if len(rsp["hits"]["hits"]) == 0:
+        flask.abort(404)
+
+    docs = rsp["hits"]["hits"]
+
+    return flask.render_template('lieu_record_wof.html', docs=docs)
+
 @app.route("/lieu/record/<guid>", methods=["GET"])
 @app.route("/lieu/record/<guid>/", methods=["GET"])
 
 def lieu_record(guid):
 
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
     query = {
@@ -493,7 +520,7 @@ def lieu_docs_to_buckets_and_records(idx, docs):
 
 def lieu_old():
 
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
     aggrs = {
@@ -679,7 +706,7 @@ def lieu_old():
 
 def lieu_by_id(id):
 
-    host = "internal-whosonfirst-elasticsearch-dev-399376336.us-east-1.elb.amazonaws.com"
+    host = os.environ.get('SPELUNKER_SEARCH_HOST', None)
     idx = mapzen.whosonfirst.elasticsearch.search(host=host, index="lieu")
 
     # perversely... this will make ES cry... I don't

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}lieu{% endblock %}
+
+{% block content %}
+
+{% include "inc_lieu_css.html" %}
+
+<div class="row">
+
+</div>
+
+<div class="row">
+
+<table border="1" class="lieu-table">
+{% for doc in docs %}
+
+<tr>
+  <th>Rollup</th>
+  <th>GUID</th>
+  <th>Summary</th>
+</tr>
+
+<tr>
+  <td><a href="{{ url_for('lieu') }}?id= {{ doc._source.properties.get("lieu:hash") | e }}">{{ doc._source.properties.get("lieu:hash") | e }}</a></td>
+  <td><a href="{{ url_for('lieu_record', guid=doc._source.properties.get("lieu:guid")) }}">{{ doc._source.properties.get("lieu:guid") | e }}</a></td>
+  <td>
+    {% set feature=doc._source %}
+    {% include "inc_lieu_record_summary.html" %}
+  </td>
+</tr>
+
+{% endfor %}
+</table>
+</div>
+
+
+{% endblock %}
