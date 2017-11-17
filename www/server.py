@@ -296,9 +296,10 @@ def lieu():
     sort_order = 'desc'
 
     sort = [
-        { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
-        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
-        { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
+        { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
+        # { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
+        # { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
+        # { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
     ]
 
     body = {
@@ -356,9 +357,66 @@ def lieu_pair(id):
 
     buckets, records = lieu_docs_to_buckets_and_records(idx, docs)
 
-    # need to fetch next / previous here...
+    # need to fetch next / previous here...    
 
-    return flask.render_template('lieu_pair.html', pair=pair, records=records)
+    prev_pair = lieu_pair_bookend(idx, pair, "previous")
+    next_pair = lieu_pair_bookend(idx, pair, "next")
+
+    return flask.render_template('lieu_pair.html', pair=pair, records=records, next_pair=next_pair, previous_pair=prev_pair)
+
+def lieu_pair_bookend(idx, pair, rel):
+
+    ts = pair['_source']['lieu:timestamp']
+
+    query = {
+        'match_all': {}
+    }
+
+    # valid types are 'rollup' and 'record'
+
+    filters = [
+        { 'term': { '_type': 'rollup' } },
+    ]
+
+    if rel == "next":
+        filters.append({ 'range': { 'lieu:timestamp': { 'gt': ts } } })
+    else:
+        filters.append({ 'range': { 'lieu:timestamp': { 'lt': ts } } })
+
+    query = {
+        'function_score': {
+            'query': {
+                'filtered': {
+                    'query': query,
+                    'filter': {
+                        'and': [
+                            { 'bool': { 'must': filters } }
+                        ]
+                    }
+                }
+            }
+        }
+    }	# oh ES... you so... curly (20171114/thisisaaronland)
+
+    sort = [
+        { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
+    ]
+
+    body = {
+        'query': query,
+        'sort': sort,
+    }
+
+    params = {
+        'per_page': 1
+    }
+
+    rsp = idx.query(body=body, params=params)
+
+    if len(rsp['hits']['hits']) == 0:
+        return None
+
+    return rsp['hits']['hits'][0]
 
 @app.route("/lieu/record/<guid>", methods=["GET"])
 @app.route("/lieu/record/<guid>/", methods=["GET"])

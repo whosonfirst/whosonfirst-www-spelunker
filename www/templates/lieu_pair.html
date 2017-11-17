@@ -6,6 +6,13 @@
 {% include "inc_lieu_css.html" %}
 
 <div class="row">
+<ul>
+{% if previous_pair %}<li><a href="{{ url_for('lieu_pair', id=previous_pair._id) | e }}">previous</a></li>{% endif %}
+{% if next_pair %}<li><a href="{{ url_for('lieu_pair', id=next_pair._id) | e }}">next</a></li>{% endif %}
+</ul>
+</div>
+
+<div class="row">
 <div id="map"></div>
 </div>
 
@@ -17,6 +24,10 @@
 {% include "inc_lieu_rollup_row.html" %}
 </table>
 
+</div>
+
+<div class="row">
+<pre>{{ doc | pprint | e }}</pre>
 </div>
 
 <script type="text/javascript">

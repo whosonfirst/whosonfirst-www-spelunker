@@ -1,5 +1,8 @@
   <tr class="lieu-rollup lieu-classification-{{ doc._source.classification | e }}" data-lieu-classification="{{ doc._source.classification | e }}">
-    <td><a href="{{ url_for('lieu_pair', id=doc._id) }}">{{ doc._id | e }}</a></td>
+    <td>
+      <a href="{{ url_for('lieu_pair', id=doc._id) }}">{{ doc._id | e }}</a>
+      <small style="display:block;">{{ doc._source.get("lieu:timestamp") | e }}</small>
+    </td>
     <td><a href="{{ url_for('lieu') }}?id={{ doc._source.get("lieu:hash") | e }}">{{ doc._source.get("lieu:hash") | e }}</a></td>
 
     {% set guid=doc._source.get("lieu:principal") %}
