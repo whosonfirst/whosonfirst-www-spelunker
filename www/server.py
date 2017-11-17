@@ -368,7 +368,8 @@ def lieu_pair(id):
 
 def lieu_pair_bookend(idx, pair, rel):
 
-    ts = pair['_source']['lieu:timestamp']
+    lieu_hash = pair['_source']['lieu:hash']
+    lieu_ts = pair['_source']['lieu:timestamp']
 
     query = {
         'match_all': {}
@@ -383,10 +384,10 @@ def lieu_pair_bookend(idx, pair, rel):
     ]
 
     if rel == "next":
-        filters.append({ 'range': { 'lieu:timestamp': { 'gt': ts } } })
+        filters.append({ 'range': { 'lieu:timestamp': { 'gt': lieu_ts } } })
         sort_order = 'asc'
     else:
-        filters.append({ 'range': { 'lieu:timestamp': { 'lt': ts } } })
+        filters.append({ 'range': { 'lieu:timestamp': { 'lt': lieu_ts } } })
         sort_order = 'desc'
 
     query = {
@@ -405,10 +406,8 @@ def lieu_pair_bookend(idx, pair, rel):
     }	# oh ES... you so... curly (20171114/thisisaaronland)
 
     sort = [
-        { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
-        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
-        { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
-        { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
+        { 'lieu:hash' : { 'order': 'desc', 'mode': 'max' } },
+        { 'lieu:timestamp' : { 'order': sort_order, 'mode': 'max' } },
     ]
 
     body = {
