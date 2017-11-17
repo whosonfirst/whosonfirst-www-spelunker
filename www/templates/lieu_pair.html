@@ -31,6 +31,11 @@ window.addEventListener("load", function load(event){
 	var id = principal.getAttribute("id");
 	var zoom = 18;
 
+	var min_lat = lat;
+	var min_lon = lon;
+	var max_lat = lat;
+	var max_lon = lon;
+
 	var map = mapzen.whosonfirst.leaflet.tangram.map_with_latlon('map', lat, lon, zoom);
 
 	var feature = {
@@ -68,6 +73,22 @@ window.addEventListener("load", function load(event){
 		var lon = other.getAttribute("data-lieu-longitude");
 		var classification = other.getAttribute("data-lieu-classification");
 
+		if (lat < min_lat){
+			  min_lat = lat;
+		}
+
+		if (lon < min_lon){
+			  min_lon = lon;
+		}
+
+		if (lat > max_lat){
+			  max_lat = lat;
+		}
+
+		if (lon < max_lon){
+			  max_lon = lon;
+		}
+
 		var feature = {
 			"type": "Feature",
 			"geometry": { "type": "Point", "coordinates": [ lon, lat ] },
@@ -78,7 +99,7 @@ window.addEventListener("load", function load(event){
 			"color": "#000",
 			"weight": 2,
 			"opacity": 1,
-			"radius": 8,
+			"radius": 6,
 			"fillColor": possible[classification],
 			"fillOpacity": 0.8
 		};
@@ -87,6 +108,11 @@ window.addEventListener("load", function load(event){
 		mapzen.whosonfirst.leaflet.draw_point(map, feature, style, handler);
 	}
 			  
+	if ((min_lat != max_lat) || (min_lon != max_lon)){
+			var sw = [ min_lat, min_lon ];
+			var ne = [ max_lat, max_lon ];
+			  map.fitBounds([ sw, ne ]);
+	}			  
 });
 
 </script>

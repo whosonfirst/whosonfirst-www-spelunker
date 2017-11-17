@@ -356,6 +356,8 @@ def lieu_pair(id):
 
     buckets, records = lieu_docs_to_buckets_and_records(idx, docs)
 
+    # need to fetch next / previous here...
+
     return flask.render_template('lieu_pair.html', pair=pair, records=records)
 
 @app.route("/lieu/record/<guid>", methods=["GET"])
