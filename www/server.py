@@ -258,6 +258,7 @@ def lieu():
         { 'term': { '_type': 'rollup' } }
     ]
 
+    """
     include_all = get_str('all')
     include_all = get_single(include_all)
 
@@ -266,6 +267,7 @@ def lieu():
         filters.append({ 'bool': { 'must_not': {
             'term': { 'classification': 'exact_dupe' }
         }}})
+    """
 
     lieu_hash = get_str('id')
     lieu_hash = get_single(lieu_hash)
@@ -296,10 +298,10 @@ def lieu():
     sort_order = 'desc'
 
     sort = [
+        { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
+        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
         { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
-        # { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
-        # { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
-        # { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
+        { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
     ]
 
     body = {
@@ -374,7 +376,7 @@ def lieu_pair_bookend(idx, pair, rel):
 
     # valid types are 'rollup' and 'record'
 
-    sortorder = 'desc'
+    sort_order = 'desc'
 
     filters = [
         { 'term': { '_type': 'rollup' } },
@@ -382,10 +384,10 @@ def lieu_pair_bookend(idx, pair, rel):
 
     if rel == "next":
         filters.append({ 'range': { 'lieu:timestamp': { 'gt': ts } } })
-        sortorder = 'asc'
+        sort_order = 'asc'
     else:
         filters.append({ 'range': { 'lieu:timestamp': { 'lt': ts } } })
-        sortorder = 'desc'
+        sort_order = 'desc'
 
     query = {
         'function_score': {
@@ -403,7 +405,10 @@ def lieu_pair_bookend(idx, pair, rel):
     }	# oh ES... you so... curly (20171114/thisisaaronland)
 
     sort = [
-        { 'lieu:timestamp' : { 'order': sortorder, 'mode': 'max' } },
+        { 'lieu:hash' : { 'order': sort_order, 'mode': 'max' } },
+        { 'is_dupe': { 'order': sort_order, 'mode': 'max' }},
+        { 'lieu:timestamp' : { 'order': 'desc', 'mode': 'max' } },
+        { 'similarity' : { 'order': sort_order, 'mode': 'max' } },
     ]
 
     body = {

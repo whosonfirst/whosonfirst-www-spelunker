@@ -6,9 +6,10 @@
 {% include "inc_lieu_css.html" %}
 
 <div class="row">
-<ul>
-{% if previous_pair %}<li><a href="{{ url_for('lieu_pair', id=previous_pair._id) | e }}" id="previous_page">previous</a></li>{% endif %}
-{% if next_pair %}<li><a href="{{ url_for('lieu_pair', id=next_pair._id) | e }}" id="next_page">next</a></li>{% endif %}
+<ul class="list-inline lieu-pagination" style="float:right;">
+{% if previous_pair %}<li><a href="{{ url_for('lieu_pair', id=previous_pair._id) | e }}" id="previous-page">previous</a></li>{% endif %}
+<li><a href="{{ url_for('lieu') }}">see all</a></li>
+{% if next_pair %}<li><a href="{{ url_for('lieu_pair', id=next_pair._id) | e }}" id="next-page">next</a></li>{% endif %}
 </ul>
 </div>
 

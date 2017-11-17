@@ -2,6 +2,8 @@
     <td>
       <a href="{{ url_for('lieu_pair', id=doc._id) }}">{{ doc._id | e }}</a>
       <small style="display:block;">{{ doc._source.get("lieu:timestamp") | e }}</small>
+
+      canonical: {{ doc._source.is_canonical | e }}
     </td>
     <td><a href="{{ url_for('lieu') }}?id={{ doc._source.get("lieu:hash") | e }}">{{ doc._source.get("lieu:hash") | e }}</a></td>
 
