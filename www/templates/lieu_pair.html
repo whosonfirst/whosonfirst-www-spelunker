@@ -7,8 +7,8 @@
 
 <div class="row">
 <ul>
-{% if previous_pair %}<li><a href="{{ url_for('lieu_pair', id=previous_pair._id) | e }}">previous</a></li>{% endif %}
-{% if next_pair %}<li><a href="{{ url_for('lieu_pair', id=next_pair._id) | e }}">next</a></li>{% endif %}
+{% if previous_pair %}<li><a href="{{ url_for('lieu_pair', id=previous_pair._id) | e }}" id="previous_page">previous</a></li>{% endif %}
+{% if next_pair %}<li><a href="{{ url_for('lieu_pair', id=next_pair._id) | e }}" id="next_page">next</a></li>{% endif %}
 </ul>
 </div>
 
