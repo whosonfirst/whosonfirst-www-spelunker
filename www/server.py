@@ -2578,6 +2578,20 @@ def has_concordance_query(src):
             'exists': { 'field': concordance  }
     }
 
+    # why do I have the feeling this is just the beginning...
+    # (20171120/thisisaaronland)
+
+    if src == "osm:id":
+
+        filter = {
+            'bool': { 'should': [
+                { 'exists': { 'field': 'wof:concordances.osm:node' } },
+                { 'exists': { 'field': 'wof:concordances.osm:way' } },
+                { 'exists': { 'field': 'wof:concordances.osm:rel' } },
+                { 'exists': { 'field': 'wof:concordances.osm:relation' } }
+            ]}
+        }
+
     query = {
         'match_all': {}
     }
