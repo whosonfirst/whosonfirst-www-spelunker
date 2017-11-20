@@ -30,6 +30,10 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.gp:id': self.render_woedb_id,
 		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.oa:id': self.render_ourairport_id,
+		'wof.concordances.osm:node': self.render_openstreetmap_node,
+		'wof.concordances.osm:way': self.render_openstreetmap_way,
+		'wof.concordances.osm:rel': self.render_openstreetmap_relation,
+		'wof.concordances.osm:relation': self.render_openstreetmap_relation,
 		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.latimes:id': self.render_latimes_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
@@ -84,6 +88,10 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
 		'wof.concordances.oa:id': 'ourairports',
+		'wof.concordances.osm:node': 'openstreetmap',
+		'wof.concordances.osm:way': 'openstreetmap',
+		'wof.concordances.osm:rel': 'openstreetmap',
+		'wof.concordances.osm:relation': 'openstreetmap',
 		'wof.concordances.qs:id': 'quattroshapes',
 		'wof.concordances.transitland:onestop_id': 'transitland',
 		'wof.concordances.wk:page': 'wikipedia',
@@ -283,6 +291,21 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_ourairport_id': function(d, ctx){
 	    var link = "http://ourairports.com/airports/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_openstreetmap_node': function(d, ctx){
+	    var link = "https://openstreetmap.org/node/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_openstreetmap_way': function(d, ctx){
+	    var link = "https://openstreetmap.org/way/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_openstreetmap_relation': function(d, ctx){
+	    var link = "https://openstreetmap.org/relation/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
