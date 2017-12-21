@@ -43,8 +43,10 @@ tangram:
 
 refill:
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml
-	curl -s -o www/static/tangram/themes/black.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/black.yaml
-	curl -s -o www/static/tangram/images/refill@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/refill%402x.png
+	curl -s -o www/static/tangram/themes/color-black.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/color-black.yaml
+	curl -s -o www/static/tangram/themes/label-5.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/label-5.yaml
+	curl -s -o www/static/tangram/themes/refill-icons.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/refill-icons.yaml
+	curl -s -o www/static/tangram/themes/images/refill@2x.png https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/themes/images/refill%402x.png
 	curl -s -o www/static/tangram/images/building-grid.gif https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/images/building-grid.gif
 
 wof-fonts:
