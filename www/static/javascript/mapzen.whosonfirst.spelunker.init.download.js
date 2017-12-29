@@ -139,7 +139,7 @@ window.addEventListener("load", function load(event){
 			status.innerHTML = '';
 		}
 	    var github = document.getElementById('bundle-github');
-	    
+
 		if (github_access_token) {
 			github.className = 'logout';
 		} else {
@@ -331,48 +331,47 @@ window.addEventListener("load", function load(event){
 		}
 	}
 
-    if (btn_gist) {
-	btn_gist.addEventListener('click', function(e) {
-		e.preventDefault();
-		if (btn_gist.className.indexOf('disabled') != -1) {
-			return;
-		}
-		btn_gist.className = btn_gist.className + ' disabled';
-		var github = document.getElementById('bundle-github');
-		if (github_access_token) {
-			github.className = 'uploading';
-			upload_bundle_to_gist();
-		} else {
-			github.className = 'waiting';
-			window.open(root + 'auth', 'auth', 'width=640,height=480');
-			wait_for_github_login(upload_bundle_to_gist);
-		}
-	});
+	if (btn_gist) {
+		btn_gist.addEventListener('click', function(e) {
+			e.preventDefault();
+			if (btn_gist.className.indexOf('disabled') != -1) {
+				return;
+			}
+			btn_gist.className = btn_gist.className + ' disabled';
+			var github = document.getElementById('bundle-github');
+			if (github_access_token) {
+				github.className = 'uploading';
+				upload_bundle_to_gist();
+			} else {
+				github.className = 'waiting';
+				window.open(root + 'auth', 'auth', 'width=640,height=480');
+				wait_for_github_login(upload_bundle_to_gist);
+			}
+		});
 
-    
-	document.getElementById('github-cancel').addEventListener('click', function(e) {
-	    e.preventDefault();
-		btn_gist.className = btn_gist.className.replace('disabled', '');
-		if (github_interval) {
-			clearInterval(github_interval);
-			github_interval = null;
-		}
-	}, false);
+		document.getElementById('github-cancel').addEventListener('click', function(e) {
+			e.preventDefault();
+			btn_gist.className = btn_gist.className.replace('disabled', '');
+			if (github_interval) {
+				clearInterval(github_interval);
+				github_interval = null;
+			}
+		}, false);
 
-	document.getElementById('github-logout').addEventListener('click', function(e) {
-		e.preventDefault();
-		github_access_token = null;
-		var github = document.getElementById('bundle-github');
-		github.className = 'login';
-		localforage.removeItem('github_access_token');
-		if (github_interval) {
-			clearInterval(github_interval);
-			github_interval = null;
-		}
-	}, false);
-    } else {
-	document.getElementById('bundle-github').style.display = 'none';
-    }
+		document.getElementById('github-logout').addEventListener('click', function(e) {
+			e.preventDefault();
+			github_access_token = null;
+			var github = document.getElementById('bundle-github');
+			github.className = 'login';
+			localforage.removeItem('github_access_token');
+			if (github_interval) {
+				clearInterval(github_interval);
+				github_interval = null;
+			}
+		}, false);
+	} else {
+		document.getElementById('bundle-github').style.display = 'none';
+	}
 
 	btn_bundle.addEventListener('click', function(e) {
 		e.preventDefault();
