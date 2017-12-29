@@ -138,7 +138,8 @@ window.addEventListener("load", function load(event){
 		} else {
 			status.innerHTML = '';
 		}
-		var github = document.getElementById('bundle-github');
+	    var github = document.getElementById('bundle-github');
+	    
 		if (github_access_token) {
 			github.className = 'logout';
 		} else {
@@ -330,6 +331,7 @@ window.addEventListener("load", function load(event){
 		}
 	}
 
+    if (btn_gist) {
 	btn_gist.addEventListener('click', function(e) {
 		e.preventDefault();
 		if (btn_gist.className.indexOf('disabled') != -1) {
@@ -347,8 +349,9 @@ window.addEventListener("load", function load(event){
 		}
 	});
 
+    
 	document.getElementById('github-cancel').addEventListener('click', function(e) {
-		e.preventDefault();
+	    e.preventDefault();
 		btn_gist.className = btn_gist.className.replace('disabled', '');
 		if (github_interval) {
 			clearInterval(github_interval);
@@ -367,6 +370,9 @@ window.addEventListener("load", function load(event){
 			github_interval = null;
 		}
 	}, false);
+    } else {
+	document.getElementById('bundle-github').style.display = 'none';
+    }
 
 	btn_bundle.addEventListener('click', function(e) {
 		e.preventDefault();
