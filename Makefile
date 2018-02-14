@@ -1,3 +1,6 @@
+docker-build:
+	docker build -t wof-spelunker .
+
 upgrade:
 	sudo apt-get update
 	sudo apt-get upgrade
