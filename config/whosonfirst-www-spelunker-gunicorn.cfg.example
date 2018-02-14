@@ -16,7 +16,12 @@ if not os.path.exists(spelunker_cfg):
    raise Exception, "missing spelunker config file (%s)" % spelunker_cfg
 
 workers = multiprocessing.cpu_count() * 2 + 1
-worker_class = "egg:gunicorn#gevent"
+
+# the old way
+# worker_class = "egg:gunicorn#gevent"
+
+# the new way (as of... ?)
+worker_class = "gunicorn.workers.ggevent.GeventWorker"
 
 cfg = ConfigParser.ConfigParser()
 cfg.read(spelunker_cfg)
