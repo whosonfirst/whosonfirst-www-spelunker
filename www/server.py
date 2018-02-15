@@ -122,9 +122,11 @@ def init():
     search_idx = mapzen.whosonfirst.elasticsearch.search(**search_args)
     flask.g.search_idx = search_idx
 
-    data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://whosonfirst.mapzen.com/data')
+    data_root = os.environ.get('SPELUNKER_DATA_ROOT', 'https://data.whosonfirst.org/')
     flask.g.data_root = data_root
 
+    # DEPRECATED...? (20180215/thisisaaronland)
+    
     static_root = os.environ.get('SPELUNKER_STATIC_ROOT', 'https://whosonfirst.mapzen.com/static')
     flask.g.static_root = static_root
 

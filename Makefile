@@ -41,8 +41,8 @@ geopoint:
 	curl -s -o www/static/javascript/geopoint.js https://raw.githubusercontent.com/davidwood/node-geopoint/master/geopoint.js
 
 tangram:
-	curl -s -o www/static/javascript/tangram.js https://mapzen.com/tangram/tangram.debug.js
-	curl -s -o www/static/javascript/tangram.min.js https://mapzen.com/tangram/tangram.min.js
+	curl -s -o www/static/javascript/tangram.js https://www.nextzen.org/tangram/tangram.debug.js
+	curl -s -o www/static/javascript/tangram.min.js https://www.nextzen.org/tangram/tangram.min.js
 
 refill:
 	curl -s -o www/static/tangram/refill.yaml https://raw.githubusercontent.com/tangrams/refill-style/gh-pages/refill-style.yaml

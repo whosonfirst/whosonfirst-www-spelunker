@@ -17,10 +17,11 @@ if not os.path.exists(spelunker_cfg):
 
 workers = multiprocessing.cpu_count() * 2 + 1
 
+# http://docs.gunicorn.org/en/latest/settings.html#worker-processes
 # the old way
 # worker_class = "egg:gunicorn#gevent"
-
 # the new way (as of... ?)
+
 worker_class = "gunicorn.workers.ggevent.GeventWorker"
 
 cfg = ConfigParser.ConfigParser()

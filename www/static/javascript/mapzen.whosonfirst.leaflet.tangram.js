@@ -8,8 +8,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     	// below in the 'scenefile' method (20160201/thisisaaronland)
     
     var _scenefile = 'static/tangram/refill.yaml'
-    var _key = 'mapzen-XXXXXXX';
-    var _tileurl = 'https://tile.mapzen.com/mapzen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _key = 'nextzen-xxxxxx';	// https://developers.nextzen.org/
+
+    var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
     var _cache = {};
 
 	var self = {
@@ -94,10 +95,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'attributions': function(){
 
 			var attributions = {
-				'Tangram': 'https://mapzen.com/tangram',
+				'Tangram': 'https://github.com/tangrams/',
 				'© OSM contributors': 'http://www.openstreetmap.org/',
-				'Who\'s On First': 'http://whosonfirst.mapzen.com/',
-				'Mapzen': 'https://mapzen.com/',
+				'Who\'s On First': 'http://www.whosonfirst.org/',
+				'Nextzen': 'https://nextzen.org/',
 			};
 
 			return attributions;
