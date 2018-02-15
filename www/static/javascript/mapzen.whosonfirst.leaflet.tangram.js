@@ -9,7 +9,8 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     
     var _scenefile = 'static/tangram/refill.yaml'
     var _key = 'nextzen-xxxxxx';	// https://developers.nextzen.org/
-    var _tileurl = 'https://nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+
+    var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
     var _cache = {};
 
 	var self = {
