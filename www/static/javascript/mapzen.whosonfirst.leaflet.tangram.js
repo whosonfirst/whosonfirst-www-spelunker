@@ -8,8 +8,8 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     	// below in the 'scenefile' method (20160201/thisisaaronland)
     
     var _scenefile = 'static/tangram/refill.yaml'
-    var _key = 'mapzen-XXXXXXX';
-    var _tileurl = 'https://tile.mapzen.com/mapzen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _key = 'nextzen-xxxxxx';	// https://developers.nextzen.org/
+    var _tileurl = 'https://nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
     var _cache = {};
 
 	var self = {

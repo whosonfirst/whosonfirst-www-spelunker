@@ -14,8 +14,7 @@ mapzen.whosonfirst.config = (function(){
 			var endpoint = document.body.getAttribute("data-wof-data-endpoint");
 
 			if (endpoint == ""){
-				var root = location.protocol + "//" + location.host;
-				endpoint = root + "/data/";
+				endpoint = "https://data.whosonfirst.org/";
 			}
 			else if (endpoint.substr(-1) != "/"){
 				endpoint += "/";
@@ -39,7 +38,7 @@ mapzen.whosonfirst.config = (function(){
 			// Heads up, api_key is used in two different places down
 			// below. (20171002/dphiffer)
 
-			var api_key = 'mapzen-xxxxxx';
+			var api_key = 'nextzen-xxxxxx';		// https://developers.nextzen.org/
 
 			if (mapzen.whosonfirst.leaflet.tangram) {
 				mapzen.whosonfirst.leaflet.tangram.set_key(api_key);
@@ -47,12 +46,14 @@ mapzen.whosonfirst.config = (function(){
 
 			// You may want to change this to places.dev.mapzen.com
 			// if this is a dev thing and not a prod thing.
-			var api_host = 'places.mapzen.com';
-			var api_path = '/v1';
+			var api_host = 'places.whosonfirst.org';
+			var api_path = '/api/rest/';
 
 			if (mapzen.whosonfirst.api) {
 				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + api_path);
-				mapzen.whosonfirst.api.set_key(api_key);
+
+				// should be access token (20180214/thisisaaronland)
+				// mapzen.whosonfirst.api.set_key(api_key);
 			}
 		}
 	};
