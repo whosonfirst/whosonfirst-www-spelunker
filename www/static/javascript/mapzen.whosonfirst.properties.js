@@ -239,7 +239,7 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_transitland_onestop_id': function(d, ctx){
 
-	    var href = "https://mapzen.com/mobility/explorer/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
+	    var href = "https://mobility-explorer.netlify.com/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
 	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
 
 	    link.onclick = function(e){
@@ -444,7 +444,7 @@ mapzen.whosonfirst.properties = (function(){
 	    var p1 = document.createElement("p");
 	    p1.appendChild(document.createTextNode(p1_text));
 
-	    var href = "https://mapzen.com/blog/yesnofix/";
+	    var href = "https://www.whosonfirst.org/blog/2016/04/08/yesnofix/";
 
 	    var link = document.createElement("a");
 	    link.setAttribute("href", href);

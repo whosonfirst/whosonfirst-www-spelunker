@@ -3,7 +3,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.uri = (function(){
 
-	var _endpoint = "https://whosonfirst.mapzen.com/data/";
+	var _endpoint = "https://data.whosonfirst.org/";
 
 	var self = {
 

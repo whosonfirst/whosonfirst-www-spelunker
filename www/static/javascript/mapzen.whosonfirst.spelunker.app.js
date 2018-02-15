@@ -437,7 +437,7 @@ mapzen.whosonfirst = mapzen.whosonfirst || {};
 
 mapzen.whosonfirst.uri = (function(){
 
-	var _endpoint = "https://whosonfirst.mapzen.com/data/";
+	var _endpoint = "https://data.whosonfirst.org/";
 
 	var self = {
 
@@ -917,8 +917,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     	// below in the 'scenefile' method (20160201/thisisaaronland)
     
     var _scenefile = 'static/tangram/refill.yaml'
-    var _key = 'mapzen-XXXXXXX';
-    var _tileurl = 'https://tile.mapzen.com/mapzen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _key = 'nextzen-xxxxxx';	// https://developers.nextzen.org/
+
+    var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
     var _cache = {};
 
 	var self = {
@@ -949,9 +950,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 				var map = L.map(id);
 				map.scrollWheelZoom.disable();
 
-			    	if (L.Hash){
-			    	    var hash = new L.Hash(map);
-				}
+			        // if (L.Hash){
+			    	//     var hash = new L.Hash(map);
+				// }
 
 			        var scale = L.control.scale();
 				scale.addTo(map);
@@ -1003,10 +1004,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'attributions': function(){
 
 			var attributions = {
-				'Tangram': 'https://mapzen.com/tangram',
+				'Tangram': 'https://github.com/tangrams/',
 				'© OSM contributors': 'http://www.openstreetmap.org/',
-				'Who\'s On First': 'http://whosonfirst.mapzen.com/',
-				'Mapzen': 'https://mapzen.com/',
+				'Who\'s On First': 'http://www.whosonfirst.org/',
+				'Nextzen': 'https://nextzen.org/',
 			};
 
 			return attributions;
@@ -1639,10 +1640,15 @@ mapzen.whosonfirst.properties = (function(){
 		//'wof.id': mapzen.whosonfirst.render_wof_id,
 		'wof.placetype': self.render_placetype,
 		'wof.concordances.4sq:id': self.render_foursquare_id,
+		'wof.concordances.companieshouse:number': self.render_companieshouse_number,
 		'wof.concordances.gn:id': self.render_geonames_id,
 		'wof.concordances.gp:id': self.render_woedb_id,
 		'wof.concordances.woe:id': self.render_woedb_id,
 		'wof.concordances.oa:id': self.render_ourairport_id,
+		'wof.concordances.osm:node': self.render_openstreetmap_node,
+		'wof.concordances.osm:way': self.render_openstreetmap_way,
+		'wof.concordances.osm:rel': self.render_openstreetmap_relation,
+		'wof.concordances.osm:relation': self.render_openstreetmap_relation,
 		'wof.concordances.faa:code': self.render_faa_code,
 		'wof.concordances.latimes:id': self.render_latimes_id,
 		'wof.concordances.tgn:id': self.render_tgn_id,
@@ -1697,6 +1703,10 @@ mapzen.whosonfirst.properties = (function(){
 		'wof.concordances.loc:id': 'library of congress',
 		'wof.concordances.nyt:id': 'new york times',
 		'wof.concordances.oa:id': 'ourairports',
+		'wof.concordances.osm:node': 'openstreetmap',
+		'wof.concordances.osm:way': 'openstreetmap',
+		'wof.concordances.osm:rel': 'openstreetmap',
+		'wof.concordances.osm:relation': 'openstreetmap',
 		'wof.concordances.qs:id': 'quattroshapes',
 		'wof.concordances.transitland:onestop_id': 'transitland',
 		'wof.concordances.wk:page': 'wikipedia',
@@ -1844,7 +1854,7 @@ mapzen.whosonfirst.properties = (function(){
 
 	'render_transitland_onestop_id': function(d, ctx){
 
-	    var href = "https://mapzen.com/mobility/explorer/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
+	    var href = "https://mobility-explorer.netlify.com/#/stops?bbox=__BBOX__&onestop_id=" + encodeURIComponent(d);
 	    var link = mapzen.whosonfirst.yesnofix.render_link(href, d, ctx);
 
 	    link.onclick = function(e){
@@ -1899,8 +1909,28 @@ mapzen.whosonfirst.properties = (function(){
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
+	'render_openstreetmap_node': function(d, ctx){
+	    var link = "https://openstreetmap.org/node/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_openstreetmap_way': function(d, ctx){
+	    var link = "https://openstreetmap.org/way/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_openstreetmap_relation': function(d, ctx){
+	    var link = "https://openstreetmap.org/relation/" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
 	'render_faa_code': function(d, ctx){
 	    var link = "http://www.fly.faa.gov/flyfaa/flyfaaindex.jsp?ARPT=" + encodeURIComponent(d);
+	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
+	},
+
+	'render_companieshouse_number': function(d, ctx){
+	    var link = "http://data.companieshouse.gov.uk/doc/company/" + encodeURIComponent(d);
 	    return mapzen.whosonfirst.yesnofix.render_link(link, d, ctx);
 	},
 
@@ -2029,7 +2059,7 @@ mapzen.whosonfirst.properties = (function(){
 	    var p1 = document.createElement("p");
 	    p1.appendChild(document.createTextNode(p1_text));
 
-	    var href = "https://mapzen.com/blog/yesnofix/";
+	    var href = "https://www.whosonfirst.org/blog/2016/04/08/yesnofix/";
 
 	    var link = document.createElement("a");
 	    link.setAttribute("href", href);
@@ -3120,7 +3150,7 @@ mapzen.whosonfirst.chrome = (function(){
 
 			var host = location.host;
 
-			if (host == "whosonfirst.mapzen.com") {
+			if (host == "spelunker.whosonfirst.org") {
 				return;
 			}
 
@@ -3142,4 +3172,4 @@ window.addEventListener("load", function load(event){
 	mapzen.whosonfirst.chrome.init();
 });
 
-// last bundled at 2017-07-03T16:06:55 UTC
+// last bundled at 2018-02-15T20:29:58 UTC

@@ -95,10 +95,10 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		'attributions': function(){
 
 			var attributions = {
-				'Tangram': 'https://mapzen.com/tangram',
+				'Tangram': 'https://github.com/tangrams/',
 				'© OSM contributors': 'http://www.openstreetmap.org/',
-				'Who\'s On First': 'http://whosonfirst.mapzen.com/',
-				'Mapzen': 'https://mapzen.com/',
+				'Who\'s On First': 'http://www.whosonfirst.org/',
+				'Nextzen': 'https://nextzen.org/',
 			};
 
 			return attributions;

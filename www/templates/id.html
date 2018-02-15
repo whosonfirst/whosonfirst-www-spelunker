@@ -2,13 +2,13 @@
 {% block title %}{{ doc.properties.get("wof:name") |e }} | {{ doc.properties.get("wof:id") |e }}{% endblock %}
 {% block head %}
 <meta property="og:type" content="article" />
-<meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+<meta property="og:site_name" content="Who's On First Spelunker" />
 <meta property="og:title" content="{{ doc.properties.get("wof:name") |e }} ({{ doc.properties.get("wof:id") |e }})" />
 <meta property="og:description" content="{{ doc.properties.get("wof:name") |e }} is a {{ doc.properties.get("wof:placetype") |e }} {% if doc.properties.get("edtf:deprecated") %} - that is deprecated{% elif doc.properties.get("wof:superseded_by") %} - that has been superseded by WOF ID {{ doc.properties.get("wof:superseded_by").0 |e }}{% endif %} {% if doc.properties.get("wof:country", "") != "" %} :flag-{{ doc.properties.get("wof:country").lower() |e }}:{% endif %}" />
 {% if g.enable_feature_staticmaps %}
 <meta property="og:image" content="{{ url_for('staticmap', id=doc.properties.get("wof:id"), _external=True) }}" />
 {% else %}
-<meta property="og:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
+<meta property="og:image" content="/images/wof-sq-pink.jpg" />
 {% endif %}
 
 
@@ -21,7 +21,7 @@
 {% if g.enable_feature_staticmaps %}
 <meta property="twitter:image" content="{{ url_for('staticmap', id=doc.properties.get("wof:id"), _external=True) }}" />
 {% else %}
-<meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
+<meta property="twitter:image" content="/images/wof-sq-pink.jpg" />
 {% endif %}
 {% endblock %}
 {% block content %}

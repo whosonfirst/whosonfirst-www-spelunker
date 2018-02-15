@@ -2,10 +2,10 @@
 {% block title %}Who's On First concordances with {{ src |e }}{% endblock %}
 {% block head %}
 <meta property="og:type" content="article" />
-<meta property="og:site_name" content="Who's On First Spelunker (a Mapzen gig)" />
+<meta property="og:site_name" content="Who's On First Spelunker" />
 <meta property="og:title" content="Places where Who's On First holds hand with {{ src|e }}" />
 <meta property="og:description" content="{% if pagination.total == 1 %}There is one place in Who's On First that has a concordance with {{ src | e}}{% else %}There are {{ pagination.total |number_format|e }} places in Who's On First that have a concordance with {{ src |e }}{% endif %}" />
-<meta property="og:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
+<meta property="og:image" content="/images/wof-sq-pink.jpg" />
 
 <meta property="twitter:card" value="summary" />
 <meta property="twitter:site" content="@alloftheplaces" />
@@ -13,7 +13,7 @@
 <meta property="twitter:url" content="{{ request.base_url |e }}" />
 <meta property="twitter:title" content="Places where Who's On First holds hand with {{ src|e }}" />
 <meta property="twitter:description" content="{% if pagination.total == 1 %}There is one place in Who's On First that has a concordance with {{ src | e}}{% else %}There are {{ pagination.total |number_format|e }} places in Who's On First that have a concordance with {{ src |e }}{% endif %}" />
-<meta property="twitter:image" content="https://whosonfirst.mapzen.com/images/wof-sq-pink.jpg" />
+<meta property="twitter:image" content="/images/wof-sq-pink.jpg" />
 
 {% endblock %}
 {% block content %}

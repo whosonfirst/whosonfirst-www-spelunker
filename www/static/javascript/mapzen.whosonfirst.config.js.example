@@ -32,7 +32,7 @@ mapzen.whosonfirst.config = (function(){
 			}
 
 			// Here is where we configure the Who's On First API details.
-			// Set this to the key you got from https://mapzen.com/developers
+			// Set this to the key you got from https://developers.nextzen.org/keys
 			// (20170111/dphiffer)
 
 			// Heads up, api_key is used in two different places down
@@ -44,10 +44,8 @@ mapzen.whosonfirst.config = (function(){
 				mapzen.whosonfirst.leaflet.tangram.set_key(api_key);
 			}
 
-			// You may want to change this to places.dev.mapzen.com
-			// if this is a dev thing and not a prod thing.
-			var api_host = 'places.whosonfirst.org';
-			var api_path = '/api/rest/';
+			var api_host = 'api.whosonfirst.org';
+			var api_path = '/v1';	// there will never be a v2...
 
 			if (mapzen.whosonfirst.api) {
 				mapzen.whosonfirst.api.set_endpoint('https://' + api_host + api_path);
