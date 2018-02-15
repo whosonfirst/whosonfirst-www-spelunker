@@ -8,7 +8,7 @@
 {% if g.enable_feature_staticmaps %}
 <meta property="og:image" content="{{ url_for('staticmap', id=doc.properties.get("wof:id"), _external=True) }}" />
 {% else %}
-<meta property="og:image" content="/images/wof-sq-pink.jpg" />
+<meta property="og:image" content="{{ url_for('static', filename='images/wof-sq-pink.jpg') }}" />
 {% endif %}
 
 
@@ -21,7 +21,7 @@
 {% if g.enable_feature_staticmaps %}
 <meta property="twitter:image" content="{{ url_for('staticmap', id=doc.properties.get("wof:id"), _external=True) }}" />
 {% else %}
-<meta property="twitter:image" content="/images/wof-sq-pink.jpg" />
+<meta property="twitter:image" content="{{ url_for('static', filename='images/wof-sq-pink.jpg') }}" />
 {% endif %}
 {% endblock %}
 {% block content %}
