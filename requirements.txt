@@ -1,10 +1,10 @@
 flask
 flask_cors
 pycountry
-git+git://github.com/whosonfirst/py-machinetag#egg=machinetag
-git+git://github.com/whosonfirst/py-machinetag-elasticsearch#egg=machinetag.elasticsearch
-git+git://github.com/whosonfirst/py-mapzen-whosonfirst-languages#egg=mapzen.whosonfirst.languages
-git+git://github.com/whosonfirst/py-mapzen-whosonfirst-sources#egg=mapzen.whosonfirst.sources
-git+git://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes#egg=mapzen.whosonfirst.placetypes
-git+git://github.com/whosonfirst/py-mapzen-whosonfirst-utils#egg=mapzen.whosonfirst.utils
-git+git://github.com/whosonfirst/py-mapzen-whosonfirst-uri#egg=mapzen.whosonfirst.uri
+git+https://github.com/whosonfirst/py-machinetag#egg=machinetag
+git+https://github.com/whosonfirst/py-machinetag-elasticsearch#egg=machinetag.elasticsearch
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-languages#egg=mapzen.whosonfirst.languages
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-sources#egg=mapzen.whosonfirst.sources
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-placetypes#egg=mapzen.whosonfirst.placetypes
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-utils#egg=mapzen.whosonfirst.utils
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-uri#egg=mapzen.whosonfirst.uri
