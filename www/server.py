@@ -160,6 +160,14 @@ def country_name(code):
             return code
 
 @app.template_filter()
+def is_an(subject):
+
+    if subject[0] in ("a", "e", "i", "o", "u"):
+        return True
+
+    return False
+
+@app.template_filter()
 def urlencode(value):
     s = unicode(value)
     return urllib.quote(s)
