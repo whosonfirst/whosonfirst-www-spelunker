@@ -142,6 +142,9 @@ def init():
 @app.template_filter()
 def country_name(code):
 
+    if code.startswith("X"):
+        return code
+
     try:
         c = pycountry.countries.get(alpha2=code)
         return c.name
