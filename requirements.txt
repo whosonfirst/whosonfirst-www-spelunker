@@ -1,6 +1,11 @@
 flask
 flask_cors
 pycountry
+tenacity
+shapely
+geojson
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-elasticsearch#egg=mapzen.whosonfirst.elasticsearch
+git+https://github.com/whosonfirst/py-mapzen-whosonfirst-meta#egg=mapzen.whosonfirst.meta
 git+https://github.com/whosonfirst/py-machinetag#egg=machinetag
 git+https://github.com/whosonfirst/py-machinetag-elasticsearch#egg=machinetag.elasticsearch
 git+https://github.com/whosonfirst/py-mapzen-whosonfirst-languages#egg=mapzen.whosonfirst.languages
