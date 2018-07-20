@@ -58,27 +58,51 @@
 
     {% endif %}
 
-{% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
+    {# superseded_by or deprecated #}
 
-{% if doc.properties['wof:superseded_by']|length == 1 %}
-<small class="flagged">this record has been both <strong>deprecated</strong> and <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></small>
-{% else %}
-<small class="flagged">this record has been both <strong>deprecated</strong> and <strong>superseded</strong></small>
-{% endif %}
+    {% if doc.properties.get("edtf:deprecated") and doc.properties.get("wof:superseded_by") %}
 
-{% elif doc.properties.get("edtf:deprecated") %}
-<small class="flagged">this record has been <strong>deprecated</strong></small>
-{% elif doc.properties.get("wof:superseded_by") %}
+    	<small class="flagged" style="display:block;">
+    	{% if doc.properties['wof:superseded_by']|length == 1 %}
+    	this record has been both <strong>deprecated</strong> and <strong>superseded</strong> by: <a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">{{ doc.properties['wof:superseded_by'].0 | e }}</a>
+    	{% else %}
+    	this record has been both <strong>deprecated</strong> and <strong>superseded</strong>
+    	{% endif %}
+	</small>
 
-{% if doc.properties['wof:superseded_by']|length == 1 %}
-<small class="flagged">this record has been <strong><a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">superseded</a></strong></small>
-{% else %}
-<small class="flagged">this record has been <strong>superseded</strong></small>
-{% endif %}
+    {% elif doc.properties.get("edtf:deprecated") %}
 
-{% else %}
+    	<small class="flagged" style="display:block;">
+	this record has been <strong>deprecated</strong>
+	</small>
 
-{% endif %}
+    {% elif doc.properties.get("wof:superseded_by") %}
+
+    	<small class="flagged" style="display:block;">
+	{% if doc.properties['wof:superseded_by']|length == 1 %}
+    	this record has been <strong>superseded</strong> by: <a href="{{ url_for('info', id=doc.properties['wof:superseded_by'].0 ) }}">{{ doc.properties['wof:superseded_by'].0 | e }}</a>
+	{% else %}
+	this record has been <strong>superseded</strong>
+	{% endif %}
+	</small>
+
+     {% else %}{% endif %}
+
+     {# supersedes #}
+
+     {% if doc.properties.get("wof:supersedes") and doc.properties['wof:supersedes']|length > 0 %}
+	<small style="display:block;">
+	  {% if doc.properties['wof:supersedes']|length == 1 %}
+	  this record <strong>supersedes</strong>:
+	  <a href="{{ url_for('info', id=doc.properties['wof:supersedes'][0]) }}" class="wof-namify">{{ doc.properties['wof:supersedes'][0] | e }}</a>
+	  {% else %}
+	  this record <strong>supersedes</strong>:
+	  {% for id in doc.properties['wof:supersedes'] %}<a href="{{ url_for('info', id=id) }}" class="wof-namify">{{ id |e }}</a> {% endfor %}
+	  {% endif %}
+	</small>
+
+     {% endif %}
+
 </div>
 
 </div>
