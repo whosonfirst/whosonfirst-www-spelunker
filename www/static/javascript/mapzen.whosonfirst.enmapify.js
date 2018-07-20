@@ -43,6 +43,9 @@ mapzen.whosonfirst.enmapify = (function(){
 			var child_url = mapzen.whosonfirst.uri.id2abspath(child_id);
 			var parent_url = mapzen.whosonfirst.uri.id2abspath(parent_id);
 			
+		    	// console.log("CHILD", child_url);
+		    	// console.log("PARENT", parent_url);
+
 			var on_parent = function(parent_feature){
 				
 				mapzen.whosonfirst.leaflet.fit_map(map, parent_feature);
@@ -59,6 +62,11 @@ mapzen.whosonfirst.enmapify = (function(){
 			};
 			
 			var on_child = function(child_feature){
+
+			    if (! child_feature){
+				console.log("ON CHILD", "on_child invoked without a child_feature");
+				return false;
+			    }
 
 				var props = child_feature['properties'];
 				var geom = child_feature['geometry'];
@@ -202,7 +210,10 @@ mapzen.whosonfirst.enmapify = (function(){
 			}
 			
 			else {
-				mapzen.whosonfirst.net.fetch(parent_url, on_parent, function(){ on_child() });
+
+			    mapzen.whosonfirst.net.fetch(parent_url, on_parent, function(){
+				mapzen.whosonfirst.net.fetch(child_url, on_child);
+			    });
 			}
 		},
 		
