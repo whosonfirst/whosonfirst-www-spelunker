@@ -490,7 +490,7 @@ def current_query():
         'match': { 'mz:is_current': 1 }
     }
 
-    return qury
+    return query
 
 @app.route("/current/facets", methods=["GET"])
 @app.route("/current/facets/", methods=["GET"])
