@@ -1,4 +1,19 @@
+{% if pagination.cursor %}
+
+<ul id="pagination" class="list-inline">
+<li><a href="{{ pagination_url }}&cursor={{ pagination.cursor|e }}">next</a></li>
+</ul>
+
+<br clear="all" />
+
+<div style="font-size:small;text-align:center;">
+There are <span class="hey-look">{{ pagination.total |number_format|e }} results</span>.
+</div>
+
+{% else %}
+
 {% if pagination.pages > 1 %}
+
 <ul id="pagination" class="list-inline">
 {% if pagination.page == 1 %}
 <li>start</li>
@@ -11,7 +26,9 @@
 <li><a href="{{ pagination_url }}&page={{ pagination.page + 1 }}">next</a></li>
 {% endif %}
 </ul>
+
 <br clear="all" />
+
 <div style="font-size:small;text-align:center;">
 {% if pagination.total==0 %}
 
@@ -23,6 +40,9 @@ There are <span class="hey-look">{{ pagination.total |number_format|e }} results
 {% if pagination.pages > 1 %}
 and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
 {% endif %}
+
+{% endif %}
+</div>
 
 {% endif %}
 

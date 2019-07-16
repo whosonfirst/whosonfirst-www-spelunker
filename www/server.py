@@ -1856,6 +1856,8 @@ def searchify():
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
+    print "PAGINATION %s" % pagination
+    
     docs = rsp['rows']
 
     docs = docs_to_geojson(docs)
@@ -2023,14 +2025,23 @@ def do_search():
         'sort': sort,
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
 
-    if page:
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
-
+    else:
+        pass
+        
     rsp = flask.g.search_idx.query(body=body, params=params)
     return body, params, rsp
 
@@ -2499,6 +2510,9 @@ def build_pagination_url():
     if qs.get('page', False):
         del(qs['page'])
 
+    if qs.get('cursor', False):
+        del(qs['cursor'])
+        
     qs = urllib.urlencode(qs)
 
     # hack because middleware stuff...
