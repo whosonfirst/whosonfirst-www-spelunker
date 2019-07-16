@@ -15,20 +15,32 @@
 
 <small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been flagged as <q class="hey-look">current</q> 
 
-{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+{% if pagination.pages > 1 %}
+{% if pagination.cursor %}
+and this is one page <span class="hey-look">of many</span>
+{% else %}
+and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+{% endif %}
+{% endif %}
+
 </small>
 
 {% else %}{% endif %}
 </h3>
 
+{% if error and error.type=="search_context_missing_exception" %}
+{% set query = 'places flagged as current' %}
+{% include "inc_pagination_expired.html" %}
+{% else %}
+
 {% if pagination.total == 0 %}
 
-<small class="see-also">There aren't <span class="hey-look">any places</span> that have been flagged as <q class="hey-look">current</q> 
+<p>There aren't <span class="hey-look">any places</span> that have been flagged as <q class="hey-look">current</q></p>
 
 {% else %}
 {% include "inc_docs.html" %}
 {% endif %}
-
+{% endif %}
 
 </div>
 </div>

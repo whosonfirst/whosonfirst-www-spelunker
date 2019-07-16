@@ -463,13 +463,22 @@ def current():
         'sort': sort
     }
 
-    params = {}
+    params = {
+        'scroll': True, 
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -489,7 +498,8 @@ def current():
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        'facet_url': facet_url
+        'facet_url': facet_url,
+        'error': rsp.get("error", None),
     }
 
     return flask.render_template('current.html', **template_args)
@@ -619,13 +629,22 @@ def brand(id):
         'query': query,
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -646,7 +665,8 @@ def brand(id):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        'facet_url': facet_url
+        'facet_url': facet_url,
+        'error': rsp.get("error", None),
     }
 
     return flask.render_template('brand.html', **template_args)
@@ -1423,13 +1443,22 @@ def machinetag_places(field, mt):
          'query': query
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -1450,6 +1479,7 @@ def machinetag_places(field, mt):
         'es_query': body,
         'timing': rsp.get("timing", None),
         'facet_url': facet_url,
+        'error': rsp.get("error", None)
     }
 
     return flask.render_template('machinetag_places.html', **template_args)
@@ -1696,13 +1726,22 @@ def category(category):
         'query': query,
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -1723,6 +1762,7 @@ def category(category):
         'es_query': body,
         'timing': rsp.get("timing", None),
         'facet_url': facet_url,
+        'error': rsp.get("error", None),
     }
 
     return flask.render_template('category.html', **template_args)
