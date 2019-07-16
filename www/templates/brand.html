@@ -10,7 +10,14 @@ Places that are a <span class="hey-look">#<span class="wof-namify-brand" data-wo
 </h3>
 </div>
 
+{% if error and error.type=="search_context_missing_exception" %}
+{% set query = 'places that are a ' + brand %}
+{% include "inc_pagination_expired.html" %}
+{% else %}
+
 {% include "inc_docs.html" %}
+
+{% endif %}
 
 <script type="text/javascript" src="{{ url_for('static', filename='javascript/localforage.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.brands.js') }}"></script>

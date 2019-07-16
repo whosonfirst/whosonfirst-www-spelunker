@@ -595,6 +595,9 @@ def random_place_query():
 @app.route("/brands/", methods=["GET"])
 def brands():
 
+    # this needs pagination before it can be made public again
+    # (20190716/straup)
+    
     flask.abort(404)
     
     aggrs = {
