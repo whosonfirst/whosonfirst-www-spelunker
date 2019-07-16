@@ -1191,13 +1191,22 @@ def placetype(placetype):
         'query': query,
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -1219,7 +1228,8 @@ def placetype(placetype):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        'facet_url': facet_url
+        'facet_url': facet_url,
+        'error': rsp.get("error", None),
     }
 
     return flask.render_template('placetype.html', **template_args)

@@ -38,7 +38,15 @@ Places that are a <q>{{ placetype |e }}</q>
 {% endif %}
 
 
-{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+{% if pagination.pages > 1 %}
+  
+  {% if pagination.cursor %}
+  and this is <span class="hey-look">one of many</span>
+  {% else %}
+  and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+  {% endif %}
+  
+{% endif %}
 </small>
 
 {% else %}
