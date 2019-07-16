@@ -17,20 +17,21 @@
 
 {% endblock %}
 {% block content %}
-{% if pagination.count == 0 %}
-
-<div class="row"><span style="font-size:2em;">😿 </span> can not find any concordances <q class="hey-look">{{ src|e }}</q></div>
-
-{% else %}
 
 <div class="row"><h3>
 {% if pagination.total == 1 %}
 There is <span class="hey-look">one place</span> that has a concordance with <q class="hey-look">{{ src |e }}</q>
 {% else %}
 There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have a concordance with <q class="hey-look">{{ src |e }}</q>
+
 {% if pagination.pages > 1 %}
+{% if pagination.cursor %}
+and this is one page <span class="hey-look">of many</span>
+{% else %}
 and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
 {% endif %}
+{% endif %}
+
 {% endif %}
 
 <small class="see-also">See all the <span class="hey-look">other things</span> that Who's On First <a href="{{ url_for('concordances') }}" class="hey-look">holds hands with</a></small>
@@ -38,7 +39,22 @@ and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</
 
 </div>
 
+{% if error and error.type=="search_context_missing_exception" %}
+
+{% set query = 'places that hold hands with ' + src %}
+{% include "inc_pagination_expired.html" %}
+
+{% else %}
+
+{% if pagination.count == 0 %}
+
+<div class="row"><span style="font-size:2em;">😿 </span> can not find any concordances <q class="hey-look">{{ src|e }}</q></div>
+
+{% else %}
+
 {% include "inc_docs.html" %}
+
+{% endif %}
 
 {% endif %}
 

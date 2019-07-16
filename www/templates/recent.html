@@ -29,25 +29,41 @@
 <small class="see-also">There are <span class="hey-look">{{ pagination.total |number_format|e }} places</span> that have been updated <span class="hey-look">in the last {{ days | number_format|e }} days</span> 
 {% endif %}
 
-{% if pagination.pages > 1 %} and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}{% endif %}
+  {% if pagination.pages > 1 %}
+  {% if pagination.cursor %}
+  and this is one page <span class="hey-look">of many<span>
+  {% else %}
+  and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+  {% endif %}
+  {% endif %}  
+
 </small>
 
 {% else %}{% endif %}
 </h3>
 
+
+{% if error and error.type=="search_context_missing_exception" %}
+
+{% set query = 'places that have been updated recently' %}
+{% include "inc_pagination_expired.html" %}
+
+{% else %}
+  
 {% if pagination.total == 0 %}
 
 {% if days == 1 %}
-<small class="see-also">There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last day</span> 
+<p>There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last day</p> 
 {% else %}
-<small class="see-also">There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last {{ days | number_format|e }} days</span> 
+ <p>There aren't <span class="hey-look">any places</span> that have been updated <span class="hey-look">in the last {{ days | number_format|e }} days</p>
+{% endif %}
+ 
+{% else %}
+{% include "inc_docs.html" %}    
 {% endif %}
 
-{% else %}
-{% include "inc_docs.html" %}
-{% endif %}
-
-{% endif %}
+ {% endif %}
+{% endif %} 
 
 </div>
 </div>

@@ -56,8 +56,10 @@ Places that are a <q>{{ placetype |e }}</q>
 </h3>
 
 {% if error and error.type=="search_context_missing_exception" %}
+
 {% set query = 'places that are a ' + placetype %}
 {% include "inc_pagination_expired.html" %}
+
 {% else %}
 
 {% if pagination.total == 0 %}
