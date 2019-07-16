@@ -11,7 +11,7 @@ Places that are a <span class="hey-look">#<span class="wof-namify-brand" data-wo
 </div>
 
 {% if error and error.type=="search_context_missing_exception" %}
-{% set query = 'places that are a ' + brand %}
+{% set query = 'places that are this brand' %}
 {% include "inc_pagination_expired.html" %}
 {% else %}
 
