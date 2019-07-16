@@ -375,13 +375,22 @@ def lastmod_days(days):
         'sort': sort
     }
 
-    params = {}
+    params = {
+        'scroll': True,
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -402,7 +411,8 @@ def lastmod_days(days):
         'docs': docs,
         'pagination': pagination,
         'pagination_url': pagination_url,
-        'facet_url': facet_url
+        'facet_url': facet_url,
+        'error': rsp.get("error", None),        
     }
 
     return flask.render_template('recent.html', **template_args)
@@ -1097,13 +1107,22 @@ def nullisland():
          'query': query
     }
 
-    params = {}
-
+    params = {
+        'scroll': True        
+    }
+    
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -1123,6 +1142,7 @@ def nullisland():
         'es_query': body,
         'facet_url': facet_url,
         'timing': rsp.get("timing", None),
+        'error': rsp.get("error", None),                
     }
 
     return flask.render_template('nullisland.html', **template_args)
@@ -2582,13 +2602,22 @@ def has_concordance(src, label):
          'query': query
     }
 
-    params = {}
+    params = {
+        'scroll': True        
+    }
 
+    cursor = get_str('cursor')
+    cursor = get_single(cursor)
+    
     page = get_int('page')
     page = get_single(page)
-
-    if page:
+    
+    if cursor:
+        params['scroll_id'] = cursor
+    elif page:
         params['page'] = page
+    else:
+        pass
 
     rsp = flask.g.search_idx.query(body=body, params=params)
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
@@ -2609,6 +2638,7 @@ def has_concordance(src, label):
         'es_query': body,
         'timing': rsp.get("timing", None),
         'facet_url': facet_url,
+        'error': rsp.get("error", None),        
     }
 
     return flask.render_template('concordance.html', **template_args)
@@ -2819,7 +2849,7 @@ def append_source_details_to_buckets(buckets):
         try:
             prefix, key = b['key'].split(':')
         except Exception, e:
-            logging.error("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
+            logging.debug("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
             continue
 
         source = src.get_source_by_prefix(prefix)
@@ -2848,7 +2878,7 @@ def append_language_details_to_buckets(buckets):
             b["fullname"] = b["name"]
 
         except Exception, e:
-            logging.warning("failed to parse language tag '%s' because %s" % (tag, e))
+            logging.debug("failed to parse language tag '%s' because %s" % (tag, e))
 
 def append_country_details_to_buckets(buckets):
 
@@ -2868,7 +2898,7 @@ def append_country_details_to_buckets(buckets):
             b["fullname"] = name
 
         except Exception, e:
-            logging.warning("failed to parse country code '%s' because %s" % (code, e))
+            logging.debug("failed to parse country code '%s' because %s" % (code, e))
 
 # please put me in a library somewhere...
 # please to be porting this at the same time...
