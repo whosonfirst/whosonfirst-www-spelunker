@@ -10,6 +10,15 @@ Descendants of <a href="{{ url_for('info', id=doc['properties']['wof:id']) }}">{
 </h3>
 </div>
 
+{% if error and error.type=="search_context_missing_exception" %}
+
+{% set query = 'places that are descendants of ' + doc['properties']['wof:name'] %}
+{% include "inc_pagination_expired.html" %}
+
+{% else %}
+
 {% include "inc_docs.html" %}
+
+{% endif %}
 
 {% endblock %}
