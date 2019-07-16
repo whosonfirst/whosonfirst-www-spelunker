@@ -6,6 +6,12 @@
 <h3>Places tagged <q>{{ tag |e }}</q></h3>
 </div>
 
+{% if error and error.type=="search_context_missing_exception" %}
+{% set query = 'places tagged ' + tag %}
+{% include "inc_pagination_expired.html" %}
+{% else %}
+
 {% include "inc_docs.html" %}
+{% endif %}
 
 {% endblock %}

@@ -51,13 +51,21 @@ Places that are a <q>{{ placetype |e }}</q>
 
 {% else %}
 
-<small class="see-also"><span class="hey-look">Huh</span>... what is <span class="hey-look">{{ placetype |e }}</span>?</small>
 {% endif %}
 
 </h3>
 
-{% if pagination.total != 0 %}
+{% if error and error.type=="search_context_missing_exception" %}
+{% set query = 'places that are a ' + placetype %}
+{% include "inc_pagination_expired.html" %}
+{% else %}
+
+{% if pagination.total == 0 %}
+<small class="see-also"><span class="hey-look">Huh</span>... what is <span class="hey-look">{{ placetype |e }}</span>?</small>
+{% else %}
 {% include "inc_docs.html" %}
+{% endif %}
+
 {% endif %}
 
 </div>
