@@ -7,7 +7,8 @@
 <br clear="all" />
 
 <div style="font-size:small;text-align:center;">
-There are <span class="hey-look">{{ pagination.total |number_format|e }} results</span>.
+  There are <span class="hey-look">{{ pagination.total |number_format|e }} results</span><br /><br />
+  There are so many results for this query that the Spelunker database can't do <code>page1, page2, page3...</code> style pagination without getting sad. There are actually <span class="hey-look">{{ pagination.pages |number_format|e }} pages</span> worth of results for this query but as of this writing there is only the <span class="hey-look">"next page"</span> of results. We all have our limits, right?
 </div>
 
 {% else %}

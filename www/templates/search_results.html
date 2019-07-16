@@ -50,7 +50,12 @@ There are <span class="hey-look">{{ pagination.total |number_format|e }} places<
 {% endif %}
 
 {% if pagination.pages > 1 %}
+
+{% if pagination.cursor %}
+and this is one page <span class="hey-look">of many</span>
+{% else %}
 and this is <span class="hey-look">page {{ pagination.page |number_format|e }}</span> of {{ pagination.pages |number_format|e }}
+{% endif %}
 
 {% endif %}
 </h3></div>
