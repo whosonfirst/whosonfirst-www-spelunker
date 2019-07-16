@@ -1873,6 +1873,7 @@ def searchify():
         'es_query': query,
         'timing': rsp.get("timing", None),
         'facet_url': facet_url,
+        'error': rsp.get("error", None),
     }
 
     return flask.render_template('search_results.html', **template_args)

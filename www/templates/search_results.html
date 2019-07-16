@@ -20,11 +20,15 @@
 
 <div class="row">
 {% if query_string %}
-<h2>😿  <small>can not find anything matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q></small></h2>
+<h2>&#128575; <small>Could not find anything matching <q class="hey-look">{{ query_string.decode('utf-8') |e }}</q></small></h2>
 {% else %}
-<h2>😿  <small>can not find anything matching <span class="hey-look">your query</span></small></h2>
+<h2>&#128575; <small>Could not find anything matching <span class="hey-look">your query</span></small></h2>
 {% endif %}
 </div>
+
+{% if error and error.type=="search_context_missing_exception" %}
+<p>It looks like your query for <span class="hey-look">{{ query|e }}</span> has expired. Some queries that return lots of results (like this one) have a <a href="https://en.wikipedia.org/wiki/Shelf_life" class="hey-look">limited shelf life</a>. It's sort of like how a bunch of bananas is left on the shelf at a grocery store for a shorter amount of time than, say, a jar of peanut butter... but for databases. Would you like to <a href="{{ pagination_url|e }}" class="hey-look">refresh your query?</a></p>
+{% endif %}
 
 {% include "inc_query.html" %}
 
