@@ -1856,7 +1856,6 @@ def searchify():
     rsp = flask.g.search_idx.standard_rsp(rsp, **params)
 
     pagination = rsp['pagination']
-    print "PAGINATION %s" % pagination
     
     docs = rsp['rows']
 
@@ -2034,13 +2033,15 @@ def do_search():
     
     page = get_int('page')
     page = get_single(page)
-
+    
     if cursor:
         params['scroll_id'] = cursor
     elif page:
         params['page'] = page
     else:
         pass
+
+    # print "PARAMS cursor '%s' page '%s' params '%s'" % (cursor, page, params)
         
     rsp = flask.g.search_idx.query(body=body, params=params)
     return body, params, rsp
