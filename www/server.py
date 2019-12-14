@@ -110,11 +110,42 @@ def init():
     search_port = os.environ.get('SPELUNKER_SEARCH_PORT', None)
     search_index = os.environ.get('SPELUNKER_SEARCH_INDEX', None)
 
+    """
+
+    why do we default to 84 results per page you ask?
+    (20191214/straup)
+    
+    julian 16:33
+    What does WOF have against Wyoming and Wisconsin? :stuck_out_tongue:
+    (just kidding, no problems here, just pagination)
+    But you know this would be a cool answer to the question "why does the spelunker default to 52 records of pagination?"
+    if you chose to do so (edited)
+
+    john 17:11
+    no more than one state can start with W sorry
+
+    john 17:27
+    also what's up with M you have 26 letters spread out the love
+
+    aaron 20:12
+    Which country has the most number of states/regions? We'll just make that the default
+
+    julian 20:19
+    oh that's a great geo trivia question
+    gotta be USA because we are #1 at everything, right?
+
+    julian 20:43
+    https://en.wikipedia.org/wiki/Federated_state
+    looks like Russia wins?
+    84 regions in the spelunker: https://spelunker.whosonfirst.org/id/85632685/descendants/?exclude=nullisland&placetype=region
+
+    """
+
     search_args = {
         'host': search_host,
         'port': search_port,
         'index': search_index,
-        'per_page': 50,
+        'per_page': 84,		# see above
         'slow_queries': 0.5,
         'slow_queries_log': slow_logger
     }
