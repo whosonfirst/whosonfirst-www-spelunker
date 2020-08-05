@@ -8,7 +8,7 @@ RUN apk update && apk upgrade \
     && pip3 install --upgrade pip \
     && pip3 install gevent \
     && pip3 install gunicorn \
-    && pip3 install atomicwriters \
+    && pip3 install atomicwrites \
     && pip3 install flask \
     && pip3 install flask_cors \
     && pip3 install pycountry \
