@@ -12,4 +12,5 @@ RUN apk update && apk upgrade \
     && pip3 install pycountry \
     && pip3 install tenacity \
     && pip3 install shapely \
-    && pip3 install geojson
+    && pip3 install geojson \
+    && pip3 install requests

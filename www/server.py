@@ -3,7 +3,7 @@
 import sys
 import os
 import logging
-import urlparse
+from urllib.parse import urlparse
 import urllib
 import codecs
 import requests
@@ -11,7 +11,7 @@ import requests
 import flask
 import werkzeug
 import werkzeug.security
-from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.datastructures import Headers
 from flask_cors import cross_origin
 
@@ -2086,7 +2086,7 @@ def search_query():
     # (20160701/thisisaaronland)
 
     if esc_q == '*' and len(query['filtered']['filter']['and']) < 2:
-        raise Exception, "E_INSUFFICIENT_SEARCH"
+        raise Exception("E_INSUFFICIENT_SEARCH")
 
     # 3. scoring the results by sub-properties
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
