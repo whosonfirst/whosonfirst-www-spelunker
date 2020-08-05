@@ -1,3 +1,6 @@
+docker-base:
+	docker build -f Dockerfile.base -t whosonfirst-spelunker-base .
+
 docker:
 	docker build -t whosonfirst-spelunker .
 
