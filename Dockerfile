@@ -9,6 +9,11 @@ RUN apk update && apk upgrade \
     # && cd whosonfirst-www-spelunker-0.9.2 \
     # && pip3 install -r requirements.txt \
     #
+    && cd /build \
+    && wget -O machinetag.tar.gz https://github.com/whosonfirst/py-machinetag/archive/v2.0.0.tar.gz && tar -xvzf machinetag.tar.gz \
+    && cd py-machinetag-2.0.0 \
+    && pip3 install -r requirements.txt . \    
+    #
     && mkdir -p /usr/local/whosonfirst/whosonfirst-www-spelunker/ \
     # && cp -r www /usr/local/whosonfirst/whosonfirst-www-spelunker/ \
     # && cp -r config /usr/local/whosonfirst/whosonfirst-www-spelunker/ \
