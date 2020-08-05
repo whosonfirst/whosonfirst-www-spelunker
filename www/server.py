@@ -23,7 +23,6 @@ import types
 import math
 import json
 import pycountry
-import pprint
 
 # https://github.com/whosonfirst/py-machinetag
 # https://github.com/whosonfirst/py-machinetag-elasticsearch
@@ -179,14 +178,14 @@ def country_name(code):
     try:
         c = pycountry.countries.get(alpha2=code)
         return c.name
-    except Exception, e:
+    except Exception as e:
 
         # I hate you Python... (20170116/thisisaaronland)
 
         try:
             c = pycountry.countries.get(alpha_2=code)
             return c.name
-        except Exception, e:
+        except Exception as e:
             logging.error("failed to get country name for %s, because %s" % (code, e))
             return code
 
@@ -224,7 +223,7 @@ def format_timestamp(ts, fmt=None):
 
         return then.strftime(fmt)
 
-    except Exception, e:
+    except Exception as e:
         logging.error("Failed to format timestamp (%s) because %s" % (ts, e))
         return ts
 
@@ -588,7 +587,7 @@ def random_place_query():
 
     try:
         iso = country.alpha2.lower()
-    except Exception, e:
+    except Exception as e:
         iso = country.alpha_2.lower()	# WUUUUUUUUHHHHHHHH.... sad face (20161202/thisisaaronland)
 
     iso = flask.g.search_idx.escape(iso)
@@ -799,7 +798,7 @@ def languages(spoken=False):
         try:
             lang = pycountry.languages.get(iso639_3_code=b['key'])
             b['lang_common'] = lang.name
-        except Exception, e:
+        except Exception as e:
             b['lang_common'] = b['key']
 
     template = "languages_official.html"
@@ -1620,7 +1619,6 @@ def machinetag_hierarchies(field, **kwargs):
             b['value'] = value
             b['machinetag'] = mt.as_string()
 
-    # print buckets
     return (aggrs, buckets)
 
 @app.route("/tags", methods=["GET"])
@@ -1948,7 +1946,7 @@ def searchify():
 
     try:
         query, params, rsp = do_search()
-    except Exception, e:
+    except Exception as e:
         logging.error("query failed because %s" % e)
         return flask.render_template('search_form.html', error=True)
 
@@ -2169,8 +2167,6 @@ def do_search():
     else:
         pass
 
-    # print "PARAMS cursor '%s' page '%s' params '%s'" % (cursor, page, params)
-        
     rsp = flask.g.search_idx.query(body=body, params=params)
     return body, params, rsp
 
@@ -2787,7 +2783,7 @@ def get_by_concordance(id, src):
 
     try:
         return flask.g.search_idx.single(rsp)
-    except Exception, e:
+    except Exception as e:
         logging.warning("failed to retrieve %s" % id)
         return None
 
@@ -2877,7 +2873,7 @@ def has_language_query(lang, spoken):
         else:
             pass
 
-    except Exception, e:
+    except Exception as e:
         logging.error("weird and freakish language tag %s failed because %s" % (lang, e))
 
     if pylang:
@@ -2945,7 +2941,7 @@ def append_source_details_to_buckets(buckets):
 
         try:
             prefix, key = b['key'].split(':')
-        except Exception, e:
+        except Exception as e:
             logging.debug("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
             continue
 
@@ -2974,7 +2970,7 @@ def append_language_details_to_buckets(buckets):
             b["name"] = str(lang)
             b["fullname"] = b["name"]
 
-        except Exception, e:
+        except Exception as e:
             logging.debug("failed to parse language tag '%s' because %s" % (tag, e))
 
 def append_country_details_to_buckets(buckets):
@@ -2994,7 +2990,7 @@ def append_country_details_to_buckets(buckets):
             b["name"] = name
             b["fullname"] = name
 
-        except Exception, e:
+        except Exception as e:
             logging.debug("failed to parse country code '%s' because %s" % (code, e))
 
 # please put me in a library somewhere...
