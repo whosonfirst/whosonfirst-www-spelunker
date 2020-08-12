@@ -3123,7 +3123,7 @@ if __name__ == '__main__':
 
     import sys
     import optparse
-    import ConfigParser
+    import configparser
 
     opt_parser = optparse.OptionParser()
 
@@ -3138,7 +3138,7 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=logging.INFO)
 
-    cfg = ConfigParser.ConfigParser()
+    cfg = configparser.ConfigParser()
     cfg.read(options.config)
 
     os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
