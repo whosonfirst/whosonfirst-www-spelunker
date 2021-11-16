@@ -8,6 +8,9 @@ PROJECT=`dirname $PARENT`
 sudo apt-get update
 sudo apt-get upgrade -y
 
+sudo add-apt-repository universe
+sudo apt-get update
+
 sudo apt-get install -y git tcsh emacs24-nox htop sysstat ufw fail2ban unattended-upgrades python-setuptools unzip
 sudo dpkg-reconfigure -f noninteractive --priority=low unattended-upgrades
 
