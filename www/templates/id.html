@@ -187,7 +187,8 @@
 
 <li><a href="https://data.whosonfirst.org/{{ doc.properties.get("wof:path") |e }}" target="data">Raw data (GeoJSON)</a></li>
 <li><a href="https://github.com/whosonfirst-data/{{ doc.properties.get("wof:repo") |e }}/blob/master/data/{{ doc.properties.get("wof:path") |e }}" target="github">View on Github</a></li>
-
+<li><a href="https://writefield.nextzen.org/place/edit?url=https://raw.githubusercontent.com/whosonfirst-data/{{ doc.properties.get("wof:repo") |e }}/master/data/{{ doc.properties.get("wof:path") |e }}" target="writefield">Edit in Write Field</a></li>
+	
 </ul>
 
 {% include "inc_log.html" %}
