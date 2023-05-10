@@ -3,15 +3,15 @@
 import sys
 import os
 import logging
-import urlparse
 import urllib
+import urllib.parse
 import codecs
 import requests
 
 import flask
 import werkzeug
 import werkzeug.security
-from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.datastructures import Headers
 from flask_cors import cross_origin
 
@@ -179,14 +179,14 @@ def country_name(code):
     try:
         c = pycountry.countries.get(alpha2=code)
         return c.name
-    except Exception, e:
+    except Exception(e):
 
         # I hate you Python... (20170116/thisisaaronland)
 
         try:
             c = pycountry.countries.get(alpha_2=code)
             return c.name
-        except Exception, e:
+        except Exception(e):
             logging.error("failed to get country name for %s, because %s" % (code, e))
             return code
 
@@ -224,7 +224,7 @@ def format_timestamp(ts, fmt=None):
 
         return then.strftime(fmt)
 
-    except Exception, e:
+    except Exception(e):
         logging.error("Failed to format timestamp (%s) because %s" % (ts, e))
         return ts
 
@@ -588,7 +588,7 @@ def random_place_query():
 
     try:
         iso = country.alpha2.lower()
-    except Exception, e:
+    except Exception(e):
         iso = country.alpha_2.lower()	# WUUUUUUUUHHHHHHHH.... sad face (20161202/thisisaaronland)
 
     iso = flask.g.search_idx.escape(iso)
@@ -799,7 +799,7 @@ def languages(spoken=False):
         try:
             lang = pycountry.languages.get(iso639_3_code=b['key'])
             b['lang_common'] = lang.name
-        except Exception, e:
+        except Exception(e):
             b['lang_common'] = b['key']
 
     template = "languages_official.html"
@@ -1948,7 +1948,7 @@ def searchify():
 
     try:
         query, params, rsp = do_search()
-    except Exception, e:
+    except Exception(e):
         logging.error("query failed because %s" % e)
         return flask.render_template('search_form.html', error=True)
 
@@ -2088,7 +2088,7 @@ def search_query():
     # (20160701/thisisaaronland)
 
     if esc_q == '*' and len(query['filtered']['filter']['and']) < 2:
-        raise Exception, "E_INSUFFICIENT_SEARCH"
+        raise Exception("E_INSUFFICIENT_SEARCH")
 
     # 3. scoring the results by sub-properties
     # https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl-function-score-query.html#score-functions
@@ -2787,7 +2787,7 @@ def get_by_concordance(id, src):
 
     try:
         return flask.g.search_idx.single(rsp)
-    except Exception, e:
+    except Exception(e):
         logging.warning("failed to retrieve %s" % id)
         return None
 
@@ -2877,7 +2877,7 @@ def has_language_query(lang, spoken):
         else:
             pass
 
-    except Exception, e:
+    except Exception(e):
         logging.error("weird and freakish language tag %s failed because %s" % (lang, e))
 
     if pylang:
@@ -2945,7 +2945,7 @@ def append_source_details_to_buckets(buckets):
 
         try:
             prefix, key = b['key'].split(':')
-        except Exception, e:
+        except Exception(e):
             logging.debug("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
             continue
 
@@ -2974,7 +2974,7 @@ def append_language_details_to_buckets(buckets):
             b["name"] = str(lang)
             b["fullname"] = b["name"]
 
-        except Exception, e:
+        except Exception(e):
             logging.debug("failed to parse language tag '%s' because %s" % (tag, e))
 
 def append_country_details_to_buckets(buckets):
@@ -2994,7 +2994,7 @@ def append_country_details_to_buckets(buckets):
             b["name"] = name
             b["fullname"] = name
 
-        except Exception, e:
+        except Exception(e):
             logging.debug("failed to parse country code '%s' because %s" % (code, e))
 
 # please put me in a library somewhere...
