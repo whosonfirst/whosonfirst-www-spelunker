@@ -30,49 +30,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.yesnofix.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/mapzen.whosonfirst.languify.css') }}" />
 
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-3.7.0.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/geopoint.js') }}"></script>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.hash.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.label.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/tangram.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/FileSaver.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.php.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.log.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.placetypes.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.uri.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.chrome.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.chrome.init.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.geojson.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.net.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.tangram.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.styles.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.handlers.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.enmapify.js') }}"></script>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.properties.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.yesnofix.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.api.js') }}"></script>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/slippymap.crosshairs.js') }}"></script>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.config.js') }}?20171002"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.facets.js') }}"></script>
-
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.brands.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.namify.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.languify.js') }}"></script>
-
-    <!--
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.dependencies.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.app.js') }}"></script>
-    -->
-
     {% block head %}{% endblock %}
 </head>
 <body data-abs-root-url="{{ url_for('index', _external=True) }}" data-wof-data-endpoint="{{ g.data_root }}">
@@ -131,5 +88,48 @@
       </div>
     </div>
 
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-3.7.0.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/geopoint.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.hash.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/leaflet.label.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/tangram.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/FileSaver.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.php.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.log.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.placetypes.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.uri.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.chrome.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.chrome.init.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.geojson.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.net.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.tangram.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.styles.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.leaflet.handlers.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.enmapify.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.properties.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.yesnofix.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.api.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/slippymap.crosshairs.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.config.js') }}?20171002"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.init.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.facets.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.brands.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.namify.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.languify.js') }}"></script>
+
+    <!--
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.dependencies.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/mapzen.whosonfirst.spelunker.app.js') }}"></script>
+    -->
+    
 </body>
 </html>
