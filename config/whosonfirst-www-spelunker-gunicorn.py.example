@@ -3,7 +3,7 @@
 
 import os
 import multiprocessing
-import ConfigParser
+import configparser
 
 spelunker_host = 'YOUR-SPELUNKER-WWW-HOST-GOES-HERE'
 spelunker_port = 'YOUR-SPELUNKER-WWW-PORT-GOES-HERE'
@@ -13,7 +13,7 @@ spelunker_cfg = 'YOUR-SPELUNKER-FLASK-CONFIG-GOES-HERE'
 spelunker_cfg = os.path.join(spelunker_root, spelunker_cfg)
 
 if not os.path.exists(spelunker_cfg):
-   raise Exception, "missing spelunker config file (%s)" % spelunker_cfg
+   raise Exception("Missing spelunker config file (%s)" % spelunker_cfg)
 
 workers = multiprocessing.cpu_count() * 2 + 1
 
@@ -24,7 +24,7 @@ workers = multiprocessing.cpu_count() * 2 + 1
 
 worker_class = "gunicorn.workers.ggevent.GeventWorker"
 
-cfg = ConfigParser.ConfigParser()
+cfg = configparser.ConfigParser()
 cfg.read(spelunker_cfg)
 
 os.environ['SPELUNKER_SEARCH_HOST'] = cfg.get('search', 'host')
