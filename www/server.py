@@ -1937,8 +1937,8 @@ def searchify():
 
     q = get_str('q')
     q = get_single(q)
-
-    if q and re.match(r'^\d+$', q):
+    
+    if q and re.match('^\d+$', str(q)):
 
         id = int(q)
 
@@ -2571,15 +2571,22 @@ def simple_enfilter(field, terms):
     if len(terms) == 1:
 
         term = get_single(terms)
-
-        if type(term) == types.IntType:
+        
+        if type(term) is int:
             esc_term = term
         elif field == 'wof:concordances_sources':
 
             # do not escape the ':' - if you do then ES will
             # be very confused (20161101/thisisaaronland)
 
-            parts = term.split(':', 2)
+            parts = str(term).split(':', 2)
+
+            # As in: /id/85923517/descendants/?exclude=nullisland&concordance=gn%3Aid
+            # ns = flask.g.search_idx.escape(parts[0])
+            # File ".local/lib/python3.9/site-packages/mapzen/whosonfirst/elasticsearch/__init__.py", line 237, in escape
+            # unistr = str.decode("utf-8")
+            # AttributeError: 'str' object has no attribute 'decode'
+
             ns = flask.g.search_idx.escape(parts[0])
             pred = flask.g.search_idx.escape(parts[1])
 
@@ -3015,13 +3022,13 @@ def get_param(k, sanitize=None):
     if sanitize:
         param = map(sanitize, param)
 
-    return param
+    return list(param)
 
 def get_single(v):
 
     if v and type(v) is list:
-        v = v[0]
-
+        return v[0]
+        
     return v
 
 def get_str(k):
