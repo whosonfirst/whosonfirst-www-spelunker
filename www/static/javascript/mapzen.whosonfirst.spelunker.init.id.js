@@ -1,5 +1,8 @@
 window.addEventListener("load", function load(event){
 
+    mapzen.whosonfirst.config.init();
+    console.log("ID INIT");
+    
     var wof = document.getElementById("wof-record");
     var wofid = wof.getAttribute("data-wof-id");
 

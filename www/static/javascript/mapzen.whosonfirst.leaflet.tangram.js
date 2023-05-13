@@ -10,7 +10,9 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
     var _scenefile = 'static/tangram/refill.yaml'
     var _key = 'nextzen-xxxxxx';	// https://developers.nextzen.org/
 
-    var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    // Nextzen is experimenting with a lower cost cached mode. Please contact hello@nextzen.org with questions.
+    // var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.topojson';
+    var _tileurl = 'https://tile.nextzen.org/tilezen/vector/v1/512/all/{z}/{x}/{y}.mvt';    
     var _cache = {};
 
 	var self = {
@@ -261,7 +263,7 @@ mapzen.whosonfirst.leaflet.tangram = (function(){
 		    return false;
 		},
 
-		'set_key': function(api_key) {
+	    'set_key': function(api_key) {
 		    _key = api_key;
 		},
 	    

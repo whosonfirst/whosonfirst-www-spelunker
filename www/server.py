@@ -3019,7 +3019,7 @@ def get_param(k, sanitize=None):
 
 def get_single(v):
 
-    if v and type(v) == types.ListType:
+    if v and type(v) is list:
         v = v[0]
 
     return v
