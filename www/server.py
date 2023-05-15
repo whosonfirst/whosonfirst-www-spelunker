@@ -37,7 +37,7 @@ import mapzen.whosonfirst.languages
 
 import mapzen.whosonfirst.utils as utils
 import mapzen.whosonfirst.placetypes as pt
-import mapzen.whosonfirst.sources as src
+import mapzen.whosonfirst.sources
 import mapzen.whosonfirst.uri as uri
 
 # helpful for figuring out headers aren't being set...
@@ -876,10 +876,10 @@ def for_concordance(who):
     source = None
 
     if not source:
-        source = src.get_source_by_name(who)
+        source = mapzen.whosonfirst.sources.get_source_by_name(who)
 
     if not source:
-        source = src.get_source_by_prefix(who)
+        source = mapzen.whosonfirst.sources.get_source_by_prefix(who)
 
     if not source:
         flask.abort(404)
@@ -901,10 +901,10 @@ def for_concordances_facets(who):
     source = None
 
     if not source:
-        source = src.get_source_by_name(who)
+        source = mapzen.whosonfirst.sources.get_source_by_name(who)
 
     if not source:
-        source = src.get_source_by_prefix(who)
+        source = mapzen.whosonfirst.sources.get_source_by_prefix(who)
 
     if not source:
         flask.abort(404)
@@ -1937,7 +1937,7 @@ def searchify():
 
     q = get_str('q')
     q = get_single(q)
-    
+
     if q and re.match('^\d+$', str(q)):
 
         id = int(q)
@@ -2959,7 +2959,7 @@ def append_source_details_to_buckets(buckets):
             logging.debug("expected %s to be a prefix:key pair but it's not, so skipping" % b['key'])
             continue
 
-        source = src.get_source_by_prefix(prefix)
+        source = mapzen.whosonfirst.sources.get_source_by_prefix(prefix)
 
         b['prefix'] = prefix
 
@@ -3052,7 +3052,10 @@ def sanitize_str(str):
         str = codecs.encode(str, 'utf-8')
         str = str.strip()
 
-    return str
+        # because str is <bytes>
+        return str.decode("utf-8")
+        
+    return str 
 
 def sanitize_int(i):
 
