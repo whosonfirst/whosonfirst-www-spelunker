@@ -1,0 +1,19 @@
+[Unit]
+Description=Who's On First Spelunker
+Documentation=https://www.whosonfirst.org/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/whosonfirst/whosonfirst-www-spelunker/www
+
+User=spelunker
+Group=spelunker
+
+ExecStart=gunicorn --workers=2 --config ../config/whosonfirst-www-spelunker-gunicorn.py server:app
+
+[Install]
+WantedBy=multi-user.target
+
+# Built for @project.name@-@project.version@ (@project.name@)
