@@ -272,7 +272,7 @@
 		"src:geom" : {
 		    "type" : "string"
 		},
-		"src:lbl:centroid" : {
+		"src:lbl_centroid" : {
 		    "type" : "string"
 		},
 		"wof:belongsto" : {
