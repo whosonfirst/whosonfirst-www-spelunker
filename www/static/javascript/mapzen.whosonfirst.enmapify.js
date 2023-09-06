@@ -141,7 +141,7 @@ mapzen.whosonfirst.enmapify = (function(){
 						var lat = props['lbl:latitude'];
 						var lon = props['lbl:longitude'];
 						
-						var label_src = props['src:lbl:centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
+						var label_src = props['src:lbl_centroid'] || props['src:centroid_lbl'] || "UNKNOWN";
 						
 						var label_text = "label centroid (";
 						label_text += label_src;
