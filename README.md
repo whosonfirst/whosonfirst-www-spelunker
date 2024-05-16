@@ -5,6 +5,10 @@ A simple Flask-based spelunker for poking around Who's On First data stored in a
 The spelunker is very much a tool to help work through what the public-facing resource (spelunker) _should_ as it is to help us (Mapzen) visualize and sanity check the
 data. The spelunker does many things but it does not do everything yet, or in some cases ever.
 
+## Important
+
+This package has been archived and replaced by the [whosonfirst/go-whosonfirst-spelunker](https://github.com/whosonfirst/go-whosonfirst-spelunker) and [whosonfirst/go-whosonfirst-spelunker-httpd](https://github.com/whosonfirst/go-whosonfirst-spelunker-httpd) packages. 
+
 ## Installation
 
 The Who's On First spelunker is primarily designed for running on a Ubuntu Linux distribution. It's not designed _for_ a Ubuntu distribution so adapting it to another platform shouldn't be difficult but that is not work we've done yet.
